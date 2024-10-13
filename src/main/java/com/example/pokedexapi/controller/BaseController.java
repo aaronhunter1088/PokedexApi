@@ -8,15 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import skaro.pokeapi.client.PokeApiClient;
-import skaro.pokeapi.resource.FlavorText;
-import skaro.pokeapi.resource.NamedApiResource;
-import skaro.pokeapi.resource.pokemon.PokemonType;
-import skaro.pokeapi.resource.pokemonspecies.PokemonSpecies;
 
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.TreeMap;
 
 @Controller
@@ -40,7 +35,8 @@ public class BaseController {
         this.pokeApiClient = client;
     }
 
-    protected Integer getEvolutionChainID(Map<Integer, List<List<Integer>>> pokemonIDToEvolutionChainMap, String pokemonId) {
+    protected Integer getEvolutionChainID(Map<Integer, List<List<Integer>>> pokemonIDToEvolutionChainMap, String pokemonId)
+    {
         logger.info("id: {}", pokemonId);
         List<Integer> keys = pokemonIDToEvolutionChainMap.keySet().stream().toList();
         Integer keyToReturn = 0;
@@ -116,13 +112,15 @@ public class BaseController {
         }
     }
 
-    protected void setGifImage(Pokemon pokemon) {
+    protected void setGifImage(Pokemon pokemon)
+    {
         pokemon.setGifImage("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/"+pokemon.getId()+".gif");
         HttpResponse<String> response = pokemonService.callUrl(pokemon.getGifImage());
         if (response.statusCode() == 404) pokemon.setGifImage(null);
     }
 
-    protected Map<String, Object> generateDefaultAttributesMap() {
+    protected Map<String, Object> generateDefaultAttributesMap()
+    {
         return new TreeMap<>() {{
             put("name", null); // on screen
             put("gender", null);
