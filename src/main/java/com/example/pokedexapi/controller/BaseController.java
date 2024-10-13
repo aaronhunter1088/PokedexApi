@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import skaro.pokeapi.client.PokeApiClient;
 
 import java.net.http.HttpResponse;
@@ -14,15 +15,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+@CrossOrigin(origins = "*")
 @Controller
 public class BaseController {
 
     private static final Logger logger = LogManager.getLogger(BaseController.class);
-
-    String pokemonId = "";
-    int page = 1;
-    int lastPageSearched = 1;
-    int pkmnPerPage = 10;
 
     protected PokemonService pokemonService;
     protected final PokeApiClient pokeApiClient;
