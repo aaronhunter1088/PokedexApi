@@ -2,6 +2,10 @@ package com.example.pokedexapi.api;
 
 import com.example.pokedexapi.controller.BaseController;
 import com.example.pokedexapi.service.PokemonService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.json.JSONParser;
@@ -32,16 +36,14 @@ import java.net.http.HttpResponse;
 import java.util.*;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/pokemon")
 class PokemonApi extends BaseController {
 
     private static final Logger logger = LogManager.getLogger(PokemonApi.class);
 
     @Autowired
-    PokemonApi(PokemonService pokemonService, PokeApiClient client) {
-        super(pokemonService, client);
-    }
+    PokemonApi(PokemonService pokemonService, PokeApiClient client)
+    { super(pokemonService, client); }
 
     // Abilities
     @RequestMapping(value="/ability", method=RequestMethod.GET)
@@ -238,10 +240,13 @@ class PokemonApi extends BaseController {
         }
     }
 
-    @RequestMapping(value = "/list-pokemon", method=RequestMethod.GET)
+    @Operation(summary = "Returns up to 10 Pokemon", responses = {
+        @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))),
+        @ApiResponse(responseCode = "400", description = "Bad request", content = @Content) })
+    @RequestMapping(value = "", method=RequestMethod.GET)
     @ResponseBody
     ResponseEntity<?> getAllPokemon(@RequestParam(value="limit", required=false, defaultValue="10") int limit,
-                                         @RequestParam(value="offset", required=false, defaultValue="0") int offset)
+                                    @RequestParam(value="offset", required=false, defaultValue="0") int offset)
     {
         logger.info("getAllPokemon limit:{} offset:{}", limit, offset);
         NamedApiResourceList<Pokemon> allPokemon;
@@ -256,6 +261,9 @@ class PokemonApi extends BaseController {
         }
     }
 
+    @Operation(summary = "Returns a Pokemon", responses = {
+            @ApiResponse(description = "Successful Operation", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PokemonApi.class))),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content) })
     @RequestMapping(value = "/{nameOrId}", method=RequestMethod.GET)
     @ResponseBody
     ResponseEntity<?> getPokemon(@PathVariable("nameOrId") String nameOrId)
