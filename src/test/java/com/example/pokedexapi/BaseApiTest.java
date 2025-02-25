@@ -1,14 +1,18 @@
-package com.example.pokedexapi.controller;
+package com.example.pokedexapi;
 
 import com.example.pokedexapi.entity.Pokemon;
 import com.example.pokedexapi.service.PokemonService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import skaro.pokeapi.client.PokeApiClient;
 
 import java.net.http.HttpResponse;
@@ -16,29 +20,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-@CrossOrigin(origins = "*")
-@Controller
-public class BaseController {
+@ActiveProfiles("test")
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@AutoConfigureMockMvc
+public class BaseApiTest {
 
-    private static final Logger logger = LogManager.getLogger(BaseController.class);
+    private static final Logger logger = LogManager.getLogger(BaseApiTest.class);
 
-    protected final PokemonService pokemonService;
-    protected final PokeApiClient pokeApiClient;
-    protected final ObjectMapper objectMapper;
+    @MockBean
+    protected PokemonService pokemonService;
+    @MockBean
+    protected PokeApiClient pokeApiClient;
+    @Autowired
+    protected ObjectMapper objectMapper;
 
     @Value("${skaro.pokeapi.baseUri}")
     protected String pokeApiBaseUrl;
-
-    @Autowired
-    protected BaseController(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper) {
-        this.pokemonService = pokemonService;
-        this.pokeApiClient = client;
-        this.objectMapper = objectMapper;
-    }
-
-    protected BaseController(PokemonService pokemonService, PokeApiClient client) {
-        this(pokemonService, client, null);
-    }
 
     protected Integer getEvolutionChainID(Map<Integer, List<List<Integer>>> pokemonIDToEvolutionChainMap, String pokemonId)
     {
@@ -58,47 +56,6 @@ public class BaseController {
         logger.info("chainKey: {}", keyToReturn);
         return keyToReturn;
     }
-
-//    /**
-//     * Returns a Pokemon with application specific properties
-//     * @param pokemonResource from pokeapi-reactor
-//     * @param speciesData from pokeapi-reactor
-//     * @return Pokemon object
-//     */
-//    protected Pokemon createPokemon(skaro.pokeapi.resource.pokemon.Pokemon pokemonResource, PokemonSpecies speciesData) {
-//        Pokemon pokemon = new Pokemon(pokemonResource);
-//        pokemon.setDefaultImage(null != pokemon.getSprites().getFrontDefault() ? pokemon.getSprites().getFrontDefault() : "/images/pokeball1.jpg");
-//        pokemon.setOfficialImage("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/"+pokemon.getId()+".png");
-//        setGifImage(pokemon);
-//        pokemon.setShinyImage(pokemon.getSprites().getFrontShiny());
-//        pokemon.setColor(speciesData.getColor().getName());
-//        pokemon.setDescriptions(speciesData.getFlavorTextEntries());
-//        List<FlavorText> pokemonDescriptions = pokemon.getDescriptions()
-//                .stream().filter(entry -> entry.getLanguage().getName().equals("en"))
-//                .toList();
-//        int randomEntry = new Random().nextInt(pokemonDescriptions.size());
-//        String description = pokemonDescriptions.get(randomEntry).getFlavorText().replace("\n", "");
-//        pokemon.setDescriptions(pokemonDescriptions);
-//        pokemon.setDescription(description);
-//        List<PokemonType> types = pokemon.getTypes();
-//        if (types.size() > 1) {
-//            logger.debug("More than 1 pokemonType");
-//            pokemon.setType(types.get(0).getType().getName().substring(0,1).toUpperCase() + types.get(0).getType().getName().substring(1)
-//                    + " & " + types.get(1).getType().getName().substring(0,1).toUpperCase() + types.get(1).getType().getName().substring(1));
-//        } else {
-//            logger.debug("One pokemonType");
-//            pokemon.setType(types.get(0).getType().getName().substring(0,1).toUpperCase() + types.get(0).getType().getName().substring(1));
-//        }
-//        String pokemonLocation = pokemon.getLocationAreaEncounters();
-//        pokemon.setLocations(pokemonService.getPokemonLocationEncounters(pokemonLocation));
-//
-//        pokemon.setPokemonMoves(pokemon.getMoves().stream()
-//                .map(skaro.pokeapi.resource.pokemon.PokemonMove::getMove)
-//                .map(NamedApiResource::getName)
-//                .sorted()
-//                .toList());
-//        return pokemon;
-//    }
 
     /**
      * Fetch the pokemon resource

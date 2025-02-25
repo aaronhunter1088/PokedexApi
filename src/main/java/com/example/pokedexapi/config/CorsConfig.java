@@ -2,6 +2,7 @@ package com.example.pokedexapi.config;
 
 import io.swagger.v3.oas.models.PathItem;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
@@ -20,8 +21,8 @@ import java.util.List;
 
 //In order for Spring Boot to be able to recognize a filter, we just
 // needed to define it as a bean with the @Component annotation.
-@Component
-class CorsConfig implements WebMvcConfigurer {
+@Configuration
+public class CorsConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {

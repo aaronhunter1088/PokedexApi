@@ -2,6 +2,7 @@ package com.example.pokedexapi.api;
 
 import com.example.pokedexapi.controller.BaseController;
 import com.example.pokedexapi.service.PokemonService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -42,8 +43,8 @@ class PokemonApi extends BaseController {
     private static final Logger logger = LogManager.getLogger(PokemonApi.class);
 
     @Autowired
-    PokemonApi(PokemonService pokemonService, PokeApiClient client)
-    { super(pokemonService, client); }
+    PokemonApi(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper)
+    { super(pokemonService, client, objectMapper); }
 
     // Abilities
     @RequestMapping(value="/ability", method=RequestMethod.GET)

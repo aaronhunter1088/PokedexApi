@@ -31,8 +31,8 @@ public class PokemonService {
     private String pokeApiBaseUrl;
 
     @Autowired
-    private PokemonService(PokeApiClient pokeApiClient) {
-        this.pokeApiClient = pokeApiClient;
+    private PokemonService(PokeApiClient client) {
+        this.pokeApiClient = client;
     }
 
     public NamedApiResourceList<Pokemon> getPokemonList(int _limit, int offset)

@@ -1,13 +1,21 @@
 package com.example.pokedexapi.config;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.resolver.DefaultAddressResolverGroup;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.http.codec.json.Jackson2JsonDecoder;
+import org.springframework.http.codec.json.Jackson2JsonEncoder;
+import org.springframework.util.MimeType;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.resources.ConnectionProvider;
@@ -18,7 +26,23 @@ import java.time.Duration;
 @Configuration
 @Import(PokeApiReactorCachingConfiguration.class)
 @EnableCaching
-class MyPokeApiReactorCachingConfiguration {
+public class MyPokeApiReactorCachingConfiguration {
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Bean({"pokeapiDecoderBean"})
+    public Jackson2JsonDecoder jsonDecoder() {
+        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return new Jackson2JsonDecoder(objectMapper, new MimeType[]{MediaType.APPLICATION_JSON});
+    }
+
+    @Bean({"pokeapiEncoderBean"})
+    public Jackson2JsonEncoder jsonEncoder() {
+        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+        return new Jackson2JsonEncoder(objectMapper, new MimeType[]{MediaType.APPLICATION_JSON});
+    }
 
     @Bean
     ConnectionProvider connectionProvider()
