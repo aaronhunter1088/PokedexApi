@@ -22,7 +22,7 @@ public class Pokemon extends skaro.pokeapi.resource.pokemon.Pokemon implements C
     List<String> locations;
     List<String> pokemonMoves;
 
-    Pokemon(skaro.pokeapi.resource.pokemon.Pokemon pokemonResource) {
+    public Pokemon(skaro.pokeapi.resource.pokemon.Pokemon pokemonResource) {
         super();
         setId(pokemonResource.getId());
         setName(pokemonResource.getName().substring(0, 1).toUpperCase() + pokemonResource.getName().substring(1));

@@ -1,4 +1,4 @@
-package com.example.pokedexapi;
+package com.example.pokedexapi.controller;
 
 import com.example.pokedexapi.entity.Pokemon;
 import com.example.pokedexapi.service.PokemonService;
@@ -18,17 +18,23 @@ import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.resource.NamedApiResource;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.PokeApiResource;
-import skaro.pokeapi.resource.berry.Berry;
 
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * BaseApiTest is a base class for API tests in the Pokedex API project.
+ * <p>
+ * Annotations:
+ * ActiveProfiles("test"): Activates the "test" profile for the application context.
+ * ExtendWith(SpringExtension.class): Integrates the Spring TestContext Framework with JUnit 5.
+ * SpringBootTest: Indicates that the class is a Spring Boot test and will bootstrap the entire container.
+ */
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@AutoConfigureMockMvc
 public class BaseApiTest {
 
     private static final Logger logger = LogManager.getLogger(BaseApiTest.class);

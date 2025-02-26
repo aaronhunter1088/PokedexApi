@@ -272,7 +272,7 @@ class PokemonApi extends BaseController {
         logger.info("getPokemon: {}", nameOrId);
         Pokemon pokemon = retrievePokemon(nameOrId);
         if (null != pokemon) {
-            pokemon = pokeApiClient.getResource(Pokemon.class, nameOrId).block();
+            //pokemon = pokeApiClient.getResource(Pokemon.class, nameOrId).block();
             return ResponseEntity.ok(pokemon);
         } else {
             logger.warn("pokemon was not found!");

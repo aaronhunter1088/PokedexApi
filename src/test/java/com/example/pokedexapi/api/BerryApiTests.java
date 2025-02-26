@@ -1,7 +1,7 @@
 package com.example.pokedexapi.api;
 
 //import com.example.pokedexapi.config.ObjectMapperConfig;
-import com.example.pokedexapi.BaseApiTest;
+import com.example.pokedexapi.controller.BaseApiTest;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,14 +34,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
 /**
- * WebMvcTest(ResourceClass.class)
- * Configures the test class to focus only on the
- * web layer of the BerryApi controller. This means
- * that only the web-related components (like controllers,
- * filters, and MockMvc) are instantiated, making the test
- * lightweight and faster. This setup is useful for testing
- * the controller's request handling and response without
- * involving the full application context.
+ * This class contains integration tests for the BerryApi controller.
+ * It uses Spring Boot's testing support to load the application context
+ * and configure MockMvc for testing the web layer.
+ * <p>
+ * Annotations:
+ * ActiveProfiles("test"): Activates the 'test' profile for the tests.
+ * ExtendWith(SpringExtension.class): Integrates the Spring TestContext Framework with JUnit 5.
+ * SpringBootTest: Loads the full application context for integration tests.
+ * AutoConfigureMockMvc: Configures MockMvc for testing the web layer.
  */
 //@TestPropertySource(locations="classpath:application-test.properties")
 @ActiveProfiles("test")
@@ -162,8 +163,8 @@ public class BerryApiTests extends BaseApiTest {
     @Test
     @DisplayName("Test getBerry returns expected berry")
     void testGetBerryReturnsExpectedBerry() throws Exception {
-        Mono<?> mono = Mono.just(berry_1);
-        when(pokeApiClient.getResource(any(), anyString())).thenReturn((Mono<PokeApiResource>) mono);
+        Mono<PokeApiResource> mono = Mono.just(berry_1);
+        when(pokeApiClient.getResource(any(), anyString())).thenReturn(mono);
         this.mockMvc.perform(get(BERRY_API + '/' + berry_1.getId()))
                 .andExpect(status().isOk())
                 .andExpect(result -> {
