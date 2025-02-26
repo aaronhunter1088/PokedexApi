@@ -46,12 +46,18 @@ public class PokemonService {
         }
     }
 
+    /**
+     * Get a Pokemon by its ID or name
+     * @param pokemonIDName the ID or name of the Pokemon
+     * @return the Pokemon object or null if not found
+     */
     public Pokemon getPokemonByName(String pokemonIDName)
     {
+        logger.info("getPokemonByNameOrId: {}", pokemonIDName);
         Pokemon pokemon = null;
         try {
             pokemon = pokeApiClient.getResource(Pokemon.class, pokemonIDName).block();
-            if (null != pokemon) logger.info("pokemon.id: {}", pokemon.getId());
+            if (null != pokemon) logger.info("pokemon found");
         } catch (Exception e) {
             logger.error("Pokemon not found using {}. Exception: {}", pokemonIDName, e.getMessage());
         }
