@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.resolver.DefaultAddressResolverGroup;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +25,8 @@ import skaro.pokeapi.PokeApiReactorCachingConfiguration;
 
 import java.time.Duration;
 
+@Getter
+@Setter
 @Configuration
 @Import(PokeApiReactorCachingConfiguration.class)
 @EnableCaching

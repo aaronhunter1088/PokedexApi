@@ -1,20 +1,15 @@
 package com.example.pokedexapi.service;
 
-import com.example.pokedexapi.controller.BaseApiTest;
 import com.example.pokedexapi.entity.Pokemon;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Mono;
@@ -51,7 +46,7 @@ class PokemonServiceTest {
     @BeforeEach
     void setUp() throws IOException {
         pikachu = objectMapper.readValue(
-                new ClassPathResource("pikachu.json").getFile(),
+                new ClassPathResource("entity/pikachu.json").getFile(),
                 skaro.pokeapi.resource.pokemon.Pokemon.class
         );
     }
