@@ -5,7 +5,6 @@ import com.example.pokedexapi.service.PokemonService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -57,10 +56,10 @@ class BerryApi extends BaseController {
 
     @GetMapping("/berry-firmness")
     @ResponseBody
-    ResponseEntity<?> getBerryFirmnesses(@RequestParam(value="limit", required=false, defaultValue="10") int limit,
-                                         @RequestParam(value="offset", required=false, defaultValue="0") int offset)
+    ResponseEntity<?> getBerryFirmness(@RequestParam(value="limit", required=false, defaultValue="10") int limit,
+                                       @RequestParam(value="offset", required=false, defaultValue="0") int offset)
     {
-        logger.info("getBerryFirmnesses");
+        logger.info("getBerryFirmness");
         try {
             NamedApiResourceList<BerryFirmness> berryFirmnesses = pokeApiClient.getResource(BerryFirmness.class, new PageQuery(limit, offset)).block();
             if (null != berryFirmnesses) return ResponseEntity.ok(berryFirmnesses);

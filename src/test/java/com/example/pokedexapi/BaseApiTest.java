@@ -13,7 +13,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import reactor.core.publisher.Mono;
 import skaro.pokeapi.client.PokeApiClient;
+import skaro.pokeapi.resource.NamedApiResource;
+import skaro.pokeapi.resource.NamedApiResourceList;
+import skaro.pokeapi.resource.PokeApiResource;
+import skaro.pokeapi.resource.berry.Berry;
 
 import java.net.http.HttpResponse;
 import java.util.List;
@@ -106,5 +111,17 @@ public class BaseApiTest {
             put("tradeSpecies", null);
             put("turnUpsideDown", null); // on screen
         }};
+    }
+
+
+    // Helper methods
+    /**
+     * Helper method to convert a NamedApiResourceList<Berry> to a Mono<?>
+     * @param response NamedApiResourceList<Berry> the response to convert
+     * @return Mono<?> the response as a Mono
+     */
+    protected <T extends PokeApiResource> Mono<NamedApiResourceList<T>> getMonoFromListResponse(NamedApiResourceList<?> response, NamedApiResource<T> namedApiResource) {
+        NamedApiResourceList<T> just = (NamedApiResourceList<T>) Mono.just(response).block();
+        return Mono.just((NamedApiResourceList<T>) response);
     }
 }

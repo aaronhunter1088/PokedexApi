@@ -1,0 +1,46 @@
+{
+  "id": 1,
+  "name": "spicy",
+  "barries": null,
+  "contest_type": {
+    "name": "cool",
+    "url": "https://pokeapi.co/api/v2/contest-type/1/"
+  },
+  "names": [
+    {
+      "name": "からい",
+      "language": {
+        "name": "ja-Hrkt",
+        "url": "https://pokeapi.co/api/v2/language/1/"
+      }
+    },
+    {
+      "name": "辣",
+      "language": {
+        "name": "zh-Hant",
+        "url": "https://pokeapi.co/api/v2/language/4/"
+      }
+    },
+    {
+      "name": "Épicé",
+      "language": {
+        "name": "fr",
+        "url": "https://pokeapi.co/api/v2/language/5/"
+      }
+    },
+    {
+      "name": "Spicy",
+      "language": {
+        "name": "en",
+        "url": "https://pokeapi.co/api/v2/language/9/"
+      }
+    },
+    {
+      "name": "辣",
+      "language": {
+        "name": "zh-Hans",
+        "url": "https://pokeapi.co/api/v2/language/12/"
+      }
+    }
+  ]
+}
