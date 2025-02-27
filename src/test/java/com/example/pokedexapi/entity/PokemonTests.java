@@ -1,4 +1,105 @@
 package com.example.pokedexapi.entity;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Used to integrated JUnit 5's Spring TestContext
+ * Framework into JUnit 5's Jupiter programming model.
+ * It provides support for loading a Spring ApplicationContext
+ * and having beans @Autowired into your test instance.
+ */
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
 public class PokemonTests {
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+
+    skaro.pokeapi.resource.pokemon.Pokemon skaroPichu;
+    skaro.pokeapi.resource.pokemon.Pokemon skaroPikachu;
+    Pokemon ditto;
+    Pokemon pichu;
+    Pokemon pikachu;
+
+    @BeforeEach
+    void setUp() throws IOException {
+        skaroPichu = objectMapper.readValue(
+                new ClassPathResource("entity/pichu.json").getFile(),
+                skaro.pokeapi.resource.pokemon.Pokemon.class
+        );
+        skaroPikachu = objectMapper.readValue(
+                new ClassPathResource("entity/pikachu.json").getFile(),
+                skaro.pokeapi.resource.pokemon.Pokemon.class
+        );
+        pichu = new Pokemon(skaroPichu);
+        pikachu = new Pokemon(skaroPikachu);
+        ditto = new Pokemon(skaroPikachu, true);
+
+        assertEquals("pikachu", skaroPikachu.getName());
+        assertSame(25, skaroPikachu.getId());
+    }
+
+    @Test
+    @DisplayName("Test pokemon is created")
+    void testPokemonIsCreated() {
+        Pokemon pokemon = new Pokemon(skaroPikachu);
+        assertNotNull(pokemon);
+        assertEquals("Pikachu", pokemon.getName());
+        assertEquals(25, pokemon.getId());
+    }
+
+    @Test
+    @DisplayName("Test pokemon toString")
+    void testPokemonToString() {
+        assertEquals(ditto.toString(), pikachu.toString());
+    }
+
+    @Test
+    @DisplayName("Test pokemon hash")
+    void testPokemonHash() {
+        assertEquals(ditto.hashCode(), pikachu.hashCode());
+    }
+
+    @Test
+    @DisplayName("Test ditto is the same as pikachu")
+    void testDittoIsSameAsPikachu() {
+        assertEquals(ditto, pikachu);
+    }
+
+    @Test
+    @DisplayName("Test pichu is not the same as pikachu")
+    void testPichuIsNotSameAsPikachu() {
+        assertNotEquals(pichu, pikachu);
+    }
+
+    @Test
+    @DisplayName("Test pichu is not the same as pikachu")
+    void testPichuCompareToPikachu() {
+        assertNotEquals(0, pichu.compareTo(pikachu));
+    }
+
+    @Test
+    @DisplayName("Test ditto is the same as pikachu")
+    void testDittoCompareToPikachu() {
+        assertEquals(0, ditto.compareTo(pikachu));
+    }
+
+    @Test
+    @DisplayName("Test a String is not the same as pikachu")
+    void testStringIsNotSameAsPikachu() {
+        assertNotEquals("pikachu", skaroPikachu);
+    }
 }

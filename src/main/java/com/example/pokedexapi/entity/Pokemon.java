@@ -1,16 +1,17 @@
 package com.example.pokedexapi.entity;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import skaro.pokeapi.resource.FlavorText;
 
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class Pokemon extends skaro.pokeapi.resource.pokemon.Pokemon implements Comparable<Pokemon> {
 
-    private Long id;
     String type;
     String defaultImage;
     String officialImage;
@@ -22,10 +23,23 @@ public class Pokemon extends skaro.pokeapi.resource.pokemon.Pokemon implements C
     List<String> locations;
     List<String> pokemonMoves;
 
+    /**
+     * Raw implementation of the clone method
+     * @param pokemonResource the pokemon to clone
+     * @param clone true/false just provided
+     */
+    public Pokemon(skaro.pokeapi.resource.pokemon.Pokemon pokemonResource, boolean clone) {
+        this(pokemonResource);
+    }
+
+    /**
+     * Main constructor for the Pokemon class
+     * @param pokemonResource the skaro pokemon resource
+     */
     public Pokemon(skaro.pokeapi.resource.pokemon.Pokemon pokemonResource) {
         super();
         setId(pokemonResource.getId());
-        setName(pokemonResource.getName().substring(0, 1).toUpperCase() + pokemonResource.getName().substring(1));
+        setName(getCapitalizedProperty(pokemonResource.getName()));
         setBaseExperience(pokemonResource.getBaseExperience());
         setHeight(pokemonResource.getHeight());
         setIsDefault(pokemonResource.getIsDefault());
@@ -47,88 +61,21 @@ public class Pokemon extends skaro.pokeapi.resource.pokemon.Pokemon implements C
     public Integer getId() {
         return super.getId();
     }
-
     public void setId(Integer id) {
         super.setId(id);
     }
 
-    String getType() {
-        return type;
-    }
-    void setType(String type){
-        this.type = type;
-    }
-
-    String getDefaultImage() {
-        return defaultImage;
-    }
-    void setDefaultImage(String defaultImage){
-        this.defaultImage = defaultImage;
-    }
-
-    String getOfficialImage() {
-        return officialImage;
-    }
-    void setOfficialImage(String officialImage){
-        this.officialImage = officialImage;
-    }
-
-    public String getGifImage() {
-        return gifImage;
-    }
-    public void setGifImage(String gifImage){
-        this.gifImage = gifImage;
-    }
-
-    String getShinyImage() {
-        return shinyImage;
-    }
-    void setShinyImage(String shinyImage) {
-        this.shinyImage = shinyImage;
-    }
-
-    String getColor() {
-        return color;
-    }
-    void setColor(String color) {
-        this.color = color;
-    }
-
-    List<FlavorText> getDescriptions() {
-        return descriptions;
-    }
-    void setDescriptions(List<FlavorText> descriptions) {
-        this.descriptions = descriptions;
-    }
-
-    String getDescription() {
-        return description;
-    }
-    void setDescription(String description) {
-        this.description = description;
-    }
-
-    List<String> getLocations() {
-        return locations;
-    }
-    void setLocations(List<String> locations) {
-        this.locations = locations;
-    }
-
-    List<String> getPokemonMoves() {
-        return pokemonMoves;
-    }
-    void setPokemonMoves(List<String> moves) {
-        this.pokemonMoves = moves;
-    }
-
-    String getCapitalizedColor () {
-        return this.getColor().substring(0, 1).toUpperCase()
-                + this.getColor().substring(1);
+    /**
+     * Capitalizes the first letter of the specified property if it exists
+     * @param value the value to capitalize
+     * @return the capitalized property value
+     */
+    String getCapitalizedProperty(@NotNull String value) {
+        return value.substring(0, 1).toUpperCase() + value.substring(1);
     }
 
     @Override
-    public String toString () {
+    public String toString() {
         return "Pokemon{" +
                 "id='" + this.getId() + '\'' +
                 ", name='" + this.getName() + '\'' +
@@ -157,13 +104,39 @@ public class Pokemon extends skaro.pokeapi.resource.pokemon.Pokemon implements C
     }
 
     @Override
-    public int compareTo (Pokemon p){
-        if (this == p) {
-            return 0;
-        }
-        if (p != null) {
-            return this.getId().compareTo(p.getId());
-        }
-        return 0;
+    public boolean equals(Object o) {
+        if (!(o instanceof Pokemon pokemon)) return false;
+        return Objects.equals(getId(), pokemon.getId()) &&
+                Objects.equals(getName(), pokemon.getName()) &&
+                Objects.equals(getType(), pokemon.getType()) &&
+                Objects.equals(getDefaultImage(), pokemon.getDefaultImage()) &&
+                Objects.equals(getOfficialImage(), pokemon.getOfficialImage()) &&
+                Objects.equals(getGifImage(), pokemon.getGifImage()) &&
+                Objects.equals(getShinyImage(), pokemon.getShinyImage()) &&
+                Objects.equals(getColor(), pokemon.getColor()) &&
+                Objects.equals(getDescriptions(), pokemon.getDescriptions()) &&
+                Objects.equals(getDescription(), pokemon.getDescription()) &&
+                Objects.equals(getLocations(), pokemon.getLocations()) &&
+                Objects.equals(getPokemonMoves(), pokemon.getPokemonMoves());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getType(), getDefaultImage(), getOfficialImage(), getGifImage(),
+                            getShinyImage(), getColor(), getDescriptions(), getDescription(), getLocations(),
+                            getPokemonMoves());
+    }
+
+    /**
+     * Compares the id and name of the pokemon
+     * @param pokemon the pokedex pokemon to be compared.
+     * @return 0 if the id and name are the same, 1 otherwise
+     */
+    @Override
+    public int compareTo(Pokemon pokemon){
+        int idCompare = this.getId().compareTo(pokemon.getId());
+        if (idCompare == 0)
+            return this.getName().compareTo(pokemon.getName());
+        return idCompare;
     }
 }
