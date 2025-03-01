@@ -22,11 +22,10 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class PokemonTests {
+public class PokemonTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-
 
     skaro.pokeapi.resource.pokemon.Pokemon skaroPichu;
     skaro.pokeapi.resource.pokemon.Pokemon skaroPikachu;
@@ -62,13 +61,13 @@ public class PokemonTests {
     }
 
     @Test
-    @DisplayName("Test pokemon toString")
+    @DisplayName("Test pokemon toString are the same")
     void testPokemonToString() {
         assertEquals(ditto.toString(), pikachu.toString());
     }
 
     @Test
-    @DisplayName("Test pokemon hash")
+    @DisplayName("Test pokemon hash are the same")
     void testPokemonHash() {
         assertEquals(ditto.hashCode(), pikachu.hashCode());
     }
@@ -86,20 +85,14 @@ public class PokemonTests {
     }
 
     @Test
-    @DisplayName("Test pichu is not the same as pikachu")
+    @DisplayName("pichu compareTo pikachu returns 1")
     void testPichuCompareToPikachu() {
-        assertNotEquals(0, pichu.compareTo(pikachu));
+        assertSame(1, pichu.compareTo(pikachu));
     }
 
     @Test
-    @DisplayName("Test ditto is the same as pikachu")
+    @DisplayName("ditto compareTo pikachu returns 0")
     void testDittoCompareToPikachu() {
-        assertEquals(0, ditto.compareTo(pikachu));
-    }
-
-    @Test
-    @DisplayName("Test a String is not the same as pikachu")
-    void testStringIsNotSameAsPikachu() {
-        assertNotEquals("pikachu", skaroPikachu);
+        assertSame(0, ditto.compareTo(pikachu));
     }
 }

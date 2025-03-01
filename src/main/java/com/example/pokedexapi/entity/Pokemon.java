@@ -5,12 +5,11 @@ import lombok.*;
 import skaro.pokeapi.resource.FlavorText;
 
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class Pokemon extends skaro.pokeapi.resource.pokemon.Pokemon implements Comparable<Pokemon> {
+public class Pokemon extends skaro.pokeapi.resource.pokemon.Pokemon {
 
     String type;
     String defaultImage;
@@ -42,7 +41,7 @@ public class Pokemon extends skaro.pokeapi.resource.pokemon.Pokemon implements C
         setName(getCapitalizedProperty(pokemonResource.getName()));
         setBaseExperience(pokemonResource.getBaseExperience());
         setHeight(pokemonResource.getHeight());
-        setIsDefault(pokemonResource.getIsDefault());
+        setDefault(pokemonResource.getDefault());
         setOrder(pokemonResource.getOrder());
         setWeight(pokemonResource.getWeight());
         setAbilities(pokemonResource.getAbilities());
@@ -81,7 +80,7 @@ public class Pokemon extends skaro.pokeapi.resource.pokemon.Pokemon implements C
                 ", name='" + this.getName() + '\'' +
                 ", baseExperience='" + this.getBaseExperience() + '\'' +
                 ", height='" + this.getHeight() + '\'' +
-                ", isDefault='" + this.getIsDefault() + '\'' +
+                ", isDefault='" + this.getDefault() + '\'' +
                 ", order='" + this.getOrder() + '\'' +
                 ", weight='" + this.getWeight() + '\'' +
                 ", abilities='" + this.getAbilities() + '\'' +
@@ -101,42 +100,5 @@ public class Pokemon extends skaro.pokeapi.resource.pokemon.Pokemon implements C
                 ", gifImage='" + gifImage + '\'' +
                 ", color='" + color + '\'' +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof Pokemon pokemon)) return false;
-        return Objects.equals(getId(), pokemon.getId()) &&
-                Objects.equals(getName(), pokemon.getName()) &&
-                Objects.equals(getType(), pokemon.getType()) &&
-                Objects.equals(getDefaultImage(), pokemon.getDefaultImage()) &&
-                Objects.equals(getOfficialImage(), pokemon.getOfficialImage()) &&
-                Objects.equals(getGifImage(), pokemon.getGifImage()) &&
-                Objects.equals(getShinyImage(), pokemon.getShinyImage()) &&
-                Objects.equals(getColor(), pokemon.getColor()) &&
-                Objects.equals(getDescriptions(), pokemon.getDescriptions()) &&
-                Objects.equals(getDescription(), pokemon.getDescription()) &&
-                Objects.equals(getLocations(), pokemon.getLocations()) &&
-                Objects.equals(getPokemonMoves(), pokemon.getPokemonMoves());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getType(), getDefaultImage(), getOfficialImage(), getGifImage(),
-                            getShinyImage(), getColor(), getDescriptions(), getDescription(), getLocations(),
-                            getPokemonMoves());
-    }
-
-    /**
-     * Compares the id and name of the pokemon
-     * @param pokemon the pokedex pokemon to be compared.
-     * @return 0 if the id and name are the same, 1 otherwise
-     */
-    @Override
-    public int compareTo(Pokemon pokemon){
-        int idCompare = this.getId().compareTo(pokemon.getId());
-        if (idCompare == 0)
-            return this.getName().compareTo(pokemon.getName());
-        return idCompare;
     }
 }
