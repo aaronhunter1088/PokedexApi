@@ -2,6 +2,7 @@ package com.example.pokedexapi.api;
 
 import com.example.pokedexapi.controller.BaseController;
 import com.example.pokedexapi.service.PokemonService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.json.JSONParser;
@@ -26,8 +27,8 @@ class ContestApi extends BaseController {
     private static final Logger logger = LogManager.getLogger(ContestApi.class);
 
     @Autowired
-    ContestApi(PokemonService pokemonService, PokeApiClient client) {
-        super(pokemonService, client);
+    ContestApi(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper) {
+        super(pokemonService, client, objectMapper);
     }
 
     // ContestType

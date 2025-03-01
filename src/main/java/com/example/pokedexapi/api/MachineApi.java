@@ -2,6 +2,7 @@ package com.example.pokedexapi.api;
 
 import com.example.pokedexapi.controller.BaseController;
 import com.example.pokedexapi.service.PokemonService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,8 @@ class MachineApi extends BaseController {
     private static final Logger logger = LogManager.getLogger(MachineApi.class);
 
     @Autowired
-    MachineApi(PokemonService pokemonService, PokeApiClient client) {
-        super(pokemonService, client);
+    MachineApi(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper) {
+        super(pokemonService, client, objectMapper);
     }
 
     // Machines

@@ -40,8 +40,9 @@ class PokemonApi extends BaseController {
     private static final Logger logger = LogManager.getLogger(PokemonApi.class);
 
     @Autowired
-    PokemonApi(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper)
-    { super(pokemonService, client, objectMapper); }
+    PokemonApi(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper) {
+        super(pokemonService, client, objectMapper);
+    }
 
     // Abilities
     @RequestMapping(value="/ability", method=RequestMethod.GET)
@@ -282,10 +283,11 @@ class PokemonApi extends BaseController {
         NamedApiResourceList<Pokemon> allPokemon;
         try {
             //"https://pokeapi.co/api/v2/pokemon/?limit=10&offset=0"
-            allPokemon = pokeApiClient.getResource(Pokemon.class, new PageQuery(limit, offset)).block();
+            allPokemon = pokemonService.getListOfPokemon(new PageQuery(limit, offset));
             if (null != allPokemon) return ResponseEntity.ok(allPokemon);
             else return ResponseEntity.badRequest().body("Could not access Pokemon endpoint");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             Arrays.stream(e.getStackTrace()).forEach(logger::error);
             return ResponseEntity.badRequest().body("Could not fetch all pokemon because " + e.getMessage());
         }
@@ -670,7 +672,14 @@ class PokemonApi extends BaseController {
             return ResponseEntity.badRequest().body("No chainUrl found for {}" + nameOrId);
         }
         logger.info("chainUrl: " + chainUrl);
-        EvolutionChain evolutionChain = pokemonService.getPokemonEvolutionChain(chainUrl);
+        EvolutionChain evolutionChain = null;
+        try {
+            evolutionChain = pokemonService.getPokemonEvolutionChain(chainUrl);
+        }
+        catch (Exception e) {
+            logger.error("Error retrieving response because {}", e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
         if (evolutionChain != null) return ResponseEntity.ok(evolutionChain);
         else return ResponseEntity.badRequest().body("Could not find evolutionChain with: " + nameOrId);
     }

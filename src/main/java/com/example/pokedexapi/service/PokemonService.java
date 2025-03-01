@@ -47,13 +47,7 @@ public class PokemonService {
 
     public NamedApiResourceList<Pokemon> getPokemonList(int _limit, int offset)
     {
-        if (_limit > 0) {
-            PageQuery query = new PageQuery(_limit, offset);
-            NamedApiResourceList<Pokemon> results = pokeApiClient.getResource(Pokemon.class, query).block();
-            return results;
-        } else {
-            return pokeApiClient.getResource(Pokemon.class).block();
-        }
+        return getListOfPokemon(new PageQuery(_limit, offset));
     }
 
     /**
@@ -72,6 +66,24 @@ public class PokemonService {
             logger.error("Pokemon not found using {}. Exception: {}", pokemonIDName, e.getMessage());
         }
         return pokemon;
+    }
+
+    /**
+     * Get a list of Pokemon passing in a PageQuery
+     * @param query the limit and offset to use
+     * @return a list of pokemon or null if not found
+     */
+    public NamedApiResourceList<Pokemon> getListOfPokemon(PageQuery query)
+    {
+        logger.info("getListOfPokemon");
+        NamedApiResourceList<Pokemon> pokemonList = null;
+        try {
+            pokemonList = pokeApiClient.getResource(Pokemon.class, query).block();
+            if (pokemonList != null) logger.info("Pokemon list found");
+        } catch (Exception e) {
+            logger.error("Pokemon list not found. Exception: {}", e.getMessage());
+        }
+        return pokemonList;
     }
 
     /**
@@ -120,37 +132,27 @@ public class PokemonService {
         return areas;
     }
 
-//    public Map<String, Object> getPokemonChainData(String pokemonChainId)
-//    {
-//        String chainUrl = "https://pokeapi.co/api/v2/evolution-chain/"+pokemonChainId+'/';
-//        HttpResponse<String> response;
-//        JSONParser jsonParser;
-//        try {
-//            response = callUrl(chainUrl);
-//            logResponse(response);
-//            jsonParser = new JSONParser(response.body());
-//            return (Map<String, Object>) jsonParser.parse();
-//        } catch (Exception e) {
-//            logger.error("Internal Server Error: {}", e.getMessage());
-//            return Collections.emptyMap();
-//        }
-//    }
-
     /**
      * Get the evolution chain of a Pokemon
      * @param chainUrl the url of the evolution chain
      * @return the evolution chain or null if not found
      */
-    public EvolutionChain getPokemonEvolutionChain(String chainUrl)
+    public EvolutionChain getPokemonEvolutionChain(String chainUrl) throws Exception
     {
         HttpResponse<String> response;
         try {
             response = callUrl(chainUrl);
             logResponse(response);
             return objectMapper.readValue(response.body(), EvolutionChain.class);
+        } catch (JsonProcessingException jpe) {
+            logger.error("There was an error parsing the response: {}", jpe.getMessage());
+            throw jpe;
+        } catch (URISyntaxException use) {
+            logger.error("The url is malformed... {}", use.getMessage());
+            throw use;
         } catch (Exception e) {
-            logger.error("Internal Server Error: {}", e.getMessage());
-            return null;
+            logger.error("There was an error sending the request");
+            throw e;
         }
     }
 
@@ -663,6 +665,12 @@ public class PokemonService {
         }};
     }
 
+    /**
+     * Calls the given URL and returns the response
+     * @param url the URL to call
+     * @return the response from the URL
+     * @throws Exception if the call fails
+     */
     public HttpResponse<String> callUrl(String url) throws Exception
     {
         HttpResponse<String> response = null;

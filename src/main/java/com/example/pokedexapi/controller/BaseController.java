@@ -36,10 +36,6 @@ public class BaseController {
         this.objectMapper = objectMapper;
     }
 
-    protected BaseController(PokemonService pokemonService, PokeApiClient client) {
-        this(pokemonService, client, null);
-    }
-
     protected Integer getEvolutionChainID(Map<Integer, List<List<Integer>>> pokemonIDToEvolutionChainMap, String pokemonId)
     {
         logger.info("id: {}", pokemonId);
@@ -59,47 +55,6 @@ public class BaseController {
         return keyToReturn;
     }
 
-//    /**
-//     * Returns a Pokemon with application specific properties
-//     * @param pokemonResource from pokeapi-reactor
-//     * @param speciesData from pokeapi-reactor
-//     * @return Pokemon object
-//     */
-//    protected Pokemon createPokemon(skaro.pokeapi.resource.pokemon.Pokemon pokemonResource, PokemonSpecies speciesData) {
-//        Pokemon pokemon = new Pokemon(pokemonResource);
-//        pokemon.setDefaultImage(null != pokemon.getSprites().getFrontDefault() ? pokemon.getSprites().getFrontDefault() : "/images/pokeball1.jpg");
-//        pokemon.setOfficialImage("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/"+pokemon.getId()+".png");
-//        setGifImage(pokemon);
-//        pokemon.setShinyImage(pokemon.getSprites().getFrontShiny());
-//        pokemon.setColor(speciesData.getColor().getName());
-//        pokemon.setDescriptions(speciesData.getFlavorTextEntries());
-//        List<FlavorText> pokemonDescriptions = pokemon.getDescriptions()
-//                .stream().filter(entry -> entry.getLanguage().getName().equals("en"))
-//                .toList();
-//        int randomEntry = new Random().nextInt(pokemonDescriptions.size());
-//        String description = pokemonDescriptions.get(randomEntry).getFlavorText().replace("\n", "");
-//        pokemon.setDescriptions(pokemonDescriptions);
-//        pokemon.setDescription(description);
-//        List<PokemonType> types = pokemon.getTypes();
-//        if (types.size() > 1) {
-//            logger.debug("More than 1 pokemonType");
-//            pokemon.setType(types.get(0).getType().getName().substring(0,1).toUpperCase() + types.get(0).getType().getName().substring(1)
-//                    + " & " + types.get(1).getType().getName().substring(0,1).toUpperCase() + types.get(1).getType().getName().substring(1));
-//        } else {
-//            logger.debug("One pokemonType");
-//            pokemon.setType(types.get(0).getType().getName().substring(0,1).toUpperCase() + types.get(0).getType().getName().substring(1));
-//        }
-//        String pokemonLocation = pokemon.getLocationAreaEncounters();
-//        pokemon.setLocations(pokemonService.getPokemonLocationEncounters(pokemonLocation));
-//
-//        pokemon.setPokemonMoves(pokemon.getMoves().stream()
-//                .map(skaro.pokeapi.resource.pokemon.PokemonMove::getMove)
-//                .map(NamedApiResource::getName)
-//                .sorted()
-//                .toList());
-//        return pokemon;
-//    }
-
     /**
      * Fetch the pokemon resource
      * @param nameOrId String the name or id of a Pokemon
@@ -107,7 +62,7 @@ public class BaseController {
      */
     protected skaro.pokeapi.resource.pokemon.Pokemon retrievePokemon(String nameOrId)
     {
-        logger.info("retrievePokemon");
+        logger.info("retrievePokemon: {}", nameOrId);
         return pokemonService.getPokemonByIdOrName(nameOrId);
     }
 
