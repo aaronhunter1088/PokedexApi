@@ -19,6 +19,7 @@ import skaro.pokeapi.resource.FlavorText;
 import skaro.pokeapi.resource.NamedApiResource;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.egggroup.EggGroup;
+import skaro.pokeapi.resource.evolutionchain.EvolutionChain;
 import skaro.pokeapi.resource.growthrate.GrowthRate;
 import skaro.pokeapi.resource.nature.Nature;
 import skaro.pokeapi.resource.pokemon.PokeathlonStat;
@@ -453,7 +454,7 @@ class PokemonApi extends BaseController {
     {
         logger.info("getSpeciesData: {}", nameOrId);
         try {
-            PokemonSpecies speciesData = pokeApiClient.getResource(PokemonSpecies.class, nameOrId).block();
+            PokemonSpecies speciesData = pokemonService.getPokemonSpeciesData(nameOrId);
             if (null != speciesData) return ResponseEntity.ok(speciesData);
             else {
                 Pokemon pokemonResource = (Pokemon) getPokemon(nameOrId).getBody();
@@ -659,18 +660,19 @@ class PokemonApi extends BaseController {
     @ResponseBody
     ResponseEntity<?> getEvolutionChain(@PathVariable("nameOrId") String nameOrId)
     {
-        PokemonSpecies speciesData = (PokemonSpecies) getSpeciesData(nameOrId).getBody();
-        try {
-            assert speciesData != null;
-            String chainUrl = speciesData.getEvolutionChain().getUrl();
-            logger.info("chainUrl: " + chainUrl);
-            HttpResponse<String> response = pokemonService.callUrl(chainUrl);
-            if (response.statusCode() == 200) return ResponseEntity.ok(response.body());
-            else return ResponseEntity.badRequest().body("Could not find evolutionChain with: " + nameOrId);
-        } catch (Exception e) {
-            logger.error("Error parsing evolutionChain data because {}", e.getMessage());
-            return ResponseEntity.internalServerError().build();
+        logger.info("getEvolutionChain for {}", nameOrId);
+        PokemonSpecies speciesData = pokemonService.getPokemonSpeciesData(nameOrId);
+        if (speciesData == null) {
+            return ResponseEntity.badRequest().body("Could not find SpeciesData with value:" + nameOrId);
         }
+        String chainUrl = speciesData.getEvolutionChain().getUrl();
+        if (chainUrl == null) {
+            return ResponseEntity.badRequest().body("No chainUrl found for {}" + nameOrId);
+        }
+        logger.info("chainUrl: " + chainUrl);
+        EvolutionChain evolutionChain = pokemonService.getPokemonEvolutionChain(chainUrl);
+        if (evolutionChain != null) return ResponseEntity.ok(evolutionChain);
+        else return ResponseEntity.badRequest().body("Could not find evolutionChain with: " + nameOrId);
     }
 
 }

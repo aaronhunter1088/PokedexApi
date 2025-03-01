@@ -15,6 +15,7 @@ import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResource;
 import skaro.pokeapi.resource.NamedApiResourceList;
+import skaro.pokeapi.resource.evolutionchain.EvolutionChain;
 import skaro.pokeapi.resource.locationarea.LocationArea;
 import skaro.pokeapi.resource.locationarea.PokemonEncounter;
 import skaro.pokeapi.resource.pokedex.Pokedex;
@@ -119,25 +120,37 @@ public class PokemonService {
         return areas;
     }
 
-    public Map<String, Object> getPokemonChainData(String pokemonChainId)
+//    public Map<String, Object> getPokemonChainData(String pokemonChainId)
+//    {
+//        String chainUrl = "https://pokeapi.co/api/v2/evolution-chain/"+pokemonChainId+'/';
+//        HttpResponse<String> response;
+//        JSONParser jsonParser;
+//        try {
+//            response = callUrl(chainUrl);
+//            logResponse(response);
+//            jsonParser = new JSONParser(response.body());
+//            return (Map<String, Object>) jsonParser.parse();
+//        } catch (Exception e) {
+//            logger.error("Internal Server Error: {}", e.getMessage());
+//            return Collections.emptyMap();
+//        }
+//    }
+
+    /**
+     * Get the evolution chain of a Pokemon
+     * @param chainUrl the url of the evolution chain
+     * @return the evolution chain or null if not found
+     */
+    public EvolutionChain getPokemonEvolutionChain(String chainUrl)
     {
-        String chainUrl = "https://pokeapi.co/api/v2/evolution-chain/"+pokemonChainId+'/';
         HttpResponse<String> response;
-        JSONParser jsonParser;
         try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(chainUrl))
-                    .GET()
-                    .build();
-            response = HttpClient.newBuilder()
-                    .build()
-                    .send(request,  HttpResponse.BodyHandlers.ofString());
+            response = callUrl(chainUrl);
             logResponse(response);
-            jsonParser = new JSONParser(response.body());
-            return (Map<String, Object>) jsonParser.parse();
+            return objectMapper.readValue(response.body(), EvolutionChain.class);
         } catch (Exception e) {
             logger.error("Internal Server Error: {}", e.getMessage());
-            return Collections.emptyMap();
+            return null;
         }
     }
 
