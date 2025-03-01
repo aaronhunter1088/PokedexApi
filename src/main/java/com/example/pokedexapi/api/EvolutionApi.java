@@ -101,14 +101,18 @@ class EvolutionApi extends BaseController {
     ResponseEntity<?> getEvolutionTrigger(@PathVariable("id") int id)
     {
         logger.info("getEvolutionTrigger {}", id);
-        HttpResponse<String> response = pokemonService.callUrl(pokeApiBaseUrl+"/evolution-trigger/"+id);
-        if (response.statusCode() == 200) {
-            return ResponseEntity.ok(response.body());
-        } else if (response.statusCode() == 400) {
-            return ResponseEntity.badRequest().build();
-        } else {
+        HttpResponse<String> response;
+        try {
+            response = pokemonService.callUrl(pokeApiBaseUrl+"/evolution-trigger/"+id);
+        } catch (Exception e) {
+            logger.error("Error retrieving response because {}", e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
+        return switch (response.statusCode()) {
+            case 200 -> ResponseEntity.ok(response.body());
+            case 400 -> ResponseEntity.badRequest().build();
+            default -> ResponseEntity.internalServerError().build();
+        };
     }
 
 }

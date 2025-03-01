@@ -88,8 +88,14 @@ public class BaseApiTest {
     protected void setGifImage(Pokemon pokemon)
     {
         pokemon.setGifImage("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/"+pokemon.getId()+".gif");
-        HttpResponse<String> response = pokemonService.callUrl(pokemon.getGifImage());
-        if (response.statusCode() == 404) pokemon.setGifImage(null);
+        HttpResponse<String> response;
+        try {
+            response = pokemonService.callUrl(pokemon.getGifImage());
+            if (response.statusCode() == 404) pokemon.setGifImage(null);
+        } catch (Exception e) {
+            logger.error("Could not find gif image for pokemon with id: {}", pokemon.getId());
+            pokemon.setGifImage(null);
+        }
     }
 
     protected Map<String, Object> generateDefaultAttributesMap()

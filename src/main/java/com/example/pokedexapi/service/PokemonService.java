@@ -1,5 +1,9 @@
 package com.example.pokedexapi.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.json.JSONParser;
@@ -9,7 +13,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.query.PageQuery;
+import skaro.pokeapi.resource.NamedApiResource;
 import skaro.pokeapi.resource.NamedApiResourceList;
+import skaro.pokeapi.resource.locationarea.LocationArea;
+import skaro.pokeapi.resource.locationarea.PokemonEncounter;
 import skaro.pokeapi.resource.pokedex.Pokedex;
 import skaro.pokeapi.resource.pokemon.Pokemon;
 import skaro.pokeapi.resource.pokemonspecies.PokemonSpecies;
@@ -27,12 +34,14 @@ public class PokemonService {
 
     private static final Logger logger = LogManager.getLogger(PokemonService.class);
     private final PokeApiClient pokeApiClient;
+    private final ObjectMapper objectMapper;
     @Value("${skaro.pokeapi.baseUri}")
     private String pokeApiBaseUrl;
 
     @Autowired
-    private PokemonService(PokeApiClient client) {
+    private PokemonService(PokeApiClient client, ObjectMapper objectMapper) {
         this.pokeApiClient = client;
+        this.objectMapper = objectMapper;
     }
 
     public NamedApiResourceList<Pokemon> getPokemonList(int _limit, int offset)
@@ -51,56 +60,61 @@ public class PokemonService {
      * @param pokemonIDName the ID or name of the Pokemon
      * @return the Pokemon object or null if not found
      */
-    public Pokemon getPokemonByName(String pokemonIDName)
+    public Pokemon getPokemonByIdOrName(String pokemonIDName)
     {
         logger.info("getPokemonByNameOrId: {}", pokemonIDName);
         Pokemon pokemon = null;
         try {
             pokemon = pokeApiClient.getResource(Pokemon.class, pokemonIDName).block();
-            if (null != pokemon) logger.info("pokemon found");
+            if (pokemon != null) logger.info("Pokemon found");
         } catch (Exception e) {
             logger.error("Pokemon not found using {}. Exception: {}", pokemonIDName, e.getMessage());
         }
         return pokemon;
     }
 
+    /**
+     * Gets a PokemonSpecies by id or null if not found
+     * @param id the id of the PokemonSpecies to get
+     * @return the PokemonSpecies or null if not found
+     */
     public PokemonSpecies getPokemonSpeciesData(String id)
     {
         return pokeApiClient.getResource(PokemonSpecies.class, id).block();
     }
 
-    public List<String> getPokemonLocationEncounters(String url)
+    /**
+     * Returns all known locations of the given pokemon
+     * @param url the encounters url
+     * @return a list of locations
+     * @throws JsonProcessingException if there is an error parsing the response
+     * @throws URISyntaxException if the url is malformed
+     * @throws Exception if there is an error sending the request
+     */
+    public List<String> getPokemonLocations(String url) throws Exception
     {
         HttpResponse<String> response;
-        JSONParser jsonParser;
-        List<String> areas = new ArrayList<>();
+        final List<String> areas = new ArrayList<>();
         try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(url))
-                    .GET()
-                    .build();
-            response = HttpClient.newBuilder()
-                    .build()
-                    .send(request,  HttpResponse.BodyHandlers.ofString());
-            logger.info("response: {}", response);
-            jsonParser = new JSONParser(response.body());
-            List<LinkedHashMap<String, String>> map = (List<LinkedHashMap<String, String>>) jsonParser.parse();
-            for(Map m : map) {
-                LinkedHashMap<String, String> area = (LinkedHashMap<String, String>) m.get("location_area");
-                areas.add(area.get("name"));
-            }
+            response = callUrl(url);
+            logResponse(response);
+            List<PokemonEncounter> pokemonEncounters = objectMapper.readValue(response.body(), new TypeReference<List<PokemonEncounter>>() {});
+            pokemonEncounters.stream()
+                    .map(PokemonEncounter::getLocationArea)
+                    .forEach(area -> areas.add(area.getName()));
+            areas.forEach(area -> logger.debug("area: {}", area));
+        } catch (JsonProcessingException jpe) {
+            logger.error("There was an error parsing the response: {}", jpe.getMessage());
+            throw jpe;
         } catch (URISyntaxException use) {
-            use.printStackTrace();
             logger.error("The url is malformed... {}", use.getMessage());
-        } catch (IOException | InterruptedException ioe) {
-            ioe.printStackTrace();
+            throw use;
+        } catch (Exception e) {
             logger.error("There was an error sending the request");
-        } catch (ParseException pe) {
-            pe.printStackTrace();
-            logger.error("There was an error parsing the response: {}", pe.getMessage());
+            throw e;
         }
         if (!areas.isEmpty()) {
-            areas = areas.stream().sorted().toList();
+            return areas.stream().sorted().toList();
         }
         return areas;
     }
@@ -118,7 +132,7 @@ public class PokemonService {
             response = HttpClient.newBuilder()
                     .build()
                     .send(request,  HttpResponse.BodyHandlers.ofString());
-            logger.info("response: {}", response);
+            logResponse(response);
             jsonParser = new JSONParser(response.body());
             return (Map<String, Object>) jsonParser.parse();
         } catch (Exception e) {
@@ -127,9 +141,17 @@ public class PokemonService {
         }
     }
 
-    public int getTotalPokemon(String pokedex)
+    /**
+     * Get the total number of Pokemon in a
+     * Pokedex or -1 if not found
+     * @param pokedexId the id to get the total Pokemon from
+     * @return the total number of Pokemon in the Pokedex or -1
+     */
+    public int getTotalPokemon(String pokedexId)
     {
-        return pokeApiClient.getResource(Pokedex.class, Objects.requireNonNullElse(pokedex, "1")).block().getPokemonEntries().size();
+        Pokedex pokedex = pokeApiClient.getResource(Pokedex.class, Objects.requireNonNullElse(pokedexId, "1")).block();
+        if (pokedex != null) return pokedex.getPokemonEntries().size();
+        else return -1;
     }
 
     public Map<Integer, List<List<Integer>>> getEvolutionsMap()
@@ -628,7 +650,7 @@ public class PokemonService {
         }};
     }
 
-    public HttpResponse<String> callUrl(String url)
+    public HttpResponse<String> callUrl(String url) throws Exception
     {
         HttpResponse<String> response = null;
         try {
@@ -643,6 +665,7 @@ public class PokemonService {
             logger.info("callUrl: {} status: {}", url, response.statusCode());
         } catch (Exception e) {
             logger.error("Failed to call endpoint: {}", url);
+            throw e;
         }
         return response;
     }
@@ -650,26 +673,44 @@ public class PokemonService {
     public List<String> getAllTypes()
     {
         List<String> types = new ArrayList<>();
-        HttpResponse<String> typeResults = callUrl(pokeApiBaseUrl+"type");
-        if (typeResults.statusCode() == 200) {
-            JSONParser parser = new JSONParser(typeResults.body());
-            LinkedHashMap<String,Object> results = null;
-            try {
-                results = (LinkedHashMap<String,Object>) parser.parse();
-                List<String> finalTypes = types;
-                ((List) results.get("results")).stream()
-                        .forEach(map -> {
-                            LinkedHashMap<String,Object> result = (LinkedHashMap<String,Object>) map;
-                            finalTypes.add((String)result.get("name"));
-                        });
-                types = finalTypes.stream().sorted().toList();
-            } catch (ParseException e) {
-                logger.error("getAllTypes results failed bc {}", e.getMessage());
-            }
-            return types;
+        HttpResponse<String> typeResults = null;
+        try {
+            typeResults = callUrl(pokeApiBaseUrl+"type");
+        } catch (Exception e) {
+            logger.error("Failed to call the endpoint: {}", e.getMessage());
         }
-        else if (typeResults.statusCode() == 400) return new ArrayList<>();
-        else return new ArrayList<>();
+        assert typeResults != null;
+        return switch (typeResults.statusCode()) {
+            case 200 -> {
+                JSONParser parser = new JSONParser(typeResults.body());
+                LinkedHashMap<String,Object> results = null;
+                try {
+                    results = (LinkedHashMap<String,Object>) parser.parse();
+                    List<String> finalTypes = types;
+                    ((List) results.get("results")).stream()
+                            .forEach(map -> {
+                                LinkedHashMap<String,Object> result = (LinkedHashMap<String,Object>) map;
+                                finalTypes.add((String)result.get("name"));
+                            });
+                    types = finalTypes.stream().sorted().toList();
+                } catch (ParseException e) {
+                    logger.error("getAllTypes results failed bc {}", e.getMessage());
+                }
+                yield types;
+            }
+            case 400 -> new ArrayList<>();
+            default -> new ArrayList<>();
+        };
     }
 
+    /**
+     * Logs the response from the API call
+     * @param response the response from the API call
+     * @param <T> the type of the response
+     */
+    private <T> void logResponse(HttpResponse<T> response)
+    {
+        logger.info("response: {}", response);
+        logger.debug("response body: {}", response.body());
+    }
 }

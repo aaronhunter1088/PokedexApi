@@ -29,28 +29,36 @@ class MachineApi extends BaseController {
     ResponseEntity<?> getMachines()
     {
         logger.info("getMachines");
-        HttpResponse<String> response = pokemonService.callUrl(pokeApiBaseUrl+"/machine/");
-        if (response.statusCode() == 200) {
-            return ResponseEntity.ok(response.body());
-        } else if (response.statusCode() == 400) {
-            return ResponseEntity.badRequest().build();
-        } else {
+        HttpResponse<String> response;
+        try {
+            response = pokemonService.callUrl(pokeApiBaseUrl+"/machine");
+        } catch (Exception e) {
+            logger.error("Error retrieving response because {}", e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
+        return switch (response.statusCode()) {
+            case 200 -> ResponseEntity.ok(response.body());
+            case 400 -> ResponseEntity.badRequest().build();
+            default -> ResponseEntity.internalServerError().build();
+        };
     }
 
     @GetMapping(value="/machine/{id}")
     ResponseEntity<?> getMachine(@PathVariable(value="id") String id)
     {
         logger.info("getLocation {}", id);
-        HttpResponse<String> response = (HttpResponse<String>) pokemonService.callUrl(pokeApiBaseUrl+"/machine/"+id);
-        if (response.statusCode() == 200) {
-            return ResponseEntity.ok(response.body());
-        } else if (response.statusCode() == 400) {
-            return ResponseEntity.badRequest().build();
-        } else {
+        HttpResponse<String> response;
+        try {
+            response = pokemonService.callUrl(pokeApiBaseUrl+"/machine/"+id);
+        } catch (Exception e) {
+            logger.error("Error retrieving response because {}", e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
+        return switch (response.statusCode()) {
+            case 200 -> ResponseEntity.ok(response.body());
+            case 400 -> ResponseEntity.badRequest().build();
+            default -> ResponseEntity.internalServerError().build();
+        };
     }
 
 }

@@ -108,20 +108,19 @@ public class BaseController {
     protected skaro.pokeapi.resource.pokemon.Pokemon retrievePokemon(String nameOrId)
     {
         logger.info("retrievePokemon");
-        try {
-            // validate nameOrId here
-            return pokeApiClient.getResource(skaro.pokeapi.resource.pokemon.Pokemon.class, nameOrId).block();
-        } catch (Exception e) {
-            logger.error("Could not find pokemon with value: {}", nameOrId);
-            return null;
-        }
+        return pokemonService.getPokemonByIdOrName(nameOrId);
     }
 
     protected void setGifImage(Pokemon pokemon)
     {
         pokemon.setGifImage("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/"+pokemon.getId()+".gif");
-        HttpResponse<String> response = pokemonService.callUrl(pokemon.getGifImage());
-        if (response.statusCode() == 404) pokemon.setGifImage(null);
+        HttpResponse<String> response = null;
+        try {
+            response = pokemonService.callUrl(pokemon.getGifImage());
+            if (response.statusCode() == 404) pokemon.setGifImage(null);
+        } catch (Exception e) {
+            logger.error("Failed to fetch the gif image at: {}", pokemon.getGifImage());
+        }
     }
 
     protected Map<String, Object> generateDefaultAttributesMap()
