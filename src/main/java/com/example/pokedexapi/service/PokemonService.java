@@ -16,13 +16,12 @@ import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResource;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.evolutionchain.EvolutionChain;
-import skaro.pokeapi.resource.locationarea.LocationArea;
 import skaro.pokeapi.resource.locationarea.PokemonEncounter;
 import skaro.pokeapi.resource.pokedex.Pokedex;
 import skaro.pokeapi.resource.pokemon.Pokemon;
 import skaro.pokeapi.resource.pokemonspecies.PokemonSpecies;
+import skaro.pokeapi.resource.type.Type;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -45,40 +44,19 @@ public class PokemonService {
         this.objectMapper = objectMapper;
     }
 
-    public NamedApiResourceList<Pokemon> getPokemonList(int _limit, int offset)
-    {
-        return getListOfPokemon(new PageQuery(_limit, offset));
-    }
-
-    /**
-     * Get a Pokemon by its ID or name
-     * @param pokemonIDName the ID or name of the Pokemon
-     * @return the Pokemon object or null if not found
-     */
-    public Pokemon getPokemonByIdOrName(String pokemonIDName)
-    {
-        logger.info("getPokemonByNameOrId: {}", pokemonIDName);
-        Pokemon pokemon = null;
-        try {
-            pokemon = pokeApiClient.getResource(Pokemon.class, pokemonIDName).block();
-            if (pokemon != null) logger.info("Pokemon found");
-        } catch (Exception e) {
-            logger.error("Pokemon not found using {}. Exception: {}", pokemonIDName, e.getMessage());
-        }
-        return pokemon;
-    }
-
     /**
      * Get a list of Pokemon passing in a PageQuery
-     * @param query the limit and offset to use
+     * <a href="https://pokeapi.co/api/v2/pokemon/?limit=10&offset=0">Test</a>
+     * @param _limit the limit to use
+     * @param offset the offset to use
      * @return a list of pokemon or null if not found
      */
-    public NamedApiResourceList<Pokemon> getListOfPokemon(PageQuery query)
+    public NamedApiResourceList<Pokemon> getPokemonList(int _limit, int offset)
     {
         logger.info("getListOfPokemon");
         NamedApiResourceList<Pokemon> pokemonList = null;
         try {
-            pokemonList = pokeApiClient.getResource(Pokemon.class, query).block();
+            pokemonList = pokeApiClient.getResource(Pokemon.class, new PageQuery(_limit, offset)).block();
             if (pokemonList != null) logger.info("Pokemon list found");
         } catch (Exception e) {
             logger.error("Pokemon list not found. Exception: {}", e.getMessage());
@@ -87,17 +65,39 @@ public class PokemonService {
     }
 
     /**
+     * Get a Pokemon by its ID or name
+     * <a href="https://pokeapi.co/api/v2/pokemon/{nameOrId}>Test</a>
+     * @param nameOrId the name or id of the Pokemon
+     * @return the Pokemon object or null if not found
+     */
+    public Pokemon getPokemonByIdOrName(String nameOrId)
+    {
+        logger.info("getPokemonByNameOrId: {}", nameOrId);
+        Pokemon pokemon = null;
+        try {
+            pokemon = pokeApiClient.getResource(Pokemon.class, nameOrId).block();
+            if (pokemon != null) logger.info("Pokemon found");
+        } catch (Exception e) {
+            logger.error("Pokemon not found using {}. Exception: {}", nameOrId, e.getMessage());
+        }
+        return pokemon;
+    }
+
+    /**
      * Gets a PokemonSpecies by id or null if not found
+     * <a href="https://pokeapi.co/api/v2/pokemon-species/{speciesId}">Test</a>
      * @param id the id of the PokemonSpecies to get
      * @return the PokemonSpecies or null if not found
      */
     public PokemonSpecies getPokemonSpeciesData(String id)
     {
+        logger.info("getPokemonSpeciesData: {}", id);
         return pokeApiClient.getResource(PokemonSpecies.class, id).block();
     }
 
     /**
      * Returns all known locations of the given pokemon
+     * <a href="https://pokeapi.co/api/v2/pokemon/{nameOrId}/encounters">Test</a>
      * @param url the encounters url
      * @return a list of locations
      * @throws JsonProcessingException if there is an error parsing the response
@@ -134,6 +134,7 @@ public class PokemonService {
 
     /**
      * Get the evolution chain of a Pokemon
+     * <a href="https://pokeapi.co/api/v2/evolution-chain/{chainId}">Test</a>
      * @param chainUrl the url of the evolution chain
      * @return the evolution chain or null if not found
      */
@@ -159,6 +160,7 @@ public class PokemonService {
     /**
      * Get the total number of Pokemon in a
      * Pokedex or -1 if not found
+     * <a href="https://pokeapi.co/api/v2/pokedex/{pokedexId}">Test</a>
      * @param pokedexId the id to get the total Pokemon from
      * @return the total number of Pokemon in the Pokedex or -1
      */
@@ -169,6 +171,12 @@ public class PokemonService {
         else return -1;
     }
 
+    /**
+     * Raw map of every Pokemon and their evolutions
+     * Key: pokemonChainId, Value: entire family
+     * @return map
+     */
+    @Deprecated(forRemoval = true)
     public Map<Integer, List<List<Integer>>> getEvolutionsMap()
     {
         return new TreeMap<>() {{
@@ -691,33 +699,36 @@ public class PokemonService {
         return response;
     }
 
+    /**
+     * Fetches all the types as a list
+     * <a href="https://pokeapi.co/api/v2/type">Test</a>
+     * @return all the pokemon types
+     */
     public List<String> getAllTypes()
     {
-        List<String> types = new ArrayList<>();
-        HttpResponse<String> typeResults = null;
+        HttpResponse<String> response = null;
         try {
-            typeResults = callUrl(pokeApiBaseUrl+"type");
+            response = callUrl(pokeApiBaseUrl+"type");
         } catch (Exception e) {
             logger.error("Failed to call the endpoint: {}", e.getMessage());
         }
-        assert typeResults != null;
-        return switch (typeResults.statusCode()) {
+        assert response != null;
+        return switch (response.statusCode()) {
             case 200 -> {
-                JSONParser parser = new JSONParser(typeResults.body());
-                LinkedHashMap<String,Object> results = null;
+                List<NamedApiResource<Type>> types;
                 try {
-                    results = (LinkedHashMap<String,Object>) parser.parse();
-                    List<String> finalTypes = types;
-                    ((List) results.get("results")).stream()
-                            .forEach(map -> {
-                                LinkedHashMap<String,Object> result = (LinkedHashMap<String,Object>) map;
-                                finalTypes.add((String)result.get("name"));
-                            });
-                    types = finalTypes.stream().sorted().toList();
-                } catch (ParseException e) {
-                    logger.error("getAllTypes results failed bc {}", e.getMessage());
+                    NamedApiResourceList<Type> respond = objectMapper.readValue(response.body(), new TypeReference<NamedApiResourceList<Type>>() {});
+                    types = respond.getResults();
+                    while (respond.getNext() != null) {
+                        response = callUrl(respond.getNext());
+                        respond = objectMapper.readValue(response.body(), new TypeReference<NamedApiResourceList<Type>>() {});
+                        types.addAll(respond.getResults());
+                    }
+                    yield types.stream().map(NamedApiResource::getName).sorted().toList();
+                } catch (Exception e) {
+                    logger.error("Failed to parse the response: {}", e.getMessage());
+                    yield new ArrayList<>();
                 }
-                yield types;
             }
             case 400 -> new ArrayList<>();
             default -> new ArrayList<>();

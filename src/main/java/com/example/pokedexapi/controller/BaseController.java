@@ -36,6 +36,7 @@ public class BaseController {
         this.objectMapper = objectMapper;
     }
 
+    @Deprecated(forRemoval = true)
     protected Integer getEvolutionChainID(Map<Integer, List<List<Integer>>> pokemonIDToEvolutionChainMap, String pokemonId)
     {
         logger.info("id: {}", pokemonId);
@@ -57,6 +58,7 @@ public class BaseController {
 
     /**
      * Fetch the pokemon resource
+     * <a href="https://pokeapi.co/api/v2/pokemon/{nameOrId}">Pokemon</a>
      * @param nameOrId String the name or id of a Pokemon
      * @return the Pokemon or null
      */
@@ -66,6 +68,7 @@ public class BaseController {
         return pokemonService.getPokemonByIdOrName(nameOrId);
     }
 
+    @Deprecated(forRemoval = true)
     protected void setGifImage(Pokemon pokemon)
     {
         pokemon.setGifImage("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/"+pokemon.getId()+".gif");
@@ -78,6 +81,7 @@ public class BaseController {
         }
     }
 
+    @Deprecated(forRemoval = true)
     protected Map<String, Object> generateDefaultAttributesMap()
     {
         return new TreeMap<>() {{

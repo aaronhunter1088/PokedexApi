@@ -282,8 +282,7 @@ class PokemonApi extends BaseController {
         logger.info("getAllPokemon limit:{} offset:{}", limit, offset);
         NamedApiResourceList<Pokemon> allPokemon;
         try {
-            //"https://pokeapi.co/api/v2/pokemon/?limit=10&offset=0"
-            allPokemon = pokemonService.getListOfPokemon(new PageQuery(limit, offset));
+            allPokemon = pokemonService.getPokemonList(limit, offset);
             if (null != allPokemon) return ResponseEntity.ok(allPokemon);
             else return ResponseEntity.badRequest().body("Could not access Pokemon endpoint");
         }
@@ -303,7 +302,6 @@ class PokemonApi extends BaseController {
         logger.info("getPokemon: {}", nameOrId);
         Pokemon pokemon = retrievePokemon(nameOrId);
         if (null != pokemon) {
-            //pokemon = pokeApiClient.getResource(Pokemon.class, nameOrId).block();
             return ResponseEntity.ok(pokemon);
         } else {
             logger.warn("pokemon was not found!");
@@ -518,10 +516,27 @@ class PokemonApi extends BaseController {
     }
 
     // Pokemon Types
+    @RequestMapping(value = "/types", method=RequestMethod.GET)
+    @ResponseBody
+    ResponseEntity<?> getAllTypes()
+    {
+        logger.info("getAllTypes");
+        List<String> types;
+        try {
+            types = pokemonService.getAllTypes();
+            logger.debug("# of types: {}", types.size());
+        } catch (Exception e) {
+            logger.error("Error retrieving response because {}", e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+        if (types != null) return ResponseEntity.ok(types);
+        else return ResponseEntity.badRequest().body("Could not access Types endpoint");
+    }
+
     @RequestMapping(value = "/type", method=RequestMethod.GET)
     @ResponseBody
     ResponseEntity<?> getTypes(@RequestParam(value="limit", required=false, defaultValue="10") int limit,
-                                    @RequestParam(value="offset", required=false, defaultValue="0") int offset)
+                               @RequestParam(value="offset", required=false, defaultValue="0") int offset)
     {
         logger.info("getTypes limit:{} offset:{}", limit, offset);
         HttpResponse<String> types;
