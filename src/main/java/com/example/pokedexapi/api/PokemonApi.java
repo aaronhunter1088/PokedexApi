@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,9 +29,6 @@ import skaro.pokeapi.resource.pokemonhabitat.PokemonHabitat;
 import skaro.pokeapi.resource.pokemonshape.PokemonShape;
 import skaro.pokeapi.resource.pokemonspecies.PokemonSpecies;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.*;
 
@@ -53,10 +49,18 @@ class PokemonApi extends BaseController {
                                    @RequestParam(value="offset", required=false, defaultValue="0") int offset)
     {
         logger.info("getAbilities");
-        HttpResponse<String> abilities = pokemonService.callUrl(pokeApiBaseUrl+"ability?limit="+limit+"&offset="+offset);
-        if (abilities.statusCode() == 200) return ResponseEntity.ok(abilities.body());
-        else if (abilities.statusCode() == 400) return ResponseEntity.badRequest().body("Could not access PokemonAbility endpoint");
-        return ResponseEntity.internalServerError().body("Could not access PokemonAbility endpoint");
+        HttpResponse<String> abilities;
+        try {
+            abilities = pokemonService.callUrl(pokeApiBaseUrl+"ability?limit="+limit+"&offset="+offset);
+        } catch (Exception e) {
+            logger.error("Error retrieving response because {}", e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+        return switch (abilities.statusCode()) {
+            case 200 -> ResponseEntity.ok(abilities.body());
+            case 400 -> ResponseEntity.badRequest().body("Could not access PokemonAbility endpoint");
+            default -> ResponseEntity.internalServerError().body("Could not access PokemonAbility endpoint");
+        };
     }
 
     @GetMapping(value="/ability/{id}")
@@ -79,10 +83,18 @@ class PokemonApi extends BaseController {
                                          @RequestParam(value="offset", required=false, defaultValue="0") int offset)
     {
         logger.info("getCharacteristics");
-        HttpResponse<String> characteristics = pokemonService.callUrl(pokeApiBaseUrl+"characteristic?limit="+limit+"&offset="+offset);
-        if (characteristics.statusCode() == 200) return ResponseEntity.ok(characteristics.body());
-        else if (characteristics.statusCode() == 400) return ResponseEntity.badRequest().body("Could not access Characteristic endpoint");
-        return ResponseEntity.internalServerError().body("Could not access Characteristic endpoint");
+        HttpResponse<String> characteristics;
+        try {
+            characteristics = pokemonService.callUrl(pokeApiBaseUrl+"characteristic?limit="+limit+"&offset="+offset);
+        } catch (Exception e) {
+            logger.error("Error retrieving response because {}", e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+        return switch (characteristics.statusCode()) {
+            case 200 -> ResponseEntity.ok(characteristics.body());
+            case 400 -> ResponseEntity.badRequest().body("Could not access Characteristic endpoint");
+            default -> ResponseEntity.internalServerError().body("Could not access Characteristic endpoint");
+        };
     }
 
     @GetMapping(value="/characteristic/{id}")
@@ -135,20 +147,36 @@ class PokemonApi extends BaseController {
                                  @RequestParam(value="offset", required=false, defaultValue="0") int offset)
     {
         logger.info("getGenders");
-        HttpResponse<String> characteristics = pokemonService.callUrl(pokeApiBaseUrl+"gender?limit="+limit+"&offset="+offset);
-        if (characteristics.statusCode() == 200) return ResponseEntity.ok(characteristics.body());
-        else if (characteristics.statusCode() == 400) return ResponseEntity.badRequest().body("Could not access Gender endpoint");
-        return ResponseEntity.internalServerError().body("Could not access Gender endpoint");
+        HttpResponse<String> genders;
+        try {
+            genders = pokemonService.callUrl(pokeApiBaseUrl+"gender?limit="+limit+"&offset="+offset);
+        } catch (Exception e) {
+            logger.error("Error retrieving response because {}", e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+        return switch (genders.statusCode()) {
+            case 200 -> ResponseEntity.ok(genders.body());
+            case 400 -> ResponseEntity.badRequest().body("Could not access Gender endpoint");
+            default -> ResponseEntity.internalServerError().body("Could not access Gender endpoint");
+        };
     }
 
     @GetMapping(value="/gender/{id}")
     ResponseEntity<?> getGender(@PathVariable(value="id") String id)
     {
         logger.info("getGender {}", id);
-        HttpResponse<String> gender = pokemonService.callUrl(pokeApiBaseUrl+"gender/"+id);
-        if (gender.statusCode() == 200) return ResponseEntity.ok(gender.body());
-        else if (gender.statusCode() == 400) return ResponseEntity.badRequest().body("Could not access Gender endpoint");
-        return ResponseEntity.internalServerError().body("Could not access Gender endpoint");
+        HttpResponse<String> gender;
+        try {
+            gender = pokemonService.callUrl(pokeApiBaseUrl+"gender/"+id);
+        } catch (Exception e) {
+            logger.error("Error retrieving response because {}", e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+        return switch (gender.statusCode()) {
+            case 200 -> ResponseEntity.ok(gender.body());
+            case 400 -> ResponseEntity.badRequest().body("Could not access Gender endpoint");
+            default -> ResponseEntity.internalServerError().body("Could not access Gender endpoint");
+        };
     }
 
     // Growth Rate
@@ -453,10 +481,18 @@ class PokemonApi extends BaseController {
                                            @RequestParam(value="offset", required=false, defaultValue="0") int offset)
     {
         logger.info("getPokemonStats limit:{} offset:{}", limit, offset);
-        HttpResponse<String> stats = pokemonService.callUrl(pokeApiBaseUrl+"stat?limit="+limit+"&offset="+offset);
-        if (stats.statusCode() == 200) return ResponseEntity.ok(stats.body());
-        else if (stats.statusCode() == 400) return ResponseEntity.badRequest().body("Could not access Stat endpoint");
-        else return ResponseEntity.internalServerError().body("Could not access Stat endpoint");
+        HttpResponse<String> stats;
+        try {
+            stats = pokemonService.callUrl(pokeApiBaseUrl+"stat?limit="+limit+"&offset="+offset);
+        } catch (Exception e) {
+            logger.error("Error retrieving response because {}", e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+        return switch (stats.statusCode()) {
+            case 200 -> ResponseEntity.ok(stats.body());
+            case 400 -> ResponseEntity.badRequest().body("Could not access Stats endpoint");
+            default -> ResponseEntity.internalServerError().body("Could not access Stats endpoint");
+        };
     }
 
     @RequestMapping(value = "/pokemon-stat/{nameOrId}", method=RequestMethod.GET)
@@ -464,10 +500,18 @@ class PokemonApi extends BaseController {
     ResponseEntity<?> getStat(@PathVariable("nameOrId") String nameOrId)
     {
         logger.info("getPokemonStat {}", nameOrId);
-        HttpResponse<String> stats = pokemonService.callUrl(pokeApiBaseUrl+"stat/"+nameOrId);
-        if (stats.statusCode() == 200) return ResponseEntity.ok(stats.body());
-        else if (stats.statusCode() == 400) return ResponseEntity.badRequest().body("Could not access Stat endpoint");
-        else return ResponseEntity.internalServerError().body("Could not access Stat endpoint");
+        HttpResponse<String> stat;
+        try {
+            stat = pokemonService.callUrl(pokeApiBaseUrl+"stat/"+nameOrId);
+        } catch (Exception e) {
+            logger.error("Error retrieving response because {}", e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+        return switch (stat.statusCode()) {
+            case 200 -> ResponseEntity.ok(stat.body());
+            case 400 -> ResponseEntity.badRequest().body("Could not access Stat endpoint");
+            default -> ResponseEntity.internalServerError().body("Could not access Stat endpoint");
+        };
     }
 
     // Pokemon Types
@@ -477,10 +521,18 @@ class PokemonApi extends BaseController {
                                     @RequestParam(value="offset", required=false, defaultValue="0") int offset)
     {
         logger.info("getTypes limit:{} offset:{}", limit, offset);
-        HttpResponse<String> stats = pokemonService.callUrl(pokeApiBaseUrl+"type?limit="+limit+"&offset="+offset);
-        if (stats.statusCode() == 200) return ResponseEntity.ok(stats.body());
-        else if (stats.statusCode() == 400) return ResponseEntity.badRequest().body("Could not access Type endpoint");
-        else return ResponseEntity.internalServerError().body("Could not access Type endpoint");
+        HttpResponse<String> types;
+        try {
+            types = pokemonService.callUrl(pokeApiBaseUrl+"type?limit="+limit+"&offset="+offset);
+        } catch (Exception e) {
+            logger.error("Error retrieving response because {}", e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+        return switch (types.statusCode()) {
+            case 200 -> ResponseEntity.ok(types.body());
+            case 400 -> ResponseEntity.badRequest().body("Could not access Types endpoint");
+            default -> ResponseEntity.internalServerError().body("Could not access Types endpoint");
+        };
     }
 
     @RequestMapping(value = "/type/{nameOrId}", method=RequestMethod.GET)
@@ -488,10 +540,18 @@ class PokemonApi extends BaseController {
     ResponseEntity<?> getType(@PathVariable("nameOrId") String nameOrId)
     {
         logger.info("getType {}", nameOrId);
-        HttpResponse<String> stats = pokemonService.callUrl(pokeApiBaseUrl+"type/"+nameOrId);
-        if (stats.statusCode() == 200) return ResponseEntity.ok(stats.body());
-        else if (stats.statusCode() == 400) return ResponseEntity.badRequest().body("Could not access Type endpoint");
-        else return ResponseEntity.internalServerError().body("Could not access Type endpoint");
+        HttpResponse<String> type;
+        try {
+            type = pokemonService.callUrl(pokeApiBaseUrl+"type/"+nameOrId);
+        } catch (Exception e) {
+            logger.error("Error retrieving response because {}", e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+        return switch (type.statusCode()) {
+            case 200 -> ResponseEntity.ok(type.body());
+            case 400 -> ResponseEntity.badRequest().body("Could not access Type endpoint");
+            default -> ResponseEntity.internalServerError().body("Could not access Type endpoint");
+        };
     }
 
     // Personal Endpoints
@@ -553,42 +613,26 @@ class PokemonApi extends BaseController {
         return ResponseEntity.notFound().build();
     }
 
+    // Same as /{nameOrId}/encounters except just the names of the Location Areas
     @RequestMapping(value="/{nameOrId}/locations", method=RequestMethod.GET)
     @ResponseBody
     ResponseEntity<?> getPokemonLocations(@PathVariable("nameOrId") String nameOrId)
     {
         logger.info("getPokemonLocations for: {}", nameOrId);
         Pokemon pokemon = retrievePokemon(nameOrId);
-        if (null == pokemon) {
+        if (pokemon == null) {
             return ResponseEntity.badRequest().body("Could not find pokemon with value:" + nameOrId);
         }
         String encountersString = pokemon.getLocationAreaEncounters();
-        HttpResponse<String> response;
         List<String> namesOfAreas = new ArrayList<>();
-        JSONParser jsonParser;
         try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(encountersString))
-                    .GET()
-                    .build();
-            response = HttpClient.newBuilder()
-                    .build()
-                    .send(request,  HttpResponse.BodyHandlers.ofString());
-            logger.debug("response: " + response.body());
-            jsonParser = new JSONParser(response.body());
-            List<LinkedHashMap<String, String>> map = (List<LinkedHashMap<String, String>>) jsonParser.parse();
-            for(Map m : map) {
-                LinkedHashMap<String, String> area = (LinkedHashMap<String, String>) m.get("location_area");
-                namesOfAreas.add(area.get("name"));
-            }
-            namesOfAreas.forEach(area -> logger.debug("area: {}", area));
+            namesOfAreas = pokemonService.getPokemonLocations(encountersString);
         } catch (Exception e) {
             logger.error("Error retrieving response because {}", e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
-        StringBuilder sb = new StringBuilder();
-        namesOfAreas.forEach(area -> sb.append(area).append(", "));
-        return new ResponseEntity<>(sb.toString(), HttpStatus.OK);
+        String result = String.join(", ", namesOfAreas);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     // Pokemon Location Areas: All Location Areas in LocationApi
@@ -597,10 +641,18 @@ class PokemonApi extends BaseController {
     ResponseEntity<?> getPokemonEncounters(@PathVariable("nameOrId") String nameOrId)
     {
         logger.info("getEncounters");
-        HttpResponse<String> encounters = pokemonService.callUrl(pokeApiBaseUrl+"pokemon/"+nameOrId+"/encounters");
-        if (encounters.statusCode() == 200) return ResponseEntity.ok(encounters.body());
-        else if (encounters.statusCode() == 400) return ResponseEntity.badRequest().body("Could not access Gender endpoint");
-        return ResponseEntity.internalServerError().body("Could not access Gender endpoint");
+        HttpResponse<String> encounters;
+        try {
+            encounters = pokemonService.callUrl(pokeApiBaseUrl+"pokemon/"+nameOrId+"/encounters");
+        } catch (Exception e) {
+            logger.error("Error retrieving response because {}", e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+        return switch (encounters.statusCode()) {
+            case 200 -> ResponseEntity.ok(encounters.body());
+            case 400 -> ResponseEntity.badRequest().body("Could not access Encounters endpoint");
+            default -> ResponseEntity.internalServerError().body("Could not access Encounters endpoint");
+        };
     }
     
     @RequestMapping(value= "/{nameOrId}/evolutionChain", method=RequestMethod.GET)
@@ -616,7 +668,7 @@ class PokemonApi extends BaseController {
             if (response.statusCode() == 200) return ResponseEntity.ok(response.body());
             else return ResponseEntity.badRequest().body("Could not find evolutionChain with: " + nameOrId);
         } catch (Exception e) {
-            logger.error("Error parsing species data because {}", e.getMessage());
+            logger.error("Error parsing evolutionChain data because {}", e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
     }

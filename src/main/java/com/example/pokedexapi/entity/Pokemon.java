@@ -41,7 +41,7 @@ public class Pokemon extends skaro.pokeapi.resource.pokemon.Pokemon {
         setName(getCapitalizedProperty(pokemonResource.getName()));
         setBaseExperience(pokemonResource.getBaseExperience());
         setHeight(pokemonResource.getHeight());
-        setDefault(pokemonResource.getDefault());
+        setDefault(pokemonResource.isDefault());
         setOrder(pokemonResource.getOrder());
         setWeight(pokemonResource.getWeight());
         setAbilities(pokemonResource.getAbilities());
@@ -80,7 +80,7 @@ public class Pokemon extends skaro.pokeapi.resource.pokemon.Pokemon {
                 ", name='" + this.getName() + '\'' +
                 ", baseExperience='" + this.getBaseExperience() + '\'' +
                 ", height='" + this.getHeight() + '\'' +
-                ", isDefault='" + this.getDefault() + '\'' +
+                ", isDefault='" + this.isDefault() + '\'' +
                 ", order='" + this.getOrder() + '\'' +
                 ", weight='" + this.getWeight() + '\'' +
                 ", abilities='" + this.getAbilities() + '\'' +
