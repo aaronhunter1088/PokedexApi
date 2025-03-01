@@ -700,7 +700,7 @@ public class PokemonService {
     }
 
     /**
-     * Fetches all the types as a list
+     * Returns all the types as a list
      * <a href="https://pokeapi.co/api/v2/type">Test</a>
      * @return all the pokemon types
      */
