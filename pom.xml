@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.4</version>
+        <version>3.4.3</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
@@ -13,20 +13,6 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>PokedexApi</name>
     <description>PokedexApi</description>
-
-    <url/>
-    <licenses>
-        <license/>
-    </licenses>
-    <developers>
-        <developer/>
-    </developers>
-    <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
-    </scm>
 
     <properties>
         <java.version>18</java.version>
@@ -136,15 +122,27 @@
     </dependencies>
 
     <build>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/**</include>
+                    <!--<include>**/sounds/*.mp3</include>-->
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
+            <!-- The following two plugins were added for OpenAPI.
+                 See this link for more: https://github.com/springdoc/springdoc-openapi-maven-plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring.boot.maven.version}</version>
                 <configuration>
-                    <jvmArguments>
-                        -Dspring.application.admin.enabled=true
-                    </jvmArguments>
+                    <jvmArguments>-Dspring.application.admin.enabled=true</jvmArguments>
                 </configuration>
                 <executions>
                     <execution>
@@ -168,9 +166,10 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <outputFileName>
-                        <!-- Goes to /target/ directory -->
-                    </outputFileName>
+                    <apiDocsUrl>http://localhost:8080/pokedex/v3/api-docs</apiDocsUrl>
+                    <outputFileName>openapi.json</outputFileName>
+                    <outputDir>springdoc/maven-output</outputDir>
+                    <skip>false</skip>
                 </configuration>
             </plugin>
         </plugins>

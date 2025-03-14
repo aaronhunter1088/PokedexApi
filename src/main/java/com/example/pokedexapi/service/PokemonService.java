@@ -16,7 +16,7 @@ import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResource;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.evolutionchain.EvolutionChain;
-import skaro.pokeapi.resource.locationarea.PokemonEncounter;
+import skaro.pokeapi.resource.locationarea.LocationArea;
 import skaro.pokeapi.resource.pokedex.Pokedex;
 import skaro.pokeapi.resource.pokemon.Pokemon;
 import skaro.pokeapi.resource.pokemonspecies.PokemonSpecies;
@@ -107,14 +107,14 @@ public class PokemonService {
     public List<String> getPokemonLocations(String url) throws Exception
     {
         HttpResponse<String> response;
-        final List<String> areas = new ArrayList<>();
+        final List<String> areas;
         try {
             response = callUrl(url);
             logResponse(response);
-            List<PokemonEncounter> pokemonEncounters = objectMapper.readValue(response.body(), new TypeReference<List<PokemonEncounter>>() {});
-            pokemonEncounters.stream()
-                    .map(PokemonEncounter::getLocationArea)
-                    .forEach(area -> areas.add(area.getName()));
+            List<LocationArea> pokemonEncounters = objectMapper.readValue(response.body(), new TypeReference<>() {});
+            areas = new ArrayList<>(pokemonEncounters.stream()
+                    .map(LocationArea::getName)
+                    .toList());
             areas.forEach(area -> logger.debug("area: {}", area));
         } catch (JsonProcessingException jpe) {
             logger.error("There was an error parsing the response: {}", jpe.getMessage());

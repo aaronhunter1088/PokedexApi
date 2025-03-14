@@ -32,8 +32,11 @@ import java.time.Duration;
 @EnableCaching
 public class MyPokeApiReactorCachingConfiguration {
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
+
+    public MyPokeApiReactorCachingConfiguration(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     @Bean({"pokeapiDecoderBean"})
     public Jackson2JsonDecoder jsonDecoder() {
