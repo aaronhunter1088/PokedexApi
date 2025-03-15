@@ -5,7 +5,6 @@ import com.example.pokedexapi.service.PokemonService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -29,7 +28,6 @@ public class BaseController {
     @Value("${skaro.pokeapi.baseUri}")
     protected String pokeApiBaseUrl;
 
-    @Autowired
     protected BaseController(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper) {
         this.pokemonService = pokemonService;
         this.pokeApiClient = client;

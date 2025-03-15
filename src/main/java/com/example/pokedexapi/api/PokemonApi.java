@@ -2,6 +2,7 @@ package com.example.pokedexapi.api;
 
 import com.example.pokedexapi.controller.BaseController;
 import com.example.pokedexapi.service.PokemonService;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -39,7 +40,6 @@ class PokemonApi extends BaseController {
 
     private static final Logger logger = LogManager.getLogger(PokemonApi.class);
 
-    @Autowired
     PokemonApi(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper) {
         super(pokemonService, client, objectMapper);
     }
@@ -65,7 +65,8 @@ class PokemonApi extends BaseController {
         };
     }
 
-    @GetMapping(value="/ability/{id}")
+    @RequestMapping(value="/ability/{id}", method=RequestMethod.GET)
+    @ResponseBody
     ResponseEntity<?> getAbility(@PathVariable(value="id") String id)
     {
         logger.info("getAbility {}", id);
@@ -99,7 +100,8 @@ class PokemonApi extends BaseController {
         };
     }
 
-    @GetMapping(value="/characteristic/{id}")
+    @RequestMapping(value="/characteristic/{id}", method=RequestMethod.GET)
+    @ResponseBody
     ResponseEntity<?> getCharacteristic(@PathVariable(value="id") String id)
     {
         logger.info("getCharacteristic {}", id);
@@ -129,7 +131,8 @@ class PokemonApi extends BaseController {
         }
     }
 
-    @GetMapping(value="/egg-group/{id}")
+    @RequestMapping(value="/egg-group/{id}", method=RequestMethod.GET)
+    @ResponseBody
     ResponseEntity<?> getEggGroup(@PathVariable(value="id") String id)
     {
         logger.info("getEggGroup {}", id);
@@ -163,7 +166,8 @@ class PokemonApi extends BaseController {
         };
     }
 
-    @GetMapping(value="/gender/{id}")
+    @RequestMapping(value="/gender/{id}", method=RequestMethod.GET)
+    @ResponseBody
     ResponseEntity<?> getGender(@PathVariable(value="id") String id)
     {
         logger.info("getGender {}", id);
@@ -198,7 +202,8 @@ class PokemonApi extends BaseController {
         }
     }
 
-    @GetMapping(value="/growth-rate/{id}")
+    @RequestMapping(value="/growth-rate/{id}", method=RequestMethod.GET)
+    @ResponseBody
     ResponseEntity<?> getGrowthRate(@PathVariable(value="id") String id)
     {
         logger.info("getGrowthRate {}", id);
@@ -228,7 +233,8 @@ class PokemonApi extends BaseController {
         }
     }
 
-    @GetMapping(value="/nature/{id}")
+    @RequestMapping(value="/nature/{id}", method=RequestMethod.GET)
+    @ResponseBody
     ResponseEntity<?> getNature(@PathVariable(value="id") String id)
     {
         logger.info("getNature {}", id);
@@ -258,7 +264,8 @@ class PokemonApi extends BaseController {
         }
     }
 
-    @GetMapping(value="/pokeathlon-stat/{id}")
+    @RequestMapping(value="/pokeathlon-stat/{id}", method=RequestMethod.GET)
+    @ResponseBody
     ResponseEntity<?> getPokeathlonStat(@PathVariable(value="id") String id)
     {
         logger.info("getPokeathlonStat {}", id);
@@ -297,7 +304,7 @@ class PokemonApi extends BaseController {
             @ApiResponse(responseCode = "400", description = "Bad request", content = @Content) })
     @RequestMapping(value = "/{nameOrId}", method=RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getPokemon(@PathVariable("nameOrId") String nameOrId)
+    ResponseEntity<?> getAPokemon(@PathVariable("nameOrId") String nameOrId)
     {
         logger.info("getPokemon: {}", nameOrId);
         Pokemon pokemon = retrievePokemon(nameOrId);
@@ -328,7 +335,7 @@ class PokemonApi extends BaseController {
 
     @RequestMapping(value = "/pokemon-color/{nameOrId}", method=RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getPokemonColor(@PathVariable("nameOrId") String nameOrId)
+    ResponseEntity<?> getColor(@PathVariable("nameOrId") String nameOrId)
     {
         try {
             PokemonColor color = pokeApiClient.getResource(PokemonColor.class, nameOrId).block();
@@ -358,7 +365,7 @@ class PokemonApi extends BaseController {
 
     @RequestMapping(value = "/pokemon-form/{nameOrId}", method=RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getPokemonForm(@PathVariable("nameOrId") String nameOrId)
+    ResponseEntity<?> getForm(@PathVariable("nameOrId") String nameOrId)
     {
         try {
             PokemonForm form = pokeApiClient.getResource(PokemonForm.class, nameOrId).block();
@@ -403,7 +410,7 @@ class PokemonApi extends BaseController {
     // Pokemon Shapes
     @RequestMapping(value = "/pokemon-shape", method=RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getPokemonShapes(@RequestParam(value="limit", required=false, defaultValue="10") int limit,
+    ResponseEntity<?> getShapes(@RequestParam(value="limit", required=false, defaultValue="10") int limit,
                                             @RequestParam(value="offset", required=false, defaultValue="0") int offset)
     {
         logger.info("getShapes limit:{} offset:{}", limit, offset);
@@ -419,7 +426,7 @@ class PokemonApi extends BaseController {
 
     @RequestMapping(value = "/pokemon-shape/{nameOrId}", method=RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getPokemonShape(@PathVariable("nameOrId") String nameOrId)
+    ResponseEntity<?> getShape(@PathVariable("nameOrId") String nameOrId)
     {
         try {
             PokemonShape shape = pokeApiClient.getResource(PokemonShape.class, nameOrId).block();
@@ -432,10 +439,10 @@ class PokemonApi extends BaseController {
     }
 
     // Pokemon Species
-    @RequestMapping(value="/pokemon-species")
+    @RequestMapping(value="/pokemon-species", method=RequestMethod.GET)
     @ResponseBody
     ResponseEntity<?> getAllSpeciesData(@RequestParam(value="limit", required=false, defaultValue="10") int limit,
-                                             @RequestParam(value="offset", required=false, defaultValue="0") int offset)
+                                        @RequestParam(value="offset", required=false, defaultValue="0") int offset)
     {
         logger.info("getAllSpeciesData limit:{} offset:{}", limit, offset);
         try {
@@ -448,7 +455,7 @@ class PokemonApi extends BaseController {
         }
     }
 
-    @RequestMapping(value="/pokemon-species/{nameOrId}")
+    @RequestMapping(value="/pokemon-species/{nameOrId}", method=RequestMethod.GET)
     @ResponseBody
     ResponseEntity<?> getSpeciesData(@PathVariable("nameOrId") String nameOrId)
     {
@@ -457,7 +464,7 @@ class PokemonApi extends BaseController {
             PokemonSpecies speciesData = pokemonService.getPokemonSpeciesData(nameOrId);
             if (null != speciesData) return ResponseEntity.ok(speciesData);
             else {
-                Pokemon pokemonResource = (Pokemon) getPokemon(nameOrId).getBody();
+                Pokemon pokemonResource = (Pokemon) getAPokemon(nameOrId).getBody();
                 assert pokemonResource != null;
                 NamedApiResource<PokemonSpecies> speciesResource = pokemonResource.getSpecies();
                 if (null == speciesResource) {
@@ -478,8 +485,8 @@ class PokemonApi extends BaseController {
     // Pokemon Stats
     @RequestMapping(value = "/pokemon-stat", method=RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getPokemonStats(@RequestParam(value="limit", required=false, defaultValue="10") int limit,
-                                           @RequestParam(value="offset", required=false, defaultValue="0") int offset)
+    ResponseEntity<?> getStats(@RequestParam(value="limit", required=false, defaultValue="10") int limit,
+                               @RequestParam(value="offset", required=false, defaultValue="0") int offset)
     {
         logger.info("getPokemonStats limit:{} offset:{}", limit, offset);
         HttpResponse<String> stats;
@@ -518,7 +525,7 @@ class PokemonApi extends BaseController {
     // Pokemon Types
     @RequestMapping(value = "/types", method=RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getAllTypes()
+    ResponseEntity<?> getTypes()
     {
         logger.info("getAllTypes");
         List<String> types;
@@ -535,7 +542,7 @@ class PokemonApi extends BaseController {
 
     @RequestMapping(value = "/type", method=RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getTypes(@RequestParam(value="limit", required=false, defaultValue="10") int limit,
+    ResponseEntity<?> getType(@RequestParam(value="limit", required=false, defaultValue="10") int limit,
                                @RequestParam(value="offset", required=false, defaultValue="0") int offset)
     {
         logger.info("getTypes limit:{} offset:{}", limit, offset);
@@ -555,7 +562,7 @@ class PokemonApi extends BaseController {
 
     @RequestMapping(value = "/type/{nameOrId}", method=RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getType(@PathVariable("nameOrId") String nameOrId)
+    ResponseEntity<?> getAPokemonsType(@PathVariable("nameOrId") String nameOrId)
     {
         logger.info("getType {}", nameOrId);
         HttpResponse<String> type;
@@ -613,8 +620,10 @@ class PokemonApi extends BaseController {
         }
     }
 
-    @RequestMapping(value = "/{nameOrId}/color", method=RequestMethod.GET)
-    @ResponseBody
+    @Operation(summary = "Returns the PokemonColor as a NamedApiResource", responses = {
+            @ApiResponse(description = "Successful Operation", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = NamedApiResource.class))),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content) })
+    @GetMapping(produces = "application/json", path = "/{nameOrId}/color")
     ResponseEntity<?> getColorOfPokemon(@PathVariable("nameOrId") String nameOrId)
     {
         PokemonSpecies speciesInfo;
@@ -623,7 +632,7 @@ class PokemonApi extends BaseController {
             if (speciesInfo != null) {
                 String colorOfPokemon = speciesInfo.getColor().getName();
                 logger.info("color: {}", colorOfPokemon);
-                return ResponseEntity.ok(colorOfPokemon);
+                return ResponseEntity.ok(speciesInfo.getColor());
             }
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(nameOrId + " doesn't have a species!");

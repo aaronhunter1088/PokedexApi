@@ -2,13 +2,9 @@ package com.example.pokedexapi.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.tomcat.util.json.JSONParser;
-import org.apache.tomcat.util.json.ParseException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import skaro.pokeapi.client.PokeApiClient;
@@ -38,7 +34,6 @@ public class PokemonService {
     @Value("${skaro.pokeapi.baseUri}")
     private String pokeApiBaseUrl;
 
-    @Autowired
     private PokemonService(PokeApiClient client, ObjectMapper objectMapper) {
         this.pokeApiClient = client;
         this.objectMapper = objectMapper;
