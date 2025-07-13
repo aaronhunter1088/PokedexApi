@@ -32,7 +32,7 @@ public class MyPokeApiReactorCachingConfigurationTest {
 
     @BeforeEach
     public void init() {
-        MockitoAnnotations.openMocks(this);
+        MockitoAnnotations.initMocks(this);
         objectMapper = new ObjectMapper();
         config = new MyPokeApiReactorCachingConfiguration(objectMapper);
     }

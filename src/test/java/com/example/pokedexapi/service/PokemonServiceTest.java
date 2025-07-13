@@ -1,17 +1,26 @@
 package com.example.pokedexapi.service;
 
+import com.example.pokedexapi.controller.BaseApiTest;
 import com.example.pokedexapi.entity.Pokemon;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Mono;
 import skaro.pokeapi.client.PokeApiClient;
@@ -46,17 +55,9 @@ import static org.mockito.Mockito.*;
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-class PokemonServiceTest {
+class PokemonServiceTest extends BaseApiTest {
 
-    @Mock
-    private PokeApiClient pokeApiClient;
-    @Autowired
-    private ObjectMapper objectMapper;
-    @Value("${skaro.pokeapi.baseUri}")
-    private String baseUrl;
-
-    @InjectMocks
-    private PokemonService pokemonService;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     skaro.pokeapi.resource.pokemon.Pokemon pikachu;
     PokemonSpecies species1Response;
@@ -209,7 +210,7 @@ class PokemonServiceTest {
     @Test
     @DisplayName("Test callUrl with a valid url returns a resource")
     void testCallUrlWithValidUrlReturnsResponse() throws Exception {
-        HttpResponse<String> resource = pokemonService.callUrl(baseUrl+"ability/1");
+        HttpResponse<String> resource = pokemonService.callUrl(pokeApiBaseUrl+"ability/1");
         assertNotNull(resource);
         assertEquals(200, resource.statusCode());
         Ability ability = objectMapper.readValue(
@@ -222,7 +223,7 @@ class PokemonServiceTest {
     @Test
     @DisplayName("Test callUrl with an invalid url returns not found")
     void testCallUrlWithInvalidUrlReturnsNotFound() throws Exception {
-        HttpResponse<String> resource = pokemonService.callUrl(baseUrl+"ability/0");
+        HttpResponse<String> resource = pokemonService.callUrl(pokeApiBaseUrl+"ability/0");
         assertNotNull(resource);
         assertEquals(404, resource.statusCode());
     }

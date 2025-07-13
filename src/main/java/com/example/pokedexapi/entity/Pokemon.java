@@ -1,14 +1,10 @@
 package com.example.pokedexapi.entity;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
 import skaro.pokeapi.resource.FlavorText;
 
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
 public class Pokemon extends skaro.pokeapi.resource.pokemon.Pokemon {
 
     String type;
@@ -21,6 +17,11 @@ public class Pokemon extends skaro.pokeapi.resource.pokemon.Pokemon {
     String description;
     List<String> locations;
     List<String> pokemonMoves;
+
+    /**
+     * No args constructor for the Pokemon class
+     */
+    public Pokemon() {}
 
     /**
      * Raw implementation of the clone method
@@ -64,6 +65,86 @@ public class Pokemon extends skaro.pokeapi.resource.pokemon.Pokemon {
         super.setId(id);
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getDefaultImage() {
+        return defaultImage;
+    }
+
+    public void setDefaultImage(String defaultImage) {
+        this.defaultImage = defaultImage;
+    }
+
+    public String getOfficialImage() {
+        return officialImage;
+    }
+
+    public void setOfficialImage(String officialImage) {
+        this.officialImage = officialImage;
+    }
+
+    public String getGifImage() {
+        return gifImage;
+    }
+
+    public void setGifImage(String gifImage) {
+        this.gifImage = gifImage;
+    }
+
+    public String getShinyImage() {
+        return shinyImage;
+    }
+
+    public void setShinyImage(String shinyImage) {
+        this.shinyImage = shinyImage;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public List<FlavorText> getDescriptions() {
+        return descriptions;
+    }
+
+    public void setDescriptions(List<FlavorText> descriptions) {
+        this.descriptions = descriptions;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<String> getLocations() {
+        return locations;
+    }
+
+    public void setLocations(List<String> locations) {
+        this.locations = locations;
+    }
+
+    public List<String> getPokemonMoves() {
+        return pokemonMoves;
+    }
+
+    public void setPokemonMoves(List<String> pokemonMoves) {
+        this.pokemonMoves = pokemonMoves;
+    }
+
     /**
      * Capitalizes the first letter of the specified property if it exists
      * @param value the value to capitalize
@@ -88,11 +169,11 @@ public class Pokemon extends skaro.pokeapi.resource.pokemon.Pokemon {
                 ", gameIndices='" + this.getGameIndices() + '\'' +
                 ", heldItems='" + this.getHeldItems() + '\'' +
                 ", locationAreaEncounters='" + this.getLocationAreaEncounters() + '\'' +
-                ", moves='" + this.getPokemonMoves() + '\'' +
+                ", moves='" + this.getMoves() + '\'' +
                 ", sprites='" + this.getSprites() + '\'' +
                 ", species='" + this.getSpecies() + '\'' +
                 ", stats='" + this.getStats() + '\'' +
-                ", types='" + this.getType() + '\'' +
+                ", types='" + this.getTypes() + '\'' +
                 ", pastTypes='" + this.getPastTypes() + '\'' +
                 ", type='" + type + '\'' +
                 ", defaultImage='" + defaultImage + '\'' +

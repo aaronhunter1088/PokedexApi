@@ -9,8 +9,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Mono;
 import skaro.pokeapi.client.PokeApiClient;
@@ -36,11 +36,11 @@ import java.util.TreeMap;
 @SpringBootTest
 public class BaseApiTest {
 
-    private static final Logger logger = LogManager.getLogger(BaseApiTest.class);
+    private static final Logger logger = LogManager.getLogger();
 
-    @MockBean
+    @Autowired
     protected PokemonService pokemonService;
-    @MockBean
+    @MockitoBean
     protected PokeApiClient pokeApiClient;
     @Autowired
     protected ObjectMapper objectMapper;
@@ -123,7 +123,6 @@ public class BaseApiTest {
             put("turnUpsideDown", null); // on screen
         }};
     }
-
 
     // Helper methods
     /**

@@ -44,8 +44,6 @@ import static org.mockito.ArgumentMatchers.any;
  * SpringBootTest: Loads the full application context for integration tests.
  * AutoConfigureMockMvc: Configures MockMvc for testing the web layer.
  */
-//@TestPropertySource(locations="classpath:application-test.properties")
-@ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc

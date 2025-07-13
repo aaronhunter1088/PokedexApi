@@ -1,5 +1,6 @@
 package com.example.pokedexapi.entity;
 
+import com.example.pokedexapi.controller.BaseApiTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class PokemonTest {
+public class PokemonTest extends BaseApiTest {
 
     @Autowired
     private ObjectMapper objectMapper;
