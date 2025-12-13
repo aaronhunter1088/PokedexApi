@@ -1,24 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>com.skvllprodvctions</groupId>
         <artifactId>parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
 
     <artifactId>PokedexApi</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
     <name>PokedexApi</name>
     <packaging>jar</packaging>
     <description>Backend service used by the PokedexApiUI</description>
 
     <properties>
         <finalName>${project.artifactId}-${project.version}</finalName>
-        <outputDirectory>${basedir}/target</outputDirectory>
+        <outputDirectory>${basedir}/dist</outputDirectory>
+        <main.class>pokedexapi.PokedexApiApplication</main.class>
     </properties>
+
+    <!-- Included in Parent. Left as a reference -->
+    <dependencyManagement/>
 
     <dependencies>
         <!-- spring boot starter -->
@@ -73,6 +77,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-rest</artifactId>
         </dependency>
+        <!-- spring hateoas: was seeing an error starting the app and running tests without it -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-hateoas</artifactId>
+        </dependency>
         <!-- mysql connector -->
         <dependency>
             <groupId>com.mysql</groupId>
@@ -93,30 +102,30 @@
             <groupId>skaro.pokeapi</groupId>
             <artifactId>pokeapi-reactor</artifactId>
         </dependency>
-        <!-- model mapper -->
+        <!-- model mapper: convert jpa entities to DTOs  -->
         <dependency>
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
-            <version>2.3.9</version>
+            <version>3.2.6</version>
         </dependency>
-        <!-- spring doc/swagger -->
+        <!-- springdoc/swagger: creates openapi.json in /target, open at /context/swagger-ui/index.html -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
-            <version>2.6.0</version>
         </dependency>
-
+        <!-- servlet api -->
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>4.0.1</version>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.1.0</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- Test Dependencies -->
 
         <!-- Spring Boot Test -->
         <dependency>
@@ -125,14 +134,15 @@
             <scope>test</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>junit</groupId>
-                    <artifactId>junit</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-api</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <!-- Spring Boot Web MVC Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc-test</artifactId>
         </dependency>
         <!-- junit jupiter -->
         <dependency>
@@ -148,32 +158,32 @@
     </dependencies>
 
     <build>
-        <sourceDirectory>src/main/java</sourceDirectory>
-        <testSourceDirectory>src/test/java</testSourceDirectory>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>**/**</include>
-                    <!--<include>**/sounds/*.mp3</include>-->
-                </includes>
-            </resource>
-        </resources>
+        <!-- source and test directories defined in parent -->
+        <!-- resources defined in parent -->
 
+        <!-- NOTES -->
+        <!-- Assembly:single creates PokedexApi-#.jar -->
+        <!-- Mvn:package creates PokedexApi-#-jar-with-dependencies.jar -->
+        <!-- Mvn:install adds PokedexApi-#-jar-with-dependencies.jar to local repo -->
         <plugins>
-            <!-- The following two plugins were added for OpenAPI.
-                 See this link for more: https://github.com/springdoc/springdoc-openapi-maven-plugin -->
+            <!-- Spring boot Maven
+                     Must be specifically inherited
+                     Purpose: It repackages your built artifact into an executable
+                     Spring Boot archive (a "fat" jar/war) that embeds dependencies
+                     and the Spring Boot loader so you can run the app with java -jar.
+                     It ensure the manifest and main class are there. -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <jvmArguments>-Dspring.application.admin.enabled=true</jvmArguments>
+                    <jvmArguments>
+                        -Dspring.application.admin.enabled=true
+                    </jvmArguments>
                 </configuration>
                 <executions>
                     <execution>
                         <goals>
-                            <goal>start</goal>
-                            <goal>stop</goal>
+                            <goal>repackage</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -181,7 +191,7 @@
             <plugin>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-maven-plugin</artifactId>
-                <version>1.4</version>
+                <version>1.5</version>
                 <executions>
                     <execution>
                         <id>integration-test</id>
@@ -191,13 +201,23 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <apiDocsUrl>http://localhost:8080/pokedex/v3/api-docs</apiDocsUrl>
-                    <outputFileName>openapi.json</outputFileName>
-                    <outputDir>springdoc/maven-output</outputDir>
-                    <skip>false</skip>
+                    <outputFileName>
+                        <!-- Goes to /target/ directory -->
+                    </outputFileName>
+                    <apiDocsUrl>http://localhost:8080/pokedexapi/v3/api-docs</apiDocsUrl>
                 </configuration>
             </plugin>
+            <!-- Compile found in parent -->
+            <!-- Test-compile found in parent -->
+            <!-- Generate resources found in parent -->
+            <!-- Assembly:Single Creates PokedexApi-version.jar
+                     and PokedexApi-version-jar-with-dependencies.jar
+                     Run Command: mvn clean package (-Dmaven.test.skip=true)
+                     Found in parent -->
+            <!-- Attach sources
+                     Found in parent -->
+            <!-- JaCoCo configuration for code analysis
+                     Found in parent -->
         </plugins>
     </build>
-
 </project>
