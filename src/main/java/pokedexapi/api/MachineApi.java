@@ -20,7 +20,8 @@ class MachineApi extends BaseController {
     private static final Logger logger = LogManager.getLogger(MachineApi.class);
 
     @Autowired
-    MachineApi(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper) {
+    MachineApi(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper)
+    {
         super(pokemonService, client, objectMapper);
     }
 
@@ -44,7 +45,7 @@ class MachineApi extends BaseController {
         };
     }
 
-    @GetMapping(value="/machine/{id}")
+    @GetMapping(value="/{id}")
     ResponseEntity<?> getMachine(@PathVariable(value="id") String id)
     {
         logger.info("getLocation {}", id);

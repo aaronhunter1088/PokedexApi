@@ -18,7 +18,7 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/pokedexapi/**")
-                .allowedOrigins("http://localhost:4200") // Replace with your frontend url
+                .allowedOrigins("http://localhost:8080") // Replace with your frontend url
                 //.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedMethods("GET")
                 .allowedHeaders("*");

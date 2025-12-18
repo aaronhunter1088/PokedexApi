@@ -1,5 +1,6 @@
 package pokedexapi.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import pokedexapi.entity.Pokemon;
 import pokedexapi.service.PokemonService;
 import org.apache.logging.log4j.LogManager;
@@ -19,7 +20,7 @@ import java.util.TreeMap;
 @Controller
 public class BaseController {
 
-    private static final Logger logger = LogManager.getLogger(BaseController.class);
+    private static final Logger LOGGER = LogManager.getLogger(BaseController.class);
 
     protected final PokemonService pokemonService;
     protected final PokeApiClient pokeApiClient;
@@ -28,7 +29,9 @@ public class BaseController {
     @Value("${skaro.pokeapi.baseUri}")
     protected String pokeApiBaseUrl;
 
-    protected BaseController(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper) {
+    @Autowired
+    protected BaseController(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper)
+    {
         this.pokemonService = pokemonService;
         this.pokeApiClient = client;
         this.objectMapper = objectMapper;
@@ -37,7 +40,7 @@ public class BaseController {
     @Deprecated(forRemoval = true)
     protected Integer getEvolutionChainID(Map<Integer, List<List<Integer>>> pokemonIDToEvolutionChainMap, String pokemonId)
     {
-        logger.info("id: {}", pokemonId);
+        LOGGER.info("id: {}", pokemonId);
         List<Integer> keys = pokemonIDToEvolutionChainMap.keySet().stream().toList();
         Integer keyToReturn = 0;
         keysLoop:
@@ -50,7 +53,7 @@ public class BaseController {
                 }
             }
         }
-        logger.info("chainKey: {}", keyToReturn);
+        LOGGER.info("chainKey: {}", keyToReturn);
         return keyToReturn;
     }
 
@@ -62,7 +65,7 @@ public class BaseController {
      */
     protected skaro.pokeapi.resource.pokemon.Pokemon retrievePokemon(String nameOrId)
     {
-        logger.info("retrievePokemon: {}", nameOrId);
+        LOGGER.info("retrievePokemon: {}", nameOrId);
         return pokemonService.getPokemonByIdOrName(nameOrId);
     }
 
@@ -75,7 +78,7 @@ public class BaseController {
             response = pokemonService.callUrl(pokemon.getGifImage());
             if (response.statusCode() == 404) pokemon.setGifImage(null);
         } catch (Exception e) {
-            logger.error("Failed to fetch the gif image at: {}", pokemon.getGifImage());
+            LOGGER.error("Failed to fetch the gif image at: {}", pokemon.getGifImage());
         }
     }
 

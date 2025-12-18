@@ -19,12 +19,14 @@ import skaro.pokeapi.resource.itempocket.ItemPocket;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/item")
-class ItemApi extends BaseController {
-
-    private static final Logger logger = LogManager.getLogger(ItemApi.class);
+class ItemApi extends BaseController
+{
+    /* Logging instance */
+    private static final Logger LOGGER = LogManager.getLogger(ItemApi.class);
 
     @Autowired
-    ItemApi(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper) {
+    ItemApi(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper)
+    {
         super(pokemonService, client, objectMapper);
     }
 
@@ -32,7 +34,7 @@ class ItemApi extends BaseController {
     @ResponseBody
     ResponseEntity<?> getItems()
     {
-        logger.info("getItems");
+        LOGGER.info("getItems");
         try {
             NamedApiResourceList<Item> items = pokeApiClient.getResource(Item.class).block();
             if (null != items) return ResponseEntity.ok(items);
@@ -45,7 +47,7 @@ class ItemApi extends BaseController {
     @GetMapping(value="/item/{id}")
     ResponseEntity<?> getItem(@PathVariable(value="id") String id)
     {
-        logger.info("getItem {}", id);
+        LOGGER.info("getItem {}", id);
         try {
             Item item = pokeApiClient.getResource(Item.class, id).block();
             if (null != item) return ResponseEntity.ok(item);
@@ -60,7 +62,7 @@ class ItemApi extends BaseController {
     @ResponseBody
     ResponseEntity<?> getItemAttributes()
     {
-        logger.info("getItemAttributes");
+        LOGGER.info("getItemAttributes");
         try {
             NamedApiResourceList<ItemAttribute> itemAttributes = pokeApiClient.getResource(ItemAttribute.class).block();
             if (null != itemAttributes) return ResponseEntity.ok(itemAttributes);
@@ -73,7 +75,7 @@ class ItemApi extends BaseController {
     @GetMapping(value="/item-attribute/{id}")
     ResponseEntity<?> getItemAttribute(@PathVariable(value="id") String id)
     {
-        logger.info("getItemAttribute {}", id);
+        LOGGER.info("getItemAttribute {}", id);
         try {
             ItemAttribute itemAttribute = pokeApiClient.getResource(ItemAttribute.class, id).block();
             if (null != itemAttribute) return ResponseEntity.ok(itemAttribute);
@@ -88,7 +90,7 @@ class ItemApi extends BaseController {
     @ResponseBody
     ResponseEntity<?> getItemCategories()
     {
-        logger.info("getItemCategories");
+        LOGGER.info("getItemCategories");
         try {
             NamedApiResourceList<ItemCategory> itemCategories = pokeApiClient.getResource(ItemCategory.class).block();
             if (null != itemCategories) return ResponseEntity.ok(itemCategories);
@@ -101,7 +103,7 @@ class ItemApi extends BaseController {
     @GetMapping(value="/item-category/{id}")
     ResponseEntity<?> getItemCategory(@PathVariable(value="id") String id)
     {
-        logger.info("getItemCategory {}", id);
+        LOGGER.info("getItemCategory {}", id);
         try {
             ItemCategory itemCategory = pokeApiClient.getResource(ItemCategory.class, id).block();
             if (null != itemCategory) return ResponseEntity.ok(itemCategory);
@@ -116,7 +118,7 @@ class ItemApi extends BaseController {
     @ResponseBody
     ResponseEntity<?> getFlingEffects()
     {
-        logger.info("getFlingEffects");
+        LOGGER.info("getFlingEffects");
         try {
             NamedApiResourceList<ItemFlingEffect> flingEffects = pokeApiClient.getResource(ItemFlingEffect.class).block();
             if (null != flingEffects) return ResponseEntity.ok(flingEffects);
@@ -129,7 +131,7 @@ class ItemApi extends BaseController {
     @GetMapping(value="/item-fling-effect/{id}")
     ResponseEntity<?> getFlingEffect(@PathVariable(value="id") String id)
     {
-        logger.info("getFlingEffect {}", id);
+        LOGGER.info("getFlingEffect {}", id);
         try {
             ItemFlingEffect flingEffect = pokeApiClient.getResource(ItemFlingEffect.class, id).block();
             if (null != flingEffect) return ResponseEntity.ok(flingEffect);
@@ -144,7 +146,7 @@ class ItemApi extends BaseController {
     @ResponseBody
     ResponseEntity<?> getItemPockets()
     {
-        logger.info("getItemPockets");
+        LOGGER.info("getItemPockets");
         try {
             NamedApiResourceList<ItemPocket> itemPocket = pokeApiClient.getResource(ItemPocket.class).block();
             if (null != itemPocket) return ResponseEntity.ok(itemPocket);
@@ -157,7 +159,7 @@ class ItemApi extends BaseController {
     @GetMapping(value="/item-pocket/{id}")
     ResponseEntity<?> getItemPocket(@PathVariable(value="id") String id)
     {
-        logger.info("getItemPocket {}", id);
+        LOGGER.info("getItemPocket {}", id);
         try {
             ItemPocket itemPocket = pokeApiClient.getResource(ItemPocket.class, id).block();
             if (null != itemPocket) return ResponseEntity.ok(itemPocket);

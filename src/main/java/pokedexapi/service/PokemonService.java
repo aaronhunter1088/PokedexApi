@@ -1,5 +1,6 @@
 package pokedexapi.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
@@ -33,6 +34,7 @@ public class PokemonService {
     @Value("${skaro.pokeapi.baseUri}")
     private String pokeApiBaseUrl;
 
+    @Autowired
     private PokemonService(PokeApiClient client, ObjectMapper objectMapper) {
         this.pokeApiClient = client;
         this.objectMapper = objectMapper;

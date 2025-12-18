@@ -23,7 +23,8 @@ class LocationApi extends BaseController {
     private static final Logger logger = LogManager.getLogger(LocationApi.class);
 
     @Autowired
-    LocationApi(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper) {
+    LocationApi(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper)
+    {
         super(pokemonService, client, objectMapper);
     }
 
@@ -42,7 +43,7 @@ class LocationApi extends BaseController {
         }
     }
 
-    @GetMapping(value="/location/{id}")
+    @GetMapping(value="/{id}")
     ResponseEntity<?> getLocation(@PathVariable(value="id") String id)
     {
         logger.info("getLocation {}", id);
@@ -138,5 +139,4 @@ class LocationApi extends BaseController {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
-
 }

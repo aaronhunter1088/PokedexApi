@@ -23,7 +23,8 @@ class EncounterApi extends BaseController {
 
     // Encounter Method
     @Autowired
-    EncounterApi(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper) {
+    EncounterApi(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper)
+    {
         super(pokemonService, client, objectMapper);
     }
 

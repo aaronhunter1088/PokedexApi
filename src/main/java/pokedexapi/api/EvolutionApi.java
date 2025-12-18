@@ -23,7 +23,8 @@ class EvolutionApi extends BaseController {
     private static final Logger logger = LogManager.getLogger(EvolutionApi.class);
 
     @Autowired
-    EvolutionApi(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper) {
+    EvolutionApi(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper)
+    {
         super(pokemonService, client, objectMapper);
     }
 
