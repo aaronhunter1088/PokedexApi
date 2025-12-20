@@ -11,14 +11,17 @@
     </parent>
 
     <artifactId>PokedexApi</artifactId>
+    <version>1.1.0</version>
     <name>PokedexApi</name>
     <packaging>jar</packaging>
     <description>Backend service used by the PokedexApiUI</description>
 
     <properties>
         <finalName>${project.artifactId}-${project.version}</finalName>
-        <outputDirectory>${basedir}/dist</outputDirectory>
+        <outputDirectory>${basedir}/dist/${project.version}</outputDirectory>
         <main.class>pokedexapi.PokedexApiApplication</main.class>
+        <springdoc.openapi.swagger-ui>http://localhost:8080/pokedexapi/swagger-ui/index.html</springdoc.openapi.swagger-ui>
+        <springdoc.openapi.url>http://localhost:8080/pokedexapi/v3/api-docs</springdoc.openapi.url>
     </properties>
 
     <!-- Included in Parent. Left as a reference -->
@@ -179,6 +182,7 @@
                     <jvmArguments>
                         -Dspring.application.admin.enabled=true
                     </jvmArguments>
+                    <outputDirectory>${outputDirectory}</outputDirectory>
                 </configuration>
                 <executions>
                     <execution>
@@ -188,10 +192,10 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- App must be running to generate openapi.json file -->
             <plugin>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-maven-plugin</artifactId>
-                <version>1.5</version>
                 <executions>
                     <execution>
                         <id>integration-test</id>
@@ -201,10 +205,11 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <outputFileName>
-                        <!-- Goes to /target/ directory -->
-                    </outputFileName>
-                    <apiDocsUrl>http://localhost:8080/pokedexapi/v3/api-docs</apiDocsUrl>
+                    <!-- Defaults to 'openapi.json' -->
+                    <outputFileName>pokedexSwagger.json</outputFileName>
+                    <!-- Defaults to /target directory -->
+                    <outputDir>${outputDirectory}</outputDir>
+                    <apiDocsUrl>${springdoc.openapi.url}</apiDocsUrl>
                 </configuration>
             </plugin>
             <!-- Compile found in parent -->
