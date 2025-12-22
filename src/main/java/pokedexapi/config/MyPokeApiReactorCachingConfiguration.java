@@ -1,11 +1,12 @@
 package pokedexapi.config;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.resolver.DefaultAddressResolverGroup;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -16,6 +17,7 @@ import reactor.netty.resources.ConnectionProvider;
 import skaro.pokeapi.PokeApiReactorCachingConfiguration;
 
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 @Import(PokeApiReactorCachingConfiguration.class)
@@ -23,8 +25,15 @@ import java.time.Duration;
 public class MyPokeApiReactorCachingConfiguration {
 
     @Bean
-    public CacheManager cacheManager() {
-        return new ConcurrentMapCacheManager();
+    public Caffeine caffeineConfig() {
+        return Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.MINUTES);
+    }
+
+    @Bean
+    public CacheManager cacheManager(Caffeine caffeine) {
+        CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager();
+        caffeineCacheManager.setCaffeine(caffeine);
+        return caffeineCacheManager;
     }
 
     @Bean
