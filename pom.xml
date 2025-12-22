@@ -17,11 +17,12 @@
     <description>Backend service used by the PokedexApiUI</description>
 
     <properties>
+        <caffeine.cache.version>3.2.3</caffeine.cache.version>
         <finalName>${project.artifactId}-${project.version}</finalName>
         <outputDirectory>${basedir}/dist/${project.version}</outputDirectory>
         <main.class>pokedexapi.PokedexApiApplication</main.class>
-        <springdoc.openapi.swagger-ui>http://localhost:8080/pokedexapi/swagger-ui/index.html</springdoc.openapi.swagger-ui>
-        <springdoc.openapi.url>http://localhost:8080/pokedexapi/v3/api-docs</springdoc.openapi.url>
+        <springdoc.openapi.swagger-ui>http://localhost:4202/pokedexapi/swagger-ui/index.html</springdoc.openapi.swagger-ui>
+        <springdoc.openapi.url>http://localhost:4202/pokedexapi/v3/api-docs</springdoc.openapi.url>
     </properties>
 
     <!-- Included in Parent. Left as a reference -->
@@ -85,6 +86,17 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-hateoas</artifactId>
         </dependency>
+        <!-- spring boot starter cache -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <!-- caffeine cache -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>${caffeine.cache.version}</version>
+        </dependency>
         <!-- mysql connector -->
         <dependency>
             <groupId>com.mysql</groupId>
@@ -100,7 +112,7 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
         </dependency>
-        <!-- Pokemon Reactor -->
+        <!-- pokeapi-reactor -->
         <dependency>
             <groupId>skaro.pokeapi</groupId>
             <artifactId>pokeapi-reactor</artifactId>
@@ -146,6 +158,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc-test</artifactId>
+        </dependency>
+        <!-- Spring Boot Cache Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache-test</artifactId>
         </dependency>
         <!-- junit jupiter -->
         <dependency>

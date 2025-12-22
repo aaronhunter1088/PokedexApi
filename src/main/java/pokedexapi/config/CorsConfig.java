@@ -1,8 +1,15 @@
 package pokedexapi.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
 
 /**
  * Servlet Filter implementation class CORSFilter
@@ -17,8 +24,9 @@ public class CorsConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/pokedexapi/**")
-                .allowedOrigins("http://localhost:8080") // Replace with your frontend url
+        // can be blocked by spring-security
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:4203") // Replace with your frontend url
                 //.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedMethods("GET")
                 .allowedHeaders("*");
@@ -32,11 +40,12 @@ public class CorsConfig implements WebMvcConfigurer {
 //        cookies along with cross domain requests
 //         */
 //        cors.setAllowCredentials(true);
+//
 //        /*
 //        set permitted origins that can access our resources
 //         */
 //        cors.setAllowedOrigins(
-//                List.of("http://localhost:4200", "http://localhost:8080"));
+//                List.of("http://localhost:4203", "http://localhost:4203"));
 //        /*
 //        allows us to configure the list of headers permitted
 //        in the HTTP request
