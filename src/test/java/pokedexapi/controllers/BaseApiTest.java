@@ -1,5 +1,8 @@
 package pokedexapi.controllers;
 
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import skaro.pokeapi.resource.pokemon.Pokemon;
 import tools.jackson.databind.ObjectMapper;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -31,7 +34,9 @@ import static pokedexapi.utilities.Constants.GIF_IMAGE_URL;
  * ExtendWith(SpringExtension.class): Integrates the Spring TestContext Framework with JUnit 5.
  * SpringBootTest: Indicates that the class is a Spring Boot test and will bootstrap the entire container.
  */
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class BaseApiTest {
 
     private static final Logger logger = LogManager.getLogger(BaseApiTest.class);
