@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>PokedexApi</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <name>PokedexApi</name>
     <packaging>jar</packaging>
     <description>Backend service used by the PokedexApiUI</description>
@@ -90,6 +90,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <!-- spring-boot-starter-actuator -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <!-- caffeine cache -->
         <dependency>
