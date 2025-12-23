@@ -5,15 +5,13 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pokedexapi.controller.BaseController;
+import pokedexapi.controllers.BaseController;
 import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.generation.Generation;
 import tools.jackson.databind.ObjectMapper;
-
-import java.net.http.HttpResponse;
 
 // TODO: Validate
 @RestController

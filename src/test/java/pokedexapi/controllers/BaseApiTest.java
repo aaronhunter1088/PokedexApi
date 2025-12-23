@@ -1,4 +1,4 @@
-package pokedexapi.controller;
+package pokedexapi.controllers;
 
 import skaro.pokeapi.resource.pokemon.Pokemon;
 import tools.jackson.databind.ObjectMapper;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static pokedexapi.utility.Constants.GIF_IMAGE;
+import static pokedexapi.utilities.Constants.GIF_IMAGE_URL;
 
 /**
  * BaseApiTest is a base class for API tests in the Pokedex API project.
@@ -84,7 +84,7 @@ public class BaseApiTest {
 
     protected void setGifImage(Pokemon pokemon)
     {
-        String gifUrl = GIF_IMAGE(pokemon.id());
+        String gifUrl = GIF_IMAGE_URL(pokemon.id());
         HttpResponse<String> response;
         try {
             response = pokemonService.callUrl(gifUrl);

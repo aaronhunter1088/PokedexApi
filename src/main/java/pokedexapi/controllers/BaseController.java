@@ -1,4 +1,4 @@
-package pokedexapi.controller;
+package pokedexapi.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import pokedexapi.service.PokemonService;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static pokedexapi.utility.Constants.GIF_IMAGE;
+import static pokedexapi.utilities.Constants.GIF_IMAGE_URL;
 
 @CrossOrigin(origins = "*")
 @Controller
@@ -76,10 +76,10 @@ public class BaseController {
     {
         HttpResponse<String> response = null;
         try {
-            response = pokemonService.callUrl(GIF_IMAGE(pokemon.id()));
+            response = pokemonService.callUrl(GIF_IMAGE_URL(pokemon.id()));
             if (response.statusCode() == 404) throw new Exception("Gif image not found");
         } catch (Exception e) {
-            LOGGER.error("Failed to fetch the gif image at: {}", GIF_IMAGE(pokemon.id()));
+            LOGGER.error("Failed to fetch the gif image at: {}", GIF_IMAGE_URL(pokemon.id()));
         }
     }
 

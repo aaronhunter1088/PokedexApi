@@ -1,6 +1,6 @@
 package pokedexapi.api;
 
-import pokedexapi.controller.BaseController;
+import pokedexapi.controllers.BaseController;
 import pokedexapi.service.PokemonService;
 import tools.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
-import skaro.pokeapi.resource.generation.Generation;
 import skaro.pokeapi.resource.pokedex.Pokedex;
 import skaro.pokeapi.resource.version.Version;
 import skaro.pokeapi.resource.versiongroup.VersionGroup;

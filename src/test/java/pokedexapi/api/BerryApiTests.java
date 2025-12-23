@@ -1,6 +1,6 @@
 package pokedexapi.api;
 
-import pokedexapi.controller.BaseApiTest;
+import pokedexapi.controllers.BaseApiTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import reactor.core.publisher.Mono;
@@ -21,13 +20,8 @@ import skaro.pokeapi.resource.berry.Berry;
 import skaro.pokeapi.resource.berryfirmness.BerryFirmness;
 import skaro.pokeapi.resource.berryflavor.BerryFlavor;
 import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.JsonNode;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -38,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
 /**
- * This class contains integration tests for the BerryApi controller.
+ * This class contains integration tests for the BerryApi controllers.
  * It uses Spring Boot's testing support to load the application context
  * and configure MockMvc for testing the web layer.
  * <p>

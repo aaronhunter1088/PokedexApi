@@ -1,6 +1,6 @@
 package pokedexapi.api;
 
-import pokedexapi.controller.BaseController;
+import pokedexapi.controllers.BaseController;
 import pokedexapi.service.PokemonService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -16,10 +16,7 @@ import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.FlavorText;
 import skaro.pokeapi.resource.NamedApiResource;
 import skaro.pokeapi.resource.NamedApiResourceList;
-import skaro.pokeapi.resource.egggroup.EggGroup;
 import skaro.pokeapi.resource.evolutionchain.EvolutionChain;
-import skaro.pokeapi.resource.growthrate.GrowthRate;
-import skaro.pokeapi.resource.nature.Nature;
 import skaro.pokeapi.resource.pokemon.PokeathlonStat;
 import skaro.pokeapi.resource.pokemon.Pokemon;
 import skaro.pokeapi.resource.pokemoncolor.PokemonColor;
