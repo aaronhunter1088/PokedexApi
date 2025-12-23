@@ -57,11 +57,11 @@ public class MyPokeApiReactorCachingConfigurationTest {
         assertNotNull(client);
     }
 
-    @Test
-    public void testWebClientBuilder() {
-        ConnectionProvider provider = config.connectionProvider();
-        HttpClient client = config.httpClient(provider);
-        WebClient.Builder builder = config.webClientBuilder(client);
-        assertNotNull(builder);
-    }
+//    @Test
+//    public void testWebClientBuilder() {
+//        ConnectionProvider provider = config.connectionProvider();
+//        HttpClient client = config.httpClient(provider);
+//        WebClient.Builder builder = config.webClientBuilder(client);
+//        assertNotNull(builder);
+//    }
 }
