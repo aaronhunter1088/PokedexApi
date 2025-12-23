@@ -57,11 +57,11 @@ public class MyPokeApiReactorCachingConfiguration {
                                         connection.addHandlerLast(new HttpObjectAggregator(10485760)))); // Set max message size
     }
 
-    @Bean
-    public WebClient.Builder webClientBuilder(HttpClient httpClient) {
-        return WebClient.builder()
-                .clientConnector(new ReactorClientHttpConnector(httpClient))
-                .codecs(clientCodecConfigurer ->
-                        clientCodecConfigurer.defaultCodecs().maxInMemorySize(10 * 1024 * 1024)); // Set max in-memory size
-    }
+//    @Bean
+//    public WebClient.Builder webClientBuilder(HttpClient httpClient) {
+//        return WebClient.builder()
+//                .clientConnector(new ReactorClientHttpConnector(httpClient))
+//                .codecs(clientCodecConfigurer ->
+//                        clientCodecConfigurer.defaultCodecs().maxInMemorySize(10 * 1024 * 1024)); // Set max in-memory size
+//    }
 }

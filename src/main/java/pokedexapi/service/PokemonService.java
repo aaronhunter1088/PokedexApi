@@ -707,13 +707,13 @@ public class PokemonService {
                 List<NamedApiResource<Type>> types;
                 try {
                     NamedApiResourceList<Type> respond = objectMapper.readValue(response.body(), new TypeReference<NamedApiResourceList<Type>>() {});
-                    types = respond.getResults();
-                    while (respond.getNext() != null) {
-                        response = callUrl(respond.getNext());
+                    types = respond.results();
+                    while (respond.next() != null) {
+                        response = callUrl(respond.next());
                         respond = objectMapper.readValue(response.body(), new TypeReference<NamedApiResourceList<Type>>() {});
-                        types.addAll(respond.getResults());
+                        types.addAll(respond.results());
                     }
-                    yield types.stream().map(NamedApiResource::getName).sorted().toList();
+                    yield types.stream().map(NamedApiResource::name).sorted().toList();
                 } catch (Exception e) {
                     logger.error("Failed to parse the response: {}", e.getMessage());
                     yield new ArrayList<>();

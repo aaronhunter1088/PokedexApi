@@ -35,8 +35,8 @@ import java.util.*;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/pokemon")
-class PokemonApi extends BaseController {
-
+class PokemonApi extends BaseController
+{
     private static final Logger logger = LogManager.getLogger(PokemonApi.class);
 
     PokemonApi(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper) {
@@ -234,50 +234,6 @@ class PokemonApi extends BaseController {
         }
     }
 
-    // Pokemon Species
-    @RequestMapping(value="/pokemon-species", method=RequestMethod.GET)
-    @ResponseBody
-    ResponseEntity<?> getAllSpeciesData(@RequestParam(value="limit", required=false, defaultValue="10") int limit,
-                                        @RequestParam(value="offset", required=false, defaultValue="0") int offset)
-    {
-        logger.info("getAllSpeciesData limit:{} offset:{}", limit, offset);
-        try {
-            NamedApiResourceList<PokemonSpecies> allSpeciesData = pokeApiClient.getResource(PokemonSpecies.class, new PageQuery(limit, offset)).block();
-            if (null != allSpeciesData) return ResponseEntity.ok(allSpeciesData);
-            else return ResponseEntity.badRequest().body("Could not access PokemonSpecies endpoint");
-        } catch (Exception e) {
-            Arrays.stream(e.getStackTrace()).forEach(logger::error);
-            return ResponseEntity.badRequest().body("Could not fetch all species because " + e.getMessage());
-        }
-    }
-
-    @RequestMapping(value="/pokemon-species/{nameOrId}", method=RequestMethod.GET)
-    @ResponseBody
-    ResponseEntity<?> getSpeciesData(@PathVariable("nameOrId") String nameOrId)
-    {
-        logger.info("getSpeciesData: {}", nameOrId);
-        try {
-            PokemonSpecies speciesData = pokemonService.getPokemonSpeciesData(nameOrId);
-            if (null != speciesData) return ResponseEntity.ok(speciesData);
-            else {
-                Pokemon pokemonResource = (Pokemon) getAPokemon(nameOrId).getBody();
-                assert pokemonResource != null;
-                NamedApiResource<PokemonSpecies> speciesResource = pokemonResource.getSpecies();
-                if (null == speciesResource) {
-                    return ResponseEntity.noContent().build();
-                }
-                HttpResponse<String> response = pokemonService.callUrl(speciesResource.getUrl());
-                // TODO: Convert response.body() to PokemonSpecies
-                if (response.statusCode() == 200) return ResponseEntity.ok(response.body());
-                else return ResponseEntity.badRequest().body("Could not find PokemonSpecies with: " + nameOrId);
-            }
-        }
-        catch (Exception e) {
-            Arrays.stream(e.getStackTrace()).forEach(logger::error);
-            return ResponseEntity.internalServerError().body(e.getMessage());
-        }
-    }
-
     // Personal Endpoints
     @RequestMapping(value="/{nameOrId}/validateNameOrId", method=RequestMethod.GET)
     @ResponseBody
@@ -307,7 +263,7 @@ class PokemonApi extends BaseController {
         try {
             Optional<PokemonSpecies> pokemonSpecies = pokeApiClient.getResource(PokemonSpecies.class, nameOrId).blockOptional();
             pokemonDescriptions = pokemonSpecies.map(species -> species
-                    .getFlavorTextEntries().stream().filter(entry -> entry.getLanguage().getName().equals("en"))
+                    .getFlavorTextEntries().stream().filter(entry -> entry.getLanguage().name().equals("en"))
                     .toList()).orElse(null);
             assert pokemonDescriptions != null;
             int randomEntry = new Random().nextInt(pokemonDescriptions.size());
@@ -329,7 +285,7 @@ class PokemonApi extends BaseController {
         try {
             speciesInfo = pokeApiClient.getResource(PokemonSpecies.class, nameOrId).block();
             if (speciesInfo != null) {
-                String colorOfPokemon = speciesInfo.getColor().getName();
+                String colorOfPokemon = speciesInfo.getColor().name();
                 logger.info("color: {}", colorOfPokemon);
                 return ResponseEntity.ok(speciesInfo.getColor());
             }
@@ -349,7 +305,7 @@ class PokemonApi extends BaseController {
         if (pokemon == null) {
             return ResponseEntity.badRequest().body("Could not find pokemon with value:" + nameOrId);
         }
-        String encountersString = pokemon.getLocationAreaEncounters();
+        String encountersString = pokemon.locationAreaEncounters();
         List<String> namesOfAreas = new ArrayList<>();
         try {
             namesOfAreas = pokemonService.getPokemonLocations(encountersString);
@@ -390,7 +346,7 @@ class PokemonApi extends BaseController {
         if (speciesData == null) {
             return ResponseEntity.badRequest().body("Could not find SpeciesData with value:" + nameOrId);
         }
-        String chainUrl = speciesData.getEvolutionChain().getUrl();
+        String chainUrl = speciesData.getEvolutionChain().url();
         if (chainUrl == null) {
             return ResponseEntity.badRequest().body("No chainUrl found for {}" + nameOrId);
         }
