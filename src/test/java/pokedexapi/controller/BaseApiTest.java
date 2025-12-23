@@ -1,17 +1,14 @@
 package pokedexapi.controller;
 
+import skaro.pokeapi.resource.pokemon.Pokemon;
 import tools.jackson.databind.ObjectMapper;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.codec.json.Jackson2JsonEncoder;
-import pokedexapi.entity.Pokemon;
 import pokedexapi.service.PokemonService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import reactor.core.publisher.Mono;
 import skaro.pokeapi.client.PokeApiClient;
@@ -23,6 +20,8 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import static pokedexapi.utility.Constants.GIF_IMAGE;
 
 /**
  * BaseApiTest is a base class for API tests in the Pokedex API project.
@@ -85,14 +84,13 @@ public class BaseApiTest {
 
     protected void setGifImage(Pokemon pokemon)
     {
-        pokemon.setGifImage("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/"+pokemon.getId()+".gif");
+        String gifUrl = GIF_IMAGE(pokemon.id());
         HttpResponse<String> response;
         try {
-            response = pokemonService.callUrl(pokemon.getGifImage());
-            if (response.statusCode() == 404) pokemon.setGifImage(null);
+            response = pokemonService.callUrl(gifUrl);
+            if (response.statusCode() == 404) throw new Exception("Gif not found");
         } catch (Exception e) {
-            logger.error("Could not find gif image for pokemon with id: {}", pokemon.getId());
-            pokemon.setGifImage(null);
+            logger.error("Could not find gif image for pokemon with id: {}", pokemon.id());
         }
     }
 

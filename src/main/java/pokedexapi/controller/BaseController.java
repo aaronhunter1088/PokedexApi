@@ -1,7 +1,6 @@
 package pokedexapi.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import pokedexapi.entity.Pokemon;
 import pokedexapi.service.PokemonService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,12 +8,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import skaro.pokeapi.client.PokeApiClient;
+import skaro.pokeapi.resource.pokemon.Pokemon;
 import tools.jackson.databind.ObjectMapper;
 
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import static pokedexapi.utility.Constants.GIF_IMAGE;
 
 @CrossOrigin(origins = "*")
 @Controller
@@ -63,7 +65,7 @@ public class BaseController {
      * @param nameOrId String the name or id of a Pokemon
      * @return the Pokemon or null
      */
-    protected skaro.pokeapi.resource.pokemon.Pokemon retrievePokemon(String nameOrId)
+    protected Pokemon retrievePokemon(String nameOrId)
     {
         LOGGER.info("retrievePokemon: {}", nameOrId);
         return pokemonService.getPokemonByIdOrName(nameOrId);
@@ -72,13 +74,12 @@ public class BaseController {
     @Deprecated(forRemoval = true)
     protected void setGifImage(Pokemon pokemon)
     {
-        pokemon.setGifImage("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/"+pokemon.getId()+".gif");
         HttpResponse<String> response = null;
         try {
-            response = pokemonService.callUrl(pokemon.getGifImage());
-            if (response.statusCode() == 404) pokemon.setGifImage(null);
+            response = pokemonService.callUrl(GIF_IMAGE(pokemon.id()));
+            if (response.statusCode() == 404) throw new Exception("Gif image not found");
         } catch (Exception e) {
-            LOGGER.error("Failed to fetch the gif image at: {}", pokemon.getGifImage());
+            LOGGER.error("Failed to fetch the gif image at: {}", GIF_IMAGE(pokemon.id()));
         }
     }
 

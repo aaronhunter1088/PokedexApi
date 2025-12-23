@@ -2,6 +2,7 @@ package pokedexapi.entity;
 
 import org.mockito.junit.jupiter.MockitoExtension;
 import pokedexapi.controller.BaseApiTest;
+import skaro.pokeapi.resource.pokemon.Pokemon;
 import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +14,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -42,21 +44,12 @@ public class PokemonTest extends BaseApiTest {
                 new ClassPathResource("entity/pikachu.json").getFile(),
                 skaro.pokeapi.resource.pokemon.Pokemon.class
         );
-        pichu = new Pokemon(skaroPichu);
-        pikachu = new Pokemon(skaroPikachu);
-        ditto = new Pokemon(skaroPikachu, true);
+        pichu = Pokemon.from(skaroPichu, Collections.emptyMap());
+        pikachu = Pokemon.from(skaroPikachu, Collections.emptyMap());
+        ditto = Pokemon.from(skaroPikachu, Collections.emptyMap());
 
         assertEquals("pikachu", skaroPikachu.getName());
         assertSame(25, skaroPikachu.getId());
-    }
-
-    @Test
-    @DisplayName("Test pokemon is created")
-    void testPokemonIsCreated() {
-        Pokemon pokemon = new Pokemon(skaroPikachu);
-        assertNotNull(pokemon);
-        assertEquals("Pikachu", pokemon.getName());
-        assertEquals(25, pokemon.getId());
     }
 
     @Test

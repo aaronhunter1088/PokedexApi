@@ -1,35 +1,23 @@
 package pokedexapi.service;
 
 import pokedexapi.controller.BaseApiTest;
-import pokedexapi.entity.Pokemon;
-import com.fasterxml.jackson.core.type.TypeReference;
-import tools.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Mono;
-import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.resource.*;
 import skaro.pokeapi.resource.ability.Ability;
 import skaro.pokeapi.resource.egggroup.EggGroup;
 import skaro.pokeapi.resource.generation.Generation;
 import skaro.pokeapi.resource.growthrate.GrowthRate;
 import skaro.pokeapi.resource.pokedex.Pokedex;
+import skaro.pokeapi.resource.pokemon.Pokemon;
 import skaro.pokeapi.resource.pokemoncolor.PokemonColor;
 import skaro.pokeapi.resource.pokemonhabitat.PokemonHabitat;
 import skaro.pokeapi.resource.pokemonshape.PokemonShape;
@@ -85,7 +73,7 @@ class PokemonServiceTest extends BaseApiTest {
         Mono<PokeApiResource> just = Mono.just(pikachu);
         when(pokeApiClient.getResource(any(), anyString())).thenReturn(just);
 
-        Pokemon result = new Pokemon(pokemonService.getPokemonByIdOrName(pikachu.getName()));
+        Pokemon result = pokemonService.getPokemonByIdOrName(pikachu.getName());
         assertNotNull(result);
         verify(pokeApiClient, times(1)).getResource(any(), anyString());
     }
@@ -96,7 +84,7 @@ class PokemonServiceTest extends BaseApiTest {
         Mono<PokeApiResource> just = Mono.just(pikachu);
         when(pokeApiClient.getResource(any(), anyString())).thenReturn(just);
 
-        Pokemon result = new Pokemon(pokemonService.getPokemonByIdOrName(pikachu.getId().toString()));
+        Pokemon result = pokemonService.getPokemonByIdOrName(pikachu.getId().toString());
         assertNotNull(result);
         verify(pokeApiClient, times(1)).getResource(any(), anyString());
     }
@@ -134,8 +122,8 @@ class PokemonServiceTest extends BaseApiTest {
         assertFalse(species.hasGenderDifferences());
         assertFalse(species.isFormsSwitchable());
         NamedApiResource<GrowthRate> growthRate = species.getGrowthRate();
-        assertEquals("medium-slow", growthRate.getName());
-        assertEquals("https://pokeapi.co/api/v2/growth-rate/4/", growthRate.getUrl());
+        assertEquals("medium-slow", growthRate.name());
+        assertEquals("https://pokeapi.co/api/v2/growth-rate/4/", growthRate.url());
         List<PokemonSpeciesDexEntry> speciesDexEntry = species.getPokedexNumbers();
         assertNotNull(speciesDexEntry);
         assertSame(8, speciesDexEntry.size());
@@ -143,19 +131,19 @@ class PokemonServiceTest extends BaseApiTest {
         assertNotNull(eggGroups);
         assertSame(2, eggGroups.size());
         NamedApiResource<PokemonColor> color = species.getColor();
-        assertEquals("green", color.getName());
-        assertEquals("https://pokeapi.co/api/v2/pokemon-color/5/", color.getUrl());
+        assertEquals("green", color.name());
+        assertEquals("https://pokeapi.co/api/v2/pokemon-color/5/", color.url());
         NamedApiResource<PokemonShape> shape = species.getShape();
-        assertEquals("quadruped", shape.getName());
-        assertEquals("https://pokeapi.co/api/v2/pokemon-shape/8/", shape.getUrl());
+        assertEquals("quadruped", shape.name());
+        assertEquals("https://pokeapi.co/api/v2/pokemon-shape/8/", shape.url());
         NamedApiResource<PokemonSpecies> evolvesFromSpecies = species.getEvolvesFromSpecies();
         assertNull(evolvesFromSpecies);
         NamedApiResource<PokemonHabitat> habitat = species.getHabitat();
-        assertEquals("grassland", habitat.getName());
-        assertEquals("https://pokeapi.co/api/v2/pokemon-habitat/3/", habitat.getUrl());
+        assertEquals("grassland", habitat.name());
+        assertEquals("https://pokeapi.co/api/v2/pokemon-habitat/3/", habitat.url());
         NamedApiResource<Generation> generation = species.getGeneration();
-        assertEquals("generation-i", generation.getName());
-        assertEquals("https://pokeapi.co/api/v2/generation/1/", generation.getUrl());
+        assertEquals("generation-i", generation.name());
+        assertEquals("https://pokeapi.co/api/v2/generation/1/", generation.url());
         List<Name> names = species.getNames();
         assertNotNull(names);
         assertSame(11, names.size());
