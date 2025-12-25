@@ -1,6 +1,5 @@
 package pokedexapi.service;
 
-import pokedexapi.controllers.BaseApiTest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import pokedexapi.controllers.BaseApiTest;
 import reactor.core.publisher.Mono;
 import skaro.pokeapi.resource.*;
 import skaro.pokeapi.resource.ability.Ability;
@@ -53,15 +53,15 @@ class PokemonServiceTest extends BaseApiTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        pikachu = objectMapper.readValue(
+        pikachu = jsonMapper.readValue(
                 new ClassPathResource("entity/pikachu.json").getFile(),
                 skaro.pokeapi.resource.pokemon.Pokemon.class
         );
-        species1Response = objectMapper.readValue(
+        species1Response = jsonMapper.readValue(
                 new ClassPathResource("service/pokemonSpecies1Response.json").getFile(),
                 PokemonSpecies.class
         );
-        pokedex2Response = objectMapper.readValue(
+        pokedex2Response = jsonMapper.readValue(
                 new ClassPathResource("service/pokedex2Response.json").getFile(),
                 Pokedex.class
         );
@@ -198,10 +198,10 @@ class PokemonServiceTest extends BaseApiTest {
     @Test
     @DisplayName("Test callUrl with a valid url returns a resource")
     void testCallUrlWithValidUrlReturnsResponse() throws Exception {
-        HttpResponse<String> resource = pokemonService.callUrl(pokeApiBaseUrl+"ability/1");
+        HttpResponse<String> resource = pokemonService.callUrl(pokeApiBaseUrl + "ability/1");
         assertNotNull(resource);
         assertEquals(200, resource.statusCode());
-        Ability ability = objectMapper.readValue(
+        Ability ability = jsonMapper.readValue(
                 resource.body(),
                 Ability.class
         );
@@ -211,7 +211,7 @@ class PokemonServiceTest extends BaseApiTest {
     @Test
     @DisplayName("Test callUrl with an invalid url returns not found")
     void testCallUrlWithInvalidUrlReturnsNotFound() throws Exception {
-        HttpResponse<String> resource = pokemonService.callUrl(pokeApiBaseUrl+"ability/0");
+        HttpResponse<String> resource = pokemonService.callUrl(pokeApiBaseUrl + "ability/0");
         assertNotNull(resource);
         assertEquals(404, resource.statusCode());
     }

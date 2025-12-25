@@ -1,11 +1,11 @@
 package pokedexapi;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import pokedexapi.controllers.BaseApiTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import pokedexapi.controllers.BaseApiTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -15,14 +15,18 @@ class PokedexApiApplicationTest extends BaseApiTest {
 
     @Autowired
     private PokedexApiApplication application;
+
     /*
      * Fixture: Executed before every test
      */
-    protected void setUp() {}
+    protected void setUp() {
+    }
+
     /*
-        * Fixture: Executed after every test
+     * Fixture: Executed after every test
      */
-    protected void tearDown() {}
+    protected void tearDown() {
+    }
 
     @Test
     void contextLoads() {

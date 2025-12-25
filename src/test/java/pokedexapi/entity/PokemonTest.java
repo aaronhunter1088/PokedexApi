@@ -1,7 +1,5 @@
 package pokedexapi.entity;
 
-import pokedexapi.controllers.BaseApiTest;
-import skaro.pokeapi.resource.pokemon.Pokemon;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +7,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import pokedexapi.controllers.BaseApiTest;
+import skaro.pokeapi.resource.pokemon.Pokemon;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -33,11 +33,11 @@ public class PokemonTest extends BaseApiTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        skaroPichu = objectMapper.readValue(
+        skaroPichu = jsonMapper.readValue(
                 new ClassPathResource("entity/pichu.json").getFile(),
                 skaro.pokeapi.resource.pokemon.Pokemon.class
         );
-        skaroPikachu = objectMapper.readValue(
+        skaroPikachu = jsonMapper.readValue(
                 new ClassPathResource("entity/pikachu.json").getFile(),
                 skaro.pokeapi.resource.pokemon.Pokemon.class
         );

@@ -1,10 +1,8 @@
 package pokedexapi.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import skaro.pokeapi.client.PokeApiClient;
@@ -17,6 +15,8 @@ import skaro.pokeapi.resource.pokedex.Pokedex;
 import skaro.pokeapi.resource.pokemon.Pokemon;
 import skaro.pokeapi.resource.pokemonspecies.PokemonSpecies;
 import skaro.pokeapi.resource.type.Type;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -25,30 +25,30 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.*;
 
-@Service(value="PokemonService")
+@Service(value = "PokemonService")
 public class PokemonService {
 
     private static final Logger logger = LogManager.getLogger(PokemonService.class);
     private final PokeApiClient pokeApiClient;
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
     @Value("${skaro.pokeapi.baseUri}")
     private String pokeApiBaseUrl;
 
     @Autowired
-    private PokemonService(PokeApiClient client, ObjectMapper objectMapper) {
+    private PokemonService(PokeApiClient client, JsonMapper jsonMapper) {
         this.pokeApiClient = client;
-        this.objectMapper = objectMapper;
+        this.jsonMapper = jsonMapper;
     }
 
     /**
      * Get a list of Pokemon passing in a PageQuery
      * <a href="https://pokeapi.co/api/v2/pokemon/?limit=10&offset=0">Test</a>
+     *
      * @param _limit the limit to use
      * @param offset the offset to use
      * @return a list of pokemon or null if not found
      */
-    public NamedApiResourceList<Pokemon> getPokemonList(int _limit, int offset)
-    {
+    public NamedApiResourceList<Pokemon> getPokemonList(int _limit, int offset) {
         logger.info("getListOfPokemon");
         NamedApiResourceList<Pokemon> pokemonList = null;
         try {
@@ -63,16 +63,16 @@ public class PokemonService {
     /**
      * Get a Pokemon by its ID or name
      * <a href="https://pokeapi.co/api/v2/pokemon/{nameOrId}>Test</a>
+     *
      * @param nameOrId the name or id of the Pokemon
      * @return the Pokemon object or null if not found
      */
-    public Pokemon getPokemonByIdOrName(String nameOrId)
-    {
-        logger.info("getPokemonByNameOrId: {}", nameOrId);
+    public Pokemon getPokemonByIdOrName(String nameOrId) {
+        logger.info("getPokemonByIdOrName: {}", nameOrId);
         Pokemon pokemon = null;
         try {
             pokemon = pokeApiClient.getResource(Pokemon.class, nameOrId).block();
-            if (pokemon != null) logger.info("Pokemon found");
+            if (pokemon != null) logger.debug("{} found", pokemon);
         } catch (Exception e) {
             logger.error("Pokemon not found using {}. Exception: {}", nameOrId, e.getMessage());
         }
@@ -82,11 +82,11 @@ public class PokemonService {
     /**
      * Gets a PokemonSpecies by id or null if not found
      * <a href="https://pokeapi.co/api/v2/pokemon-species/{speciesId}">Test</a>
+     *
      * @param id the id of the PokemonSpecies to get
      * @return the PokemonSpecies or null if not found
      */
-    public PokemonSpecies getPokemonSpeciesData(String id)
-    {
+    public PokemonSpecies getPokemonSpeciesData(String id) {
         logger.info("getPokemonSpeciesData: {}", id);
         return pokeApiClient.getResource(PokemonSpecies.class, id).block();
     }
@@ -94,19 +94,20 @@ public class PokemonService {
     /**
      * Returns all known locations of the given pokemon
      * <a href="https://pokeapi.co/api/v2/pokemon/{nameOrId}/encounters">Test</a>
+     *
      * @param url the encounters url
      * @return a list of locations
      * @throws URISyntaxException if the url is malformed
-     * @throws Exception if there is an error sending the request
+     * @throws Exception          if there is an error sending the request
      */
-    public List<String> getPokemonLocations(String url) throws Exception
-    {
+    public List<String> getPokemonLocations(String url) throws Exception {
         HttpResponse<String> response;
         final List<String> areas;
         try {
             response = callUrl(url);
             logResponse(response);
-            List<LocationArea> pokemonEncounters = objectMapper.readValue(response.body(), new TypeReference<>() {});
+            List<LocationArea> pokemonEncounters = jsonMapper.readValue(response.body(), new TypeReference<>() {
+            });
             areas = new ArrayList<>(pokemonEncounters.stream()
                     .map(LocationArea::getName)
                     .toList());
@@ -127,16 +128,16 @@ public class PokemonService {
     /**
      * Get the evolution chain of a Pokemon
      * <a href="https://pokeapi.co/api/v2/evolution-chain/{chainId}">Test</a>
+     *
      * @param chainUrl the url of the evolution chain
      * @return the evolution chain or null if not found
      */
-    public EvolutionChain getPokemonEvolutionChain(String chainUrl) throws Exception
-    {
+    public EvolutionChain getPokemonEvolutionChain(String chainUrl) throws Exception {
         HttpResponse<String> response;
         try {
             response = callUrl(chainUrl);
             logResponse(response);
-            return objectMapper.readValue(response.body(), EvolutionChain.class);
+            return jsonMapper.readValue(response.body(), EvolutionChain.class);
         } catch (URISyntaxException use) {
             logger.error("The url is malformed... {}", use.getMessage());
             throw use;
@@ -150,11 +151,11 @@ public class PokemonService {
      * Get the total number of Pokemon in a
      * Pokedex or -1 if not found
      * <a href="https://pokeapi.co/api/v2/pokedex/{pokedexId}">Test</a>
+     *
      * @param pokedexId the id to get the total Pokemon from
      * @return the total number of Pokemon in the Pokedex or -1
      */
-    public int getTotalPokemon(String pokedexId)
-    {
+    public int getTotalPokemon(String pokedexId) {
         Pokedex pokedex = pokeApiClient.getResource(Pokedex.class, Objects.requireNonNullElse(pokedexId, "1")).block();
         if (pokedex != null) return pokedex.getPokemonEntries().size();
         else return -1;
@@ -163,11 +164,11 @@ public class PokemonService {
     /**
      * Raw map of every Pokemon and their evolutions
      * Key: pokemonChainId, Value: entire family
+     *
      * @return map
      */
     @Deprecated(forRemoval = true)
-    public Map<Integer, List<List<Integer>>> getEvolutionsMap()
-    {
+    public Map<Integer, List<List<Integer>>> getEvolutionsMap() {
         return new TreeMap<>() {{
             put(1, List.of(List.of(1), List.of(2), List.of(3, 10033, 10195))); // bulbasaur, ivysaur, venusaur, venusaur-mega, venusaur-gmax
             put(2, List.of(List.of(4), List.of(5), List.of(6, 10034, 10035, 10196))); // squirtle, wartortle, blastoise, blastoise-mega, blastoise-gmax
@@ -384,7 +385,7 @@ public class PokemonService {
             put(207, List.of(List.of(399), List.of(400))); // bidoof, bibarel
             put(208, List.of(List.of(401), List.of(402))); // kricketot, kricketune
             put(209, List.of(List.of(403), List.of(404), List.of(405))); // shinx, luxio, luxray
-                /* 210 does not exist in evolution-chains call */
+            /* 210 does not exist in evolution-chains call */
             put(211, List.of(List.of(408), List.of(409))); // cranidos, rampardos
             put(212, List.of(List.of(410), List.of(411))); // shieldon, bastiodon
             put(213, List.of(List.of(412, 10004, 10005), List.of(413), List.of(414))); // burmy, wormadam-plant, mothim OTHER IMAGES for 412 with ID: 10004, 10005
@@ -397,7 +398,7 @@ public class PokemonService {
             put(220, List.of(List.of(427), List.of(428, 10088))); // buneary, lopunny, lopunny-mega
             put(221, List.of(List.of(431), List.of(432))); // glameow, purugly
             put(223, List.of(List.of(434), List.of(435))); // stunky, skuntank
-                /* 222 does not exist in evolution-chains call */
+            /* 222 does not exist in evolution-chains call */
             put(224, List.of(List.of(436), List.of(437))); // bronzor, bronzong
             put(228, List.of(List.of(441))); // chatot
             /* 225, 226, 227 does not exist in evolution-chains call */
@@ -664,12 +665,12 @@ public class PokemonService {
 
     /**
      * Calls the given URL and returns the response
+     *
      * @param url the URL to call
      * @return the response from the URL
      * @throws Exception if the call fails
      */
-    public HttpResponse<String> callUrl(String url) throws Exception
-    {
+    public HttpResponse<String> callUrl(String url) throws Exception {
         HttpResponse<String> response = null;
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -691,13 +692,13 @@ public class PokemonService {
     /**
      * Returns all the types as a list
      * <a href="https://pokeapi.co/api/v2/type">Test</a>
+     *
      * @return all the pokemon types
      */
-    public List<String> getAllTypes()
-    {
+    public List<String> getAllTypes() {
         HttpResponse<String> response = null;
         try {
-            response = callUrl(pokeApiBaseUrl+"type");
+            response = callUrl(pokeApiBaseUrl + "type");
         } catch (Exception e) {
             logger.error("Failed to call the endpoint: {}", e.getMessage());
         }
@@ -706,11 +707,13 @@ public class PokemonService {
             case 200 -> {
                 List<NamedApiResource<Type>> types;
                 try {
-                    NamedApiResourceList<Type> respond = objectMapper.readValue(response.body(), new TypeReference<NamedApiResourceList<Type>>() {});
+                    NamedApiResourceList<Type> respond = jsonMapper.readValue(response.body(), new TypeReference<NamedApiResourceList<Type>>() {
+                    });
                     types = respond.results();
                     while (respond.next() != null) {
                         response = callUrl(respond.next());
-                        respond = objectMapper.readValue(response.body(), new TypeReference<NamedApiResourceList<Type>>() {});
+                        respond = jsonMapper.readValue(response.body(), new TypeReference<NamedApiResourceList<Type>>() {
+                        });
                         types.addAll(respond.results());
                     }
                     yield types.stream().map(NamedApiResource::name).sorted().toList();
@@ -726,11 +729,11 @@ public class PokemonService {
 
     /**
      * Logs the response from the API call
+     *
      * @param response the response from the API call
-     * @param <T> the type of the response
+     * @param <T>      the type of the response
      */
-    private <T> void logResponse(HttpResponse<T> response)
-    {
+    private <T> void logResponse(HttpResponse<T> response) {
         logger.info("response: {}", response);
         logger.debug("response body: {}", response.body());
     }

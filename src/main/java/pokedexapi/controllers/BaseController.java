@@ -1,15 +1,15 @@
 package pokedexapi.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import pokedexapi.service.PokemonService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.resource.pokemon.Pokemon;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.net.http.HttpResponse;
 import java.util.List;
@@ -26,27 +26,24 @@ public class BaseController {
 
     protected final PokemonService pokemonService;
     protected final PokeApiClient pokeApiClient;
-    protected final ObjectMapper objectMapper;
+    protected final JsonMapper jsonMapper;
 
     @Value("${skaro.pokeapi.baseUri}")
     protected String pokeApiBaseUrl;
 
-    @Autowired
-    protected BaseController(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper)
-    {
+    protected BaseController(PokemonService pokemonService, PokeApiClient client, @Qualifier("jsonMapper") JsonMapper jsonMapper) {
         this.pokemonService = pokemonService;
         this.pokeApiClient = client;
-        this.objectMapper = objectMapper;
+        this.jsonMapper = jsonMapper;
     }
 
     @Deprecated(forRemoval = true)
-    protected Integer getEvolutionChainID(Map<Integer, List<List<Integer>>> pokemonIDToEvolutionChainMap, String pokemonId)
-    {
+    protected Integer getEvolutionChainID(Map<Integer, List<List<Integer>>> pokemonIDToEvolutionChainMap, String pokemonId) {
         LOGGER.info("id: {}", pokemonId);
         List<Integer> keys = pokemonIDToEvolutionChainMap.keySet().stream().toList();
         Integer keyToReturn = 0;
         keysLoop:
-        for(Integer key: keys) {
+        for (Integer key : keys) {
             List<List<Integer>> pokemonIds = pokemonIDToEvolutionChainMap.get(key);
             for (List<Integer> chainIds : pokemonIds) {
                 if (chainIds.contains(Integer.valueOf(pokemonId))) {
@@ -62,18 +59,16 @@ public class BaseController {
     /**
      * Fetch the pokemon resource
      * <a href="https://pokeapi.co/api/v2/pokemon/{nameOrId}">Pokemon</a>
+     *
      * @param nameOrId String the name or id of a Pokemon
      * @return the Pokemon or null
      */
-    protected Pokemon retrievePokemon(String nameOrId)
-    {
-        LOGGER.info("retrievePokemon: {}", nameOrId);
+    protected Pokemon retrievePokemon(String nameOrId) {
         return pokemonService.getPokemonByIdOrName(nameOrId);
     }
 
     @Deprecated(forRemoval = true)
-    protected void setGifImage(Pokemon pokemon)
-    {
+    protected void setGifImage(Pokemon pokemon) {
         HttpResponse<String> response = null;
         try {
             response = pokemonService.callUrl(GIF_IMAGE_URL(pokemon.id()));
@@ -84,8 +79,7 @@ public class BaseController {
     }
 
     @Deprecated(forRemoval = true)
-    protected Map<String, Object> generateDefaultAttributesMap()
-    {
+    protected Map<String, Object> generateDefaultAttributesMap() {
         return new TreeMap<>() {{
             put("name", null); // on screen
             put("gender", null);

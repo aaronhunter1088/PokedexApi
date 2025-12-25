@@ -1,16 +1,11 @@
 package pokedexapi.config;
 
-import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.codec.json.JacksonJsonDecoder;
-import org.springframework.http.codec.json.JacksonJsonEncoder;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.resources.ConnectionProvider;
 
@@ -20,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class MyPokeApiReactorCachingConfigurationTest {
 
     @InjectMocks
-    private MyPokeApiReactorCachingConfiguration config ;
+    private MyPokeApiReactorCachingConfiguration config;
 
     @BeforeAll
     public static void setUp() {

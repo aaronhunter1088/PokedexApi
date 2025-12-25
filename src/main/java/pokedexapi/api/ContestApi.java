@@ -1,17 +1,18 @@
 package pokedexapi.api;
 
-import pokedexapi.controllers.BaseController;
-import pokedexapi.service.PokemonService;
-import tools.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pokedexapi.controllers.BaseController;
+import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.contesttype.ContestType;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -22,22 +23,19 @@ import java.util.Map;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/contest")
-class ContestApi extends BaseController
-{
+class ContestApi extends BaseController {
     /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(ContestApi.class);
 
     @Autowired
-    ContestApi(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper)
-    {
-        super(pokemonService, client, objectMapper);
+    ContestApi(PokemonService pokemonService, PokeApiClient client, @Qualifier("jsonMapper") JsonMapper jsonMapper) {
+        super(pokemonService, client, jsonMapper);
     }
 
     // ContestType
-    @GetMapping(value="/contest-type")
+    @GetMapping(value = "/contest-type")
     @ResponseBody
-    ResponseEntity<?> getAllContests()
-    {
+    ResponseEntity<?> getAllContests() {
         LOGGER.info("getAllContests");
         try {
             NamedApiResourceList<ContestType> contests = pokeApiClient.getResource(skaro.pokeapi.resource.contesttype.ContestType.class).block();
@@ -48,9 +46,8 @@ class ContestApi extends BaseController
         }
     }
 
-    @GetMapping(value="/contest-type/{id}")
-    ResponseEntity<?> getContestType(@PathVariable(value="id") String id)
-    {
+    @GetMapping(value = "/contest-type/{id}")
+    ResponseEntity<?> getContestType(@PathVariable(value = "id") String id) {
         LOGGER.info("getContestType {}", id);
         try {
             ContestType contestType = pokeApiClient.getResource(ContestType.class, id).block();
@@ -62,21 +59,20 @@ class ContestApi extends BaseController
     }
 
     // ContestEffect
-    @GetMapping(value="/contest-effect")
+    @GetMapping(value = "/contest-effect")
     @ResponseBody
-    ResponseEntity<?> getAllContestEffect()
-    {
+    ResponseEntity<?> getAllContestEffect() {
         LOGGER.info("getAllContestEffects");
         HttpResponse<String> response;
         JSONParser jsonParser;
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                        .uri(new URI(pokeApiBaseUrl+"/contest-effect/"))
-                        .GET()
-                        .build();
+                    .uri(new URI(pokeApiBaseUrl + "/contest-effect/"))
+                    .GET()
+                    .build();
             response = HttpClient.newBuilder()
-                        .build()
-                        .send(request,  HttpResponse.BodyHandlers.ofString());
+                    .build()
+                    .send(request, HttpResponse.BodyHandlers.ofString());
             LOGGER.debug("response: {}", response.body());
             jsonParser = new JSONParser(response.body());
             Map<String, Object> results = (Map<String, Object>) jsonParser.parse();
@@ -87,21 +83,20 @@ class ContestApi extends BaseController
         }
     }
 
-    @GetMapping(value="/contest-effect/{id}")
+    @GetMapping(value = "/contest-effect/{id}")
     @ResponseBody
-    ResponseEntity<?> getContestEffect(@PathVariable(value="id") String id)
-    {
+    ResponseEntity<?> getContestEffect(@PathVariable(value = "id") String id) {
         LOGGER.info("getContestEffect with {}", id);
         HttpResponse<String> response;
         JSONParser jsonParser;
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(pokeApiBaseUrl+"/contest-effect/"+id))
+                    .uri(new URI(pokeApiBaseUrl + "/contest-effect/" + id))
                     .GET()
                     .build();
             response = HttpClient.newBuilder()
                     .build()
-                    .send(request,  HttpResponse.BodyHandlers.ofString());
+                    .send(request, HttpResponse.BodyHandlers.ofString());
             LOGGER.info("response: {}", response.body());
             jsonParser = new JSONParser(response.body());
             Map<String, Object> results = (Map<String, Object>) jsonParser.parse();
@@ -113,21 +108,20 @@ class ContestApi extends BaseController
     }
 
     // SuperContestEffects
-    @GetMapping(value="/super-contest-effect")
+    @GetMapping(value = "/super-contest-effect")
     @ResponseBody
-    ResponseEntity<?> getAllSuperContestEffect()
-    {
+    ResponseEntity<?> getAllSuperContestEffect() {
         LOGGER.info("getAllSuperContestEffects");
         HttpResponse<String> response;
         JSONParser jsonParser;
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(pokeApiBaseUrl+"/super-contest-effect/"))
+                    .uri(new URI(pokeApiBaseUrl + "/super-contest-effect/"))
                     .GET()
                     .build();
             response = HttpClient.newBuilder()
                     .build()
-                    .send(request,  HttpResponse.BodyHandlers.ofString());
+                    .send(request, HttpResponse.BodyHandlers.ofString());
             LOGGER.debug("response: {}", response.body());
             jsonParser = new JSONParser(response.body());
             Map<String, Object> results = (Map<String, Object>) jsonParser.parse();
@@ -138,21 +132,20 @@ class ContestApi extends BaseController
         }
     }
 
-    @GetMapping(value="/super-contest-effect/{id}")
+    @GetMapping(value = "/super-contest-effect/{id}")
     @ResponseBody
-    ResponseEntity<?> getSuperContestEffect(@PathVariable(value="id") String id)
-    {
+    ResponseEntity<?> getSuperContestEffect(@PathVariable(value = "id") String id) {
         LOGGER.info("getSuperContestEffect with {}", id);
         HttpResponse<String> response;
         JSONParser jsonParser;
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(pokeApiBaseUrl+"/super-contest-effect/"+id))
+                    .uri(new URI(pokeApiBaseUrl + "/super-contest-effect/" + id))
                     .GET()
                     .build();
             response = HttpClient.newBuilder()
                     .build()
-                    .send(request,  HttpResponse.BodyHandlers.ofString());
+                    .send(request, HttpResponse.BodyHandlers.ofString());
             LOGGER.info("response: {}", response.body());
             jsonParser = new JSONParser(response.body());
             Map<String, Object> results = (Map<String, Object>) jsonParser.parse();

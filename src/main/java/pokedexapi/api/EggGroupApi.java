@@ -3,6 +3,7 @@ package pokedexapi.api;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseController;
@@ -11,30 +12,27 @@ import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.egggroup.EggGroup;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.Arrays;
 
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/egg-group")
-public class EggGroupApi extends BaseController
-{
+public class EggGroupApi extends BaseController {
     /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(EggGroupApi.class);
 
     @Autowired
-    EggGroupApi(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper)
-    {
-        super(pokemonService, client, objectMapper);
+    EggGroupApi(PokemonService pokemonService, PokeApiClient client, @Qualifier("jsonMapper") JsonMapper jsonMapper) {
+        super(pokemonService, client, jsonMapper);
     }
 
     // Egg Groups
-    @RequestMapping(value="", method= RequestMethod.GET)
+    @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getEggGroups(@RequestParam(value="limit", required=false, defaultValue="10") int limit,
-                                   @RequestParam(value="offset", required=false, defaultValue="0") int offset)
-    {
+    ResponseEntity<?> getEggGroups(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                   @RequestParam(value = "offset", required = false, defaultValue = "0") int offset) {
         LOGGER.info("getEggGroups");
         try {
             NamedApiResourceList<EggGroup> eggGroups = pokeApiClient.getResource(EggGroup.class, new PageQuery(limit, offset)).block();
@@ -46,10 +44,9 @@ public class EggGroupApi extends BaseController
         }
     }
 
-    @RequestMapping(value="/{id}", method=RequestMethod.GET)
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getEggGroup(@PathVariable(value="id") String id)
-    {
+    ResponseEntity<?> getEggGroup(@PathVariable(value = "id") String id) {
         LOGGER.info("getEggGroup {}", id);
         try {
             EggGroup eggGroup = pokeApiClient.getResource(EggGroup.class, id).block();

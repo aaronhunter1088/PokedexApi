@@ -2,6 +2,7 @@ package pokedexapi.api;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseController;
@@ -12,7 +13,7 @@ import skaro.pokeapi.resource.NamedApiResource;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.pokemon.Pokemon;
 import skaro.pokeapi.resource.pokemonspecies.PokemonSpecies;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.net.http.HttpResponse;
 import java.util.Arrays;
@@ -20,19 +21,17 @@ import java.util.Arrays;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/pokemon-species")
-public class PokemonSpeciesApi extends BaseController
-{
+public class PokemonSpeciesApi extends BaseController {
     private static final Logger logger = LogManager.getLogger(PokemonSpeciesApi.class);
 
-    PokemonSpeciesApi(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper) {
-        super(pokemonService, client, objectMapper);
+    PokemonSpeciesApi(PokemonService pokemonService, PokeApiClient client, @Qualifier("jsonMapper") JsonMapper jsonMapper) {
+        super(pokemonService, client, jsonMapper);
     }
 
-    @RequestMapping(value="", method= RequestMethod.GET)
+    @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getAllSpeciesData(@RequestParam(value="limit", required=false, defaultValue="10") int limit,
-                                        @RequestParam(value="offset", required=false, defaultValue="0") int offset)
-    {
+    ResponseEntity<?> getAllSpeciesData(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                        @RequestParam(value = "offset", required = false, defaultValue = "0") int offset) {
         logger.info("getAllSpeciesData limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<PokemonSpecies> allSpeciesData = pokeApiClient.getResource(PokemonSpecies.class, new PageQuery(limit, offset)).block();
@@ -44,10 +43,9 @@ public class PokemonSpeciesApi extends BaseController
         }
     }
 
-    @RequestMapping(value="/{nameOrId}", method=RequestMethod.GET)
+    @RequestMapping(value = "/{nameOrId}", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getPokemonSpeciesData(@PathVariable String nameOrId)
-    {
+    ResponseEntity<?> getPokemonSpeciesData(@PathVariable String nameOrId) {
         logger.info("getSpeciesData: {}", nameOrId);
         try {
             PokemonSpecies speciesData = pokemonService.getPokemonSpeciesData(nameOrId);
@@ -64,8 +62,7 @@ public class PokemonSpeciesApi extends BaseController
                 if (response.statusCode() == 200) return ResponseEntity.ok(response.body());
                 else return ResponseEntity.badRequest().body("Could not find PokemonSpecies with: " + nameOrId);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Arrays.stream(e.getStackTrace()).forEach(logger::error);
             return ResponseEntity.internalServerError().body(e.getMessage());
         }

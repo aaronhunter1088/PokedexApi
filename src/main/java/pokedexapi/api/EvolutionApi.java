@@ -1,14 +1,15 @@
 package pokedexapi.api;
 
-import pokedexapi.controllers.BaseController;
-import pokedexapi.service.PokemonService;
-import tools.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pokedexapi.controllers.BaseController;
+import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -23,27 +24,25 @@ class EvolutionApi extends BaseController {
     private static final Logger logger = LogManager.getLogger(EvolutionApi.class);
 
     @Autowired
-    EvolutionApi(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper)
-    {
-        super(pokemonService, client, objectMapper);
+    EvolutionApi(PokemonService pokemonService, PokeApiClient client, @Qualifier("jsonMapper") JsonMapper jsonMapper) {
+        super(pokemonService, client, jsonMapper);
     }
 
     // Evolution Chains
-    @GetMapping(value="/evolution-chain")
+    @GetMapping(value = "/evolution-chain")
     @ResponseBody
-    ResponseEntity<?> getEvolutionChains(@RequestParam(value="limit", required=false, defaultValue="10") int limit,
-                                         @RequestParam(value="offset", required=false, defaultValue="0") int offset)
-    {
+    ResponseEntity<?> getEvolutionChains(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                         @RequestParam(value = "offset", required = false, defaultValue = "0") int offset) {
         logger.info("getEvolutionChains");
         HttpResponse<String> response;
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(pokeApiBaseUrl+"/evolution-chain?offset="+offset+"&limit="+limit))
+                    .uri(new URI(pokeApiBaseUrl + "/evolution-chain?offset=" + offset + "&limit=" + limit))
                     .GET()
                     .build();
             response = HttpClient.newBuilder()
                     .build()
-                    .send(request,  HttpResponse.BodyHandlers.ofString());
+                    .send(request, HttpResponse.BodyHandlers.ofString());
             logger.info("response: {}", response.body());
             return ResponseEntity.ok(response.body());
         } catch (Exception e) {
@@ -52,20 +51,19 @@ class EvolutionApi extends BaseController {
         }
     }
 
-    @GetMapping(value="/evolution-chain/{id}")
+    @GetMapping(value = "/evolution-chain/{id}")
     @ResponseBody
-    ResponseEntity<?> getEvolutionChain(@PathVariable("id") int id)
-    {
+    ResponseEntity<?> getEvolutionChain(@PathVariable("id") int id) {
         logger.info("getEvolutionChain {}", id);
         HttpResponse<String> response;
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(pokeApiBaseUrl+"/evolution-chain/"+id))
+                    .uri(new URI(pokeApiBaseUrl + "/evolution-chain/" + id))
                     .GET()
                     .build();
             response = HttpClient.newBuilder()
                     .build()
-                    .send(request,  HttpResponse.BodyHandlers.ofString());
+                    .send(request, HttpResponse.BodyHandlers.ofString());
             logger.info("response: {}", response.body());
             return ResponseEntity.ok(response.body());
         } catch (Exception e) {
@@ -75,21 +73,20 @@ class EvolutionApi extends BaseController {
     }
 
     // Evolution Triggers
-    @GetMapping(value="/evolution-trigger")
+    @GetMapping(value = "/evolution-trigger")
     @ResponseBody
-    ResponseEntity<?> getEvolutionTriggers(@RequestParam(value="limit", required=false, defaultValue="10") int limit,
-                                           @RequestParam(value="offset", required=false, defaultValue="0") int offset)
-    {
+    ResponseEntity<?> getEvolutionTriggers(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                           @RequestParam(value = "offset", required = false, defaultValue = "0") int offset) {
         logger.info("getEvolutionTriggers");
         HttpResponse<String> response;
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(pokeApiBaseUrl+"/evolution-trigger?offset="+offset+"&limit="+limit))
+                    .uri(new URI(pokeApiBaseUrl + "/evolution-trigger?offset=" + offset + "&limit=" + limit))
                     .GET()
                     .build();
             response = HttpClient.newBuilder()
                     .build()
-                    .send(request,  HttpResponse.BodyHandlers.ofString());
+                    .send(request, HttpResponse.BodyHandlers.ofString());
             logger.info("response: {}", response.body());
             return ResponseEntity.ok(response.body());
         } catch (Exception e) {
@@ -98,14 +95,13 @@ class EvolutionApi extends BaseController {
         }
     }
 
-    @GetMapping(value="/evolution-trigger/{id}")
+    @GetMapping(value = "/evolution-trigger/{id}")
     @ResponseBody
-    ResponseEntity<?> getEvolutionTrigger(@PathVariable("id") int id)
-    {
+    ResponseEntity<?> getEvolutionTrigger(@PathVariable("id") int id) {
         logger.info("getEvolutionTrigger {}", id);
         HttpResponse<String> response;
         try {
-            response = pokemonService.callUrl(pokeApiBaseUrl+"/evolution-trigger/"+id);
+            response = pokemonService.callUrl(pokeApiBaseUrl + "/evolution-trigger/" + id);
         } catch (Exception e) {
             logger.error("Error retrieving response because {}", e.getMessage());
             return ResponseEntity.internalServerError().build();

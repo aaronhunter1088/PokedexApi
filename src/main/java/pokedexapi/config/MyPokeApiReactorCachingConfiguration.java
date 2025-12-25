@@ -4,14 +4,13 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.resolver.DefaultAddressResolverGroup;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.resources.ConnectionProvider;
 import skaro.pokeapi.PokeApiReactorCachingConfiguration;
@@ -23,6 +22,9 @@ import java.util.concurrent.TimeUnit;
 @Import(PokeApiReactorCachingConfiguration.class)
 @EnableCaching
 public class MyPokeApiReactorCachingConfiguration {
+
+    @Value("${skaro.pokeapi.baseUri}")
+    private String pokeApiBaseUrl;
 
     @Bean
     public Caffeine caffeineConfig() {

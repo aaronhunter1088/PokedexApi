@@ -3,39 +3,37 @@ package pokedexapi.api;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseController;
 import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.net.http.HttpResponse;
 
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/gender")
-public class GenderApi extends BaseController
-{
+public class GenderApi extends BaseController {
     /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(GenderApi.class);
 
     @Autowired
-    GenderApi(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper)
-    {
-        super(pokemonService, client, objectMapper);
+    GenderApi(PokemonService pokemonService, PokeApiClient client, @Qualifier("jsonMapper") JsonMapper jsonMapper) {
+        super(pokemonService, client, jsonMapper);
     }
 
     // Genders
-    @RequestMapping(value="", method= RequestMethod.GET)
+    @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getGenders(@RequestParam(value="limit", required=false, defaultValue="10") int limit,
-                                 @RequestParam(value="offset", required=false, defaultValue="0") int offset)
-    {
+    ResponseEntity<?> getGenders(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                 @RequestParam(value = "offset", required = false, defaultValue = "0") int offset) {
         LOGGER.info("getGenders");
         HttpResponse<String> genders;
         try {
-            genders = pokemonService.callUrl(pokeApiBaseUrl+"gender?limit="+limit+"&offset="+offset);
+            genders = pokemonService.callUrl(pokeApiBaseUrl + "gender?limit=" + limit + "&offset=" + offset);
         } catch (Exception e) {
             LOGGER.error("Error retrieving response because {}", e.getMessage());
             return ResponseEntity.internalServerError().build();
@@ -47,14 +45,13 @@ public class GenderApi extends BaseController
         };
     }
 
-    @RequestMapping(value="/{id}", method=RequestMethod.GET)
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getGender(@PathVariable(value="id") String id)
-    {
+    ResponseEntity<?> getGender(@PathVariable(value = "id") String id) {
         LOGGER.info("getGender {}", id);
         HttpResponse<String> gender;
         try {
-            gender = pokemonService.callUrl(pokeApiBaseUrl+"gender/"+id);
+            gender = pokemonService.callUrl(pokeApiBaseUrl + "gender/" + id);
         } catch (Exception e) {
             LOGGER.error("Error retrieving response because {}", e.getMessage());
             return ResponseEntity.internalServerError().build();

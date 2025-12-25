@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -21,7 +21,8 @@
         <finalName>${project.artifactId}-${project.version}</finalName>
         <outputDirectory>${basedir}/dist/${project.version}</outputDirectory>
         <main.class>pokedexapi.PokedexApiApplication</main.class>
-        <springdoc.openapi.swagger-ui>http://localhost:4202/pokedexapi/swagger-ui/index.html</springdoc.openapi.swagger-ui>
+        <springdoc.openapi.swagger-ui>http://localhost:4202/pokedexapi/swagger-ui/index.html
+        </springdoc.openapi.swagger-ui>
         <springdoc.openapi.url>http://localhost:4202/pokedexapi/v3/api-docs</springdoc.openapi.url>
     </properties>
 
@@ -141,7 +142,6 @@
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <version>6.1.0</version>
             <scope>provided</scope>
         </dependency>
 

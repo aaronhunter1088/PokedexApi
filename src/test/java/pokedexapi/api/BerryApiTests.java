@@ -1,16 +1,16 @@
 package pokedexapi.api;
 
-import pokedexapi.controllers.BaseApiTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import pokedexapi.controllers.BaseApiTest;
 import reactor.core.publisher.Mono;
 import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResource;
@@ -24,12 +24,12 @@ import tools.jackson.core.type.TypeReference;
 import java.io.IOException;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 
 /**
  * This class contains integration tests for the BerryApi controllers.
@@ -47,11 +47,7 @@ import static org.mockito.ArgumentMatchers.any;
 @AutoConfigureMockMvc
 public class BerryApiTests extends BaseApiTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
     private static final String BERRY_API = "/berry";
-
     NamedApiResourceList<Berry> getAllBerriesResponse;
     NamedApiResourceList<Berry> getNext10BerriesResponse;
     Berry berry_1;
@@ -59,34 +55,40 @@ public class BerryApiTests extends BaseApiTest {
     BerryFirmness berryFirmness_1;
     NamedApiResourceList<BerryFlavor> getAllBerryFlavorsResponse;
     BerryFlavor berryFlavor_1;
+    @Autowired
+    private MockMvc mockMvc;
 
     @BeforeEach
     void setUpEach() throws IOException {
-        getAllBerriesResponse = objectMapper.readValue(
+        getAllBerriesResponse = jsonMapper.readValue(
                 new ClassPathResource("berryApi/getAllBerriesResponse.json").getFile(),
-                new TypeReference<NamedApiResourceList<Berry>>() {}
+                new TypeReference<NamedApiResourceList<Berry>>() {
+                }
         );
-        getNext10BerriesResponse = objectMapper.readValue(
+        getNext10BerriesResponse = jsonMapper.readValue(
                 new ClassPathResource("berryApi/getNext10BerriesResponse.json").getFile(),
-                new TypeReference<NamedApiResourceList<Berry>>() {}
+                new TypeReference<NamedApiResourceList<Berry>>() {
+                }
         );
-        berry_1 = objectMapper.readValue(
+        berry_1 = jsonMapper.readValue(
                 new ClassPathResource("berryApi/berry_1.json").getFile(),
                 Berry.class
         );
-        getAllBerryFirmnessResponse = objectMapper.readValue(
+        getAllBerryFirmnessResponse = jsonMapper.readValue(
                 new ClassPathResource("berryApi/getAllBerryFirmnessResponse.json").getFile(),
-                new TypeReference<NamedApiResourceList<BerryFirmness>>() {}
+                new TypeReference<NamedApiResourceList<BerryFirmness>>() {
+                }
         );
-        berryFirmness_1 = objectMapper.readValue(
+        berryFirmness_1 = jsonMapper.readValue(
                 new ClassPathResource("berryApi/berryFirmness_1.json").getFile(),
                 BerryFirmness.class
         );
-        getAllBerryFlavorsResponse = objectMapper.readValue(
+        getAllBerryFlavorsResponse = jsonMapper.readValue(
                 new ClassPathResource("berryApi/getAllBerryFlavorResponse.json").getFile(),
-                new TypeReference<NamedApiResourceList<BerryFlavor>>() {}
+                new TypeReference<NamedApiResourceList<BerryFlavor>>() {
+                }
         );
-        berryFlavor_1 = objectMapper.readValue(
+        berryFlavor_1 = jsonMapper.readValue(
                 new ClassPathResource("berryApi/berryFlavor_1.json").getFile(),
                 BerryFlavor.class
         );
@@ -105,10 +107,11 @@ public class BerryApiTests extends BaseApiTest {
         Mono<?> mono = getMonoFromListResponse(getAllBerriesResponse, new NamedApiResource<Berry>());
         when(pokeApiClient.getResource(any())).thenReturn((Mono<NamedApiResourceList<PokeApiResource>>) mono);
         this.mockMvc.perform(get(BERRY_API)).andExpect(status()
-                .isOk())
+                        .isOk())
                 .andExpect(result -> {
                     final var contentAsString = result.getResponse().getContentAsString();
-                    NamedApiResourceList<Berry> response = objectMapper.readValue(contentAsString, new TypeReference<>() {});
+                    NamedApiResourceList<Berry> response = jsonMapper.readValue(contentAsString, new TypeReference<>() {
+                    });
                     List<NamedApiResource<Berry>> berries = response.results();
                     assertThat(berries).size().isEqualTo(getAllBerriesResponse.results().size());
                     assertThat(response.count()).isEqualTo(getAllBerriesResponse.count());
@@ -119,15 +122,15 @@ public class BerryApiTests extends BaseApiTest {
 
     @Test
     @DisplayName("Test getAllBerries returns the second next 10 results")
-    void testNextTenBerries() throws Exception 
-    {
+    void testNextTenBerries() throws Exception {
         Mono<?> mono = getMonoFromListResponse(getNext10BerriesResponse, new NamedApiResource<Berry>());
         when(pokeApiClient.getResource(any())).thenReturn((Mono<NamedApiResourceList<PokeApiResource>>) mono);
         this.mockMvc.perform(get(BERRY_API)).andExpect(status()
                         .isOk())
                 .andExpect(result -> {
                     final var contentAsString = result.getResponse().getContentAsString();
-                    NamedApiResourceList<Berry> response = objectMapper.readValue(contentAsString, new TypeReference<>() {});
+                    NamedApiResourceList<Berry> response = jsonMapper.readValue(contentAsString, new TypeReference<>() {
+                    });
                     List<NamedApiResource<Berry>> berries = response.results();
                     assertThat(berries).size().isEqualTo(getNext10BerriesResponse.results().size());
                     assertThat(response.count()).isEqualTo(getNext10BerriesResponse.count());
@@ -166,7 +169,7 @@ public class BerryApiTests extends BaseApiTest {
                 .andExpect(status().isOk())
                 .andExpect(result -> {
                     final var contentAsString = result.getResponse().getContentAsString();
-                    Berry response = objectMapper.readValue(contentAsString, Berry.class);
+                    Berry response = jsonMapper.readValue(contentAsString, Berry.class);
                     assertThat(response.getName()).isEqualTo(berry_1.getName());
                     assertThat(response.getId()).isEqualTo(berry_1.getId());
                 });
@@ -207,7 +210,8 @@ public class BerryApiTests extends BaseApiTest {
                 //.andExpect(status().is(200))
                 .andExpect(result -> {
                     final var contentAsString = result.getResponse().getContentAsString();
-                    NamedApiResourceList<Berry> response = objectMapper.readValue(contentAsString, new TypeReference<>() {});
+                    NamedApiResourceList<Berry> response = jsonMapper.readValue(contentAsString, new TypeReference<>() {
+                    });
                     List<NamedApiResource<Berry>> berries = response.results();
                     assertThat(berries).size().isEqualTo(getAllBerryFirmnessResponse.results().size());
                     assertThat(response.count()).isEqualTo(getAllBerryFirmnessResponse.count());
@@ -251,7 +255,7 @@ public class BerryApiTests extends BaseApiTest {
                 .andExpect(status().isOk())
                 .andExpect(result -> {
                     final var contentAsString = result.getResponse().getContentAsString();
-                    BerryFirmness response = objectMapper.readValue(contentAsString, BerryFirmness.class);
+                    BerryFirmness response = jsonMapper.readValue(contentAsString, BerryFirmness.class);
                     assertThat(response.getName()).isEqualTo(berryFirmness_1.getName());
                     assertThat(response.getId()).isEqualTo(berryFirmness_1.getId());
                 });
@@ -292,7 +296,8 @@ public class BerryApiTests extends BaseApiTest {
                 .andExpect(status().isOk())
                 .andExpect(result -> {
                     final var contentAsString = result.getResponse().getContentAsString();
-                    NamedApiResourceList<Berry> response = objectMapper.readValue(contentAsString, new TypeReference<>() {});
+                    NamedApiResourceList<Berry> response = jsonMapper.readValue(contentAsString, new TypeReference<>() {
+                    });
                     List<NamedApiResource<Berry>> berries = response.results();
                     assertThat(berries).size().isEqualTo(getAllBerryFlavorsResponse.results().size());
                     assertThat(response.count()).isEqualTo(getAllBerryFlavorsResponse.count());
@@ -336,7 +341,7 @@ public class BerryApiTests extends BaseApiTest {
                 .andExpect(status().isOk())
                 .andExpect(result -> {
                     final var contentAsString = result.getResponse().getContentAsString();
-                    BerryFlavor response = objectMapper.readValue(contentAsString, BerryFlavor.class);
+                    BerryFlavor response = jsonMapper.readValue(contentAsString, BerryFlavor.class);
                     assertThat(response.getName()).isEqualTo(berryFlavor_1.getName());
                     assertThat(response.getId()).isEqualTo(berryFlavor_1.getId());
                 });

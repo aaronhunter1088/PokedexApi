@@ -3,39 +3,38 @@ package pokedexapi.api;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseController;
 import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.resource.stat.Stat;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.net.http.HttpResponse;
 
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/stat")
-public class StatApi extends BaseController
-{
+public class StatApi extends BaseController {
     /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(StatApi.class);
 
     @Autowired
-    StatApi(PokemonService pokemonService, PokeApiClient client, ObjectMapper objectMapper)
-    {
-        super(pokemonService, client, objectMapper);
+    StatApi(PokemonService pokemonService, PokeApiClient client, @Qualifier("jsonMapper") JsonMapper jsonMapper) {
+        super(pokemonService, client, jsonMapper);
     }
+
     // Pokemon Stats
-    @RequestMapping(value = "", method= RequestMethod.GET)
+    @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getStats(@RequestParam(value="limit", required=false, defaultValue="10") int limit,
-                               @RequestParam(value="offset", required=false, defaultValue="0") int offset)
-    {
+    ResponseEntity<?> getStats(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                               @RequestParam(value = "offset", required = false, defaultValue = "0") int offset) {
         LOGGER.info("getPokemonStats limit:{} offset:{}", limit, offset);
         HttpResponse<String> stats;
         try {
-            stats = pokemonService.callUrl(pokeApiBaseUrl+"stat?limit="+limit+"&offset="+offset);
+            stats = pokemonService.callUrl(pokeApiBaseUrl + "stat?limit=" + limit + "&offset=" + offset);
         } catch (Exception e) {
             LOGGER.error("Error retrieving response because {}", e.getMessage());
             return ResponseEntity.internalServerError().build();
@@ -47,10 +46,9 @@ public class StatApi extends BaseController
         };
     }
 
-    @RequestMapping(value = "/{nameOrId}", method=RequestMethod.GET)
+    @RequestMapping(value = "/{nameOrId}", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getStat(@PathVariable("nameOrId") String nameOrId)
-    {
+    ResponseEntity<?> getStat(@PathVariable("nameOrId") String nameOrId) {
         LOGGER.info("getPokemonStat {}", nameOrId);
 //        HttpResponse<String> stat;
 //        try {
