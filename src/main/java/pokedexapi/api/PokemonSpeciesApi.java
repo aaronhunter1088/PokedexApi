@@ -21,17 +21,21 @@ import java.util.Arrays;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/pokemon-species")
-public class PokemonSpeciesApi extends BaseController {
+public class PokemonSpeciesApi extends BaseController
+{
+    /* Logging instance */
     private static final Logger logger = LogManager.getLogger(PokemonSpeciesApi.class);
 
-    PokemonSpeciesApi(PokemonService pokemonService, PokeApiClient client, @Qualifier("jsonMapper") JsonMapper jsonMapper) {
-        super(pokemonService, client, jsonMapper);
+    PokemonSpeciesApi(PokemonService pokemonService, PokeApiClient client)
+    {
+        super(pokemonService, client);
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
     ResponseEntity<?> getAllSpeciesData(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-                                        @RequestParam(value = "offset", required = false, defaultValue = "0") int offset) {
+                                        @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    {
         logger.info("getAllSpeciesData limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<PokemonSpecies> allSpeciesData = pokeApiClient.getResource(PokemonSpecies.class, new PageQuery(limit, offset)).block();
@@ -45,7 +49,8 @@ public class PokemonSpeciesApi extends BaseController {
 
     @RequestMapping(value = "/{nameOrId}", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getPokemonSpeciesData(@PathVariable String nameOrId) {
+    ResponseEntity<?> getPokemonSpeciesData(@PathVariable String nameOrId)
+    {
         logger.info("getSpeciesData: {}", nameOrId);
         try {
             PokemonSpecies speciesData = pokemonService.getPokemonSpeciesData(nameOrId);

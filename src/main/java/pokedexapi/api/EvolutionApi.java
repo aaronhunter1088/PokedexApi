@@ -19,20 +19,23 @@ import java.net.http.HttpResponse;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/evolution")
-class EvolutionApi extends BaseController {
-
+class EvolutionApi extends BaseController
+{
+    /* Logging instance */
     private static final Logger logger = LogManager.getLogger(EvolutionApi.class);
 
     @Autowired
-    EvolutionApi(PokemonService pokemonService, PokeApiClient client, @Qualifier("jsonMapper") JsonMapper jsonMapper) {
-        super(pokemonService, client, jsonMapper);
+    EvolutionApi(PokemonService pokemonService, PokeApiClient client)
+    {
+        super(pokemonService, client);
     }
 
     // Evolution Chains
     @GetMapping(value = "/evolution-chain")
     @ResponseBody
     ResponseEntity<?> getEvolutionChains(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-                                         @RequestParam(value = "offset", required = false, defaultValue = "0") int offset) {
+                                         @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    {
         logger.info("getEvolutionChains");
         HttpResponse<String> response;
         try {
@@ -53,7 +56,8 @@ class EvolutionApi extends BaseController {
 
     @GetMapping(value = "/evolution-chain/{id}")
     @ResponseBody
-    ResponseEntity<?> getEvolutionChain(@PathVariable("id") int id) {
+    ResponseEntity<?> getEvolutionChain(@PathVariable("id") int id)
+    {
         logger.info("getEvolutionChain {}", id);
         HttpResponse<String> response;
         try {
@@ -76,7 +80,8 @@ class EvolutionApi extends BaseController {
     @GetMapping(value = "/evolution-trigger")
     @ResponseBody
     ResponseEntity<?> getEvolutionTriggers(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-                                           @RequestParam(value = "offset", required = false, defaultValue = "0") int offset) {
+                                           @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    {
         logger.info("getEvolutionTriggers");
         HttpResponse<String> response;
         try {
@@ -97,7 +102,8 @@ class EvolutionApi extends BaseController {
 
     @GetMapping(value = "/evolution-trigger/{id}")
     @ResponseBody
-    ResponseEntity<?> getEvolutionTrigger(@PathVariable("id") int id) {
+    ResponseEntity<?> getEvolutionTrigger(@PathVariable("id") int id)
+    {
         logger.info("getEvolutionTrigger {}", id);
         HttpResponse<String> response;
         try {

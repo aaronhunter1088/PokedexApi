@@ -26,16 +26,18 @@ import java.net.http.HttpResponse;
 import java.util.*;
 
 @Service(value = "PokemonService")
-public class PokemonService {
-
-    private static final Logger logger = LogManager.getLogger(PokemonService.class);
+public class PokemonService
+{
+    /* Logging instance */
+    private static final Logger LOGGER = LogManager.getLogger(PokemonService.class);
     private final PokeApiClient pokeApiClient;
     private final JsonMapper jsonMapper;
     @Value("${skaro.pokeapi.baseUri}")
     private String pokeApiBaseUrl;
 
     @Autowired
-    private PokemonService(PokeApiClient client, JsonMapper jsonMapper) {
+    private PokemonService(PokeApiClient client, JsonMapper jsonMapper)
+    {
         this.pokeApiClient = client;
         this.jsonMapper = jsonMapper;
     }
@@ -48,14 +50,15 @@ public class PokemonService {
      * @param offset the offset to use
      * @return a list of pokemon or null if not found
      */
-    public NamedApiResourceList<Pokemon> getPokemonList(int _limit, int offset) {
-        logger.info("getListOfPokemon");
+    public NamedApiResourceList<Pokemon> getPokemonList(int _limit, int offset)
+    {
+        LOGGER.info("getListOfPokemon");
         NamedApiResourceList<Pokemon> pokemonList = null;
         try {
             pokemonList = pokeApiClient.getResource(Pokemon.class, new PageQuery(_limit, offset)).block();
-            if (pokemonList != null) logger.info("Pokemon list found");
+            if (pokemonList != null) LOGGER.info("Pokemon list found");
         } catch (Exception e) {
-            logger.error("Pokemon list not found. Exception: {}", e.getMessage());
+            LOGGER.error("Pokemon list not found. Exception: {}", e.getMessage());
         }
         return pokemonList;
     }
@@ -67,14 +70,15 @@ public class PokemonService {
      * @param nameOrId the name or id of the Pokemon
      * @return the Pokemon object or null if not found
      */
-    public Pokemon getPokemonByIdOrName(String nameOrId) {
-        logger.info("getPokemonByIdOrName: {}", nameOrId);
+    public Pokemon getPokemonByIdOrName(String nameOrId)
+    {
+        LOGGER.info("getPokemonByIdOrName: {}", nameOrId);
         Pokemon pokemon = null;
         try {
             pokemon = pokeApiClient.getResource(Pokemon.class, nameOrId).block();
-            if (pokemon != null) logger.debug("{} found", pokemon);
+            if (pokemon != null) LOGGER.debug("{} found", pokemon);
         } catch (Exception e) {
-            logger.error("Pokemon not found using {}. Exception: {}", nameOrId, e.getMessage());
+            LOGGER.error("Pokemon not found using {}. Exception: {}", nameOrId, e.getMessage());
         }
         return pokemon;
     }
@@ -86,8 +90,9 @@ public class PokemonService {
      * @param id the id of the PokemonSpecies to get
      * @return the PokemonSpecies or null if not found
      */
-    public PokemonSpecies getPokemonSpeciesData(String id) {
-        logger.info("getPokemonSpeciesData: {}", id);
+    public PokemonSpecies getPokemonSpeciesData(String id)
+    {
+        LOGGER.info("getPokemonSpeciesData: {}", id);
         return pokeApiClient.getResource(PokemonSpecies.class, id).block();
     }
 
@@ -100,7 +105,8 @@ public class PokemonService {
      * @throws URISyntaxException if the url is malformed
      * @throws Exception          if there is an error sending the request
      */
-    public List<String> getPokemonLocations(String url) throws Exception {
+    public List<String> getPokemonLocations(String url) throws Exception
+    {
         HttpResponse<String> response;
         final List<String> areas;
         try {
@@ -111,12 +117,12 @@ public class PokemonService {
             areas = new ArrayList<>(pokemonEncounters.stream()
                     .map(LocationArea::getName)
                     .toList());
-            areas.forEach(area -> logger.debug("area: {}", area));
+            areas.forEach(area -> LOGGER.debug("area: {}", area));
         } catch (URISyntaxException use) {
-            logger.error("The url is malformed... {}", use.getMessage());
+            LOGGER.error("The url is malformed... {}", use.getMessage());
             throw use;
         } catch (Exception e) {
-            logger.error("There was an error sending the request");
+            LOGGER.error("There was an error sending the request");
             throw e;
         }
         if (!areas.isEmpty()) {
@@ -132,17 +138,18 @@ public class PokemonService {
      * @param chainUrl the url of the evolution chain
      * @return the evolution chain or null if not found
      */
-    public EvolutionChain getPokemonEvolutionChain(String chainUrl) throws Exception {
+    public EvolutionChain getPokemonEvolutionChain(String chainUrl) throws Exception
+    {
         HttpResponse<String> response;
         try {
             response = callUrl(chainUrl);
             logResponse(response);
             return jsonMapper.readValue(response.body(), EvolutionChain.class);
         } catch (URISyntaxException use) {
-            logger.error("The url is malformed... {}", use.getMessage());
+            LOGGER.error("The url is malformed... {}", use.getMessage());
             throw use;
         } catch (Exception e) {
-            logger.error("There was an error sending the request");
+            LOGGER.error("There was an error sending the request");
             throw e;
         }
     }
@@ -155,7 +162,8 @@ public class PokemonService {
      * @param pokedexId the id to get the total Pokemon from
      * @return the total number of Pokemon in the Pokedex or -1
      */
-    public int getTotalPokemon(String pokedexId) {
+    public int getTotalPokemon(String pokedexId)
+    {
         Pokedex pokedex = pokeApiClient.getResource(Pokedex.class, Objects.requireNonNullElse(pokedexId, "1")).block();
         if (pokedex != null) return pokedex.getPokemonEntries().size();
         else return -1;
@@ -168,7 +176,8 @@ public class PokemonService {
      * @return map
      */
     @Deprecated(forRemoval = true)
-    public Map<Integer, List<List<Integer>>> getEvolutionsMap() {
+    public Map<Integer, List<List<Integer>>> getEvolutionsMap()
+    {
         return new TreeMap<>() {{
             put(1, List.of(List.of(1), List.of(2), List.of(3, 10033, 10195))); // bulbasaur, ivysaur, venusaur, venusaur-mega, venusaur-gmax
             put(2, List.of(List.of(4), List.of(5), List.of(6, 10034, 10035, 10196))); // squirtle, wartortle, blastoise, blastoise-mega, blastoise-gmax
@@ -670,7 +679,8 @@ public class PokemonService {
      * @return the response from the URL
      * @throws Exception if the call fails
      */
-    public HttpResponse<String> callUrl(String url) throws Exception {
+    public HttpResponse<String> callUrl(String url) throws Exception
+    {
         HttpResponse<String> response = null;
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -680,10 +690,10 @@ public class PokemonService {
             response = HttpClient.newBuilder()
                     .build()
                     .send(request, HttpResponse.BodyHandlers.ofString());
-            logger.debug("response: {}", response.body());
-            logger.info("callUrl: {} status: {}", url, response.statusCode());
+            LOGGER.debug("response: {}", response.body());
+            LOGGER.info("callUrl: {} status: {}", url, response.statusCode());
         } catch (Exception e) {
-            logger.error("Failed to call endpoint: {}", url);
+            LOGGER.error("Failed to call endpoint: {}", url);
             throw e;
         }
         return response;
@@ -695,12 +705,13 @@ public class PokemonService {
      *
      * @return all the pokemon types
      */
-    public List<String> getAllTypes() {
+    public List<String> getAllTypes()
+    {
         HttpResponse<String> response = null;
         try {
             response = callUrl(pokeApiBaseUrl + "type");
         } catch (Exception e) {
-            logger.error("Failed to call the endpoint: {}", e.getMessage());
+            LOGGER.error("Failed to call the endpoint: {}", e.getMessage());
         }
         assert response != null;
         return switch (response.statusCode()) {
@@ -718,7 +729,7 @@ public class PokemonService {
                     }
                     yield types.stream().map(NamedApiResource::name).sorted().toList();
                 } catch (Exception e) {
-                    logger.error("Failed to parse the response: {}", e.getMessage());
+                    LOGGER.error("Failed to parse the response: {}", e.getMessage());
                     yield new ArrayList<>();
                 }
             }
@@ -733,8 +744,9 @@ public class PokemonService {
      * @param response the response from the API call
      * @param <T>      the type of the response
      */
-    private <T> void logResponse(HttpResponse<T> response) {
-        logger.info("response: {}", response);
-        logger.debug("response body: {}", response.body());
+    private <T> void logResponse(HttpResponse<T> response)
+    {
+        LOGGER.info("response: {}", response);
+        LOGGER.debug("response body: {}", response.body());
     }
 }

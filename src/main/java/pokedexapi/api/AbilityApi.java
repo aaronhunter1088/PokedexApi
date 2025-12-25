@@ -16,17 +16,20 @@ import tools.jackson.databind.json.JsonMapper;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/ability")
-public class AbilityApi extends BaseController {
+public class AbilityApi extends BaseController
+{
     /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(AbilityApi.class);
 
     @Autowired
-    AbilityApi(PokemonService pokemonService, PokeApiClient client, @Qualifier("jsonMapper") JsonMapper jsonMapper) {
-        super(pokemonService, client, jsonMapper);
+    AbilityApi(PokemonService pokemonService, PokeApiClient client)
+    {
+        super(pokemonService, client);
     }
 
     @GetMapping(value = "")
-    public ResponseEntity<?> getAllAbilities() {
+    public ResponseEntity<?> getAllAbilities()
+    {
         LOGGER.info("getAllAbilities");
         try {
             NamedApiResourceList<Ability> abilities = pokeApiClient.getResource(Ability.class).block();
@@ -38,7 +41,8 @@ public class AbilityApi extends BaseController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<?> getAbility(@PathVariable(value = "id") String id) {
+    public ResponseEntity<?> getAbility(@PathVariable String id)
+    {
         LOGGER.info("getAbility {}", id);
         try {
             Ability ability = pokeApiClient.getResource(Ability.class, id).block();

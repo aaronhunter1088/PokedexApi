@@ -16,19 +16,22 @@ import java.net.http.HttpResponse;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/type")
-public class TypeApi extends BaseController {
+public class TypeApi extends BaseController
+{
     /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(TypeApi.class);
 
     @Autowired
-    TypeApi(PokemonService pokemonService, PokeApiClient client, @Qualifier("jsonMapper") JsonMapper jsonMapper) {
-        super(pokemonService, client, jsonMapper);
+    TypeApi(PokemonService pokemonService, PokeApiClient client)
+    {
+        super(pokemonService, client);
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
     ResponseEntity<?> getTypes(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-                               @RequestParam(value = "offset", required = false, defaultValue = "0") int offset) {
+                               @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    {
         LOGGER.info("getType limit:{} offset:{}", limit, offset);
         HttpResponse<String> types;
         try {
@@ -46,7 +49,8 @@ public class TypeApi extends BaseController {
 
     @RequestMapping(value = "/{nameOrId}", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getAPokemonsType(@PathVariable("nameOrId") String nameOrId) {
+    ResponseEntity<?> getAPokemonsType(@PathVariable("nameOrId") String nameOrId)
+    {
         LOGGER.info("getType {}", nameOrId);
         HttpResponse<String> type;
         try {

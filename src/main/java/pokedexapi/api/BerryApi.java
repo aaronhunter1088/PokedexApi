@@ -19,18 +19,21 @@ import tools.jackson.databind.json.JsonMapper;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/berry")
-class BerryApi extends BaseController {
+class BerryApi extends BaseController
+{
     /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(BerryApi.class);
 
     @Autowired
-    BerryApi(PokemonService pokemonService, PokeApiClient client, @Qualifier("jsonMapper") JsonMapper jsonMapper) {
-        super(pokemonService, client, jsonMapper);
+    BerryApi(PokemonService pokemonService, PokeApiClient client)
+    {
+        super(pokemonService, client);
     }
 
     @GetMapping(value = "")
     @ResponseBody
-    ResponseEntity<?> getAllBerries() {
+    ResponseEntity<?> getAllBerries()
+    {
         LOGGER.info("getAllBerries");
         try {
             NamedApiResourceList<Berry> berries = pokeApiClient.getResource(Berry.class).block();
@@ -42,7 +45,8 @@ class BerryApi extends BaseController {
     }
 
     @GetMapping(value = "/{id}")
-    ResponseEntity<?> getBerry(@PathVariable(value = "id") String id) {
+    ResponseEntity<?> getBerry(@PathVariable String id)
+    {
         LOGGER.info("getBerry {}", id);
         try {
             Berry berry = pokeApiClient.getResource(Berry.class, id).block();
@@ -56,7 +60,8 @@ class BerryApi extends BaseController {
     @GetMapping("/berry-firmness")
     @ResponseBody
     ResponseEntity<?> getBerryFirmness(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-                                       @RequestParam(value = "offset", required = false, defaultValue = "0") int offset) {
+                                       @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    {
         LOGGER.info("getBerryFirmness");
         try {
             NamedApiResourceList<BerryFirmness> berryFirmnesses = pokeApiClient.getResource(BerryFirmness.class, new PageQuery(limit, offset)).block();
@@ -68,7 +73,8 @@ class BerryApi extends BaseController {
     }
 
     @GetMapping(value = "/berry-firmness/{id}")
-    ResponseEntity<?> getBerryFirmness(@PathVariable(value = "id") String id) {
+    ResponseEntity<?> getBerryFirmness(@PathVariable String id)
+    {
         LOGGER.info("getBerryFirmness: {}", id);
         try {
             BerryFirmness berryFirmness = pokeApiClient.getResource(BerryFirmness.class, id).block();
@@ -82,7 +88,8 @@ class BerryApi extends BaseController {
     @GetMapping("/berry-flavor")
     @ResponseBody
     ResponseEntity<?> getBerryFlavors(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-                                      @RequestParam(value = "offset", required = false, defaultValue = "0") int offset) {
+                                      @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    {
         LOGGER.info("getBerryFlavors");
         try {
             NamedApiResourceList<BerryFlavor> berryFlavors = pokeApiClient.getResource(BerryFlavor.class, new PageQuery(limit, offset)).block();
@@ -94,7 +101,8 @@ class BerryApi extends BaseController {
     }
 
     @GetMapping(value = "/berry-flavor/{id}")
-    ResponseEntity<?> getBerryFlavor(@PathVariable(value = "id") String id) {
+    ResponseEntity<?> getBerryFlavor(@PathVariable String id)
+    {
         LOGGER.info("getBerryFlavor: {}", id);
         try {
             BerryFlavor berryFlavor = pokeApiClient.getResource(BerryFlavor.class, id).block();

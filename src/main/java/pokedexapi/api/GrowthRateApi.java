@@ -19,20 +19,23 @@ import java.util.Arrays;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/growth-rate")
-public class GrowthRateApi extends BaseController {
+public class GrowthRateApi extends BaseController
+{
     /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(GrowthRateApi.class);
 
     @Autowired
-    GrowthRateApi(PokemonService pokemonService, PokeApiClient client, @Qualifier("jsonMapper") JsonMapper jsonMapper) {
-        super(pokemonService, client, jsonMapper);
+    GrowthRateApi(PokemonService pokemonService, PokeApiClient client)
+    {
+        super(pokemonService, client);
     }
 
     // Growth Rate
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
     ResponseEntity<?> getGrowthRates(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-                                     @RequestParam(value = "offset", required = false, defaultValue = "0") int offset) {
+                                     @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    {
         LOGGER.info("getGrowthRates");
         try {
             NamedApiResourceList<GrowthRate> growthRates = pokeApiClient.getResource(GrowthRate.class, new PageQuery(limit, offset)).block();
@@ -46,7 +49,8 @@ public class GrowthRateApi extends BaseController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getGrowthRate(@PathVariable(value = "id") String id) {
+    ResponseEntity<?> getGrowthRate(@PathVariable(value = "id") String id)
+    {
         LOGGER.info("getGrowthRate {}", id);
         try {
             GrowthRate growthRate = pokeApiClient.getResource(GrowthRate.class, id).block();

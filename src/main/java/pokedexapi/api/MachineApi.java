@@ -16,19 +16,22 @@ import java.net.http.HttpResponse;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/machine")
-class MachineApi extends BaseController {
-
+class MachineApi extends BaseController
+{
+    /* Logging instance */
     private static final Logger logger = LogManager.getLogger(MachineApi.class);
 
     @Autowired
-    MachineApi(PokemonService pokemonService, PokeApiClient client, @Qualifier("jsonMapper") JsonMapper jsonMapper) {
-        super(pokemonService, client, jsonMapper);
+    MachineApi(PokemonService pokemonService, PokeApiClient client)
+    {
+        super(pokemonService, client);
     }
 
     // Machines
     @GetMapping(value = "")
     @ResponseBody
-    ResponseEntity<?> getMachines() {
+    ResponseEntity<?> getMachines()
+    {
         logger.info("getMachines");
         HttpResponse<String> response;
         try {
@@ -45,7 +48,8 @@ class MachineApi extends BaseController {
     }
 
     @GetMapping(value = "/{id}")
-    ResponseEntity<?> getMachine(@PathVariable(value = "id") String id) {
+    ResponseEntity<?> getMachine(@PathVariable(value = "id") String id)
+    {
         logger.info("getLocation {}", id);
         HttpResponse<String> response;
         try {

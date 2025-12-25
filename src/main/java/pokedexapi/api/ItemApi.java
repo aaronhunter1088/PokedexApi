@@ -20,18 +20,21 @@ import tools.jackson.databind.json.JsonMapper;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/item")
-class ItemApi extends BaseController {
+class ItemApi extends BaseController
+{
     /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(ItemApi.class);
 
     @Autowired
-    ItemApi(PokemonService pokemonService, PokeApiClient client, @Qualifier("jsonMapper") JsonMapper jsonMapper) {
-        super(pokemonService, client, jsonMapper);
+    ItemApi(PokemonService pokemonService, PokeApiClient client)
+    {
+        super(pokemonService, client);
     }
 
     @GetMapping(value = "")
     @ResponseBody
-    ResponseEntity<?> getItems() {
+    ResponseEntity<?> getItems()
+    {
         LOGGER.info("getItems");
         try {
             NamedApiResourceList<Item> items = pokeApiClient.getResource(Item.class).block();
@@ -43,7 +46,8 @@ class ItemApi extends BaseController {
     }
 
     @GetMapping(value = "/item/{id}")
-    ResponseEntity<?> getItem(@PathVariable(value = "id") String id) {
+    ResponseEntity<?> getItem(@PathVariable(value = "id") String id)
+    {
         LOGGER.info("getItem {}", id);
         try {
             Item item = pokeApiClient.getResource(Item.class, id).block();
@@ -57,7 +61,8 @@ class ItemApi extends BaseController {
     // Attributes
     @GetMapping(value = "/item-attribute")
     @ResponseBody
-    ResponseEntity<?> getItemAttributes() {
+    ResponseEntity<?> getItemAttributes()
+    {
         LOGGER.info("getItemAttributes");
         try {
             NamedApiResourceList<ItemAttribute> itemAttributes = pokeApiClient.getResource(ItemAttribute.class).block();
@@ -69,7 +74,8 @@ class ItemApi extends BaseController {
     }
 
     @GetMapping(value = "/item-attribute/{id}")
-    ResponseEntity<?> getItemAttribute(@PathVariable(value = "id") String id) {
+    ResponseEntity<?> getItemAttribute(@PathVariable(value = "id") String id)
+    {
         LOGGER.info("getItemAttribute {}", id);
         try {
             ItemAttribute itemAttribute = pokeApiClient.getResource(ItemAttribute.class, id).block();
@@ -95,7 +101,8 @@ class ItemApi extends BaseController {
     }
 
     @GetMapping(value = "/item-category/{id}")
-    ResponseEntity<?> getItemCategory(@PathVariable(value = "id") String id) {
+    ResponseEntity<?> getItemCategory(@PathVariable(value = "id") String id)
+    {
         LOGGER.info("getItemCategory {}", id);
         try {
             ItemCategory itemCategory = pokeApiClient.getResource(ItemCategory.class, id).block();
@@ -109,7 +116,8 @@ class ItemApi extends BaseController {
     // Fling Effects
     @GetMapping(value = "/item-fling-effect")
     @ResponseBody
-    ResponseEntity<?> getFlingEffects() {
+    ResponseEntity<?> getFlingEffects()
+    {
         LOGGER.info("getFlingEffects");
         try {
             NamedApiResourceList<ItemFlingEffect> flingEffects = pokeApiClient.getResource(ItemFlingEffect.class).block();
@@ -121,7 +129,8 @@ class ItemApi extends BaseController {
     }
 
     @GetMapping(value = "/item-fling-effect/{id}")
-    ResponseEntity<?> getFlingEffect(@PathVariable(value = "id") String id) {
+    ResponseEntity<?> getFlingEffect(@PathVariable(value = "id") String id)
+    {
         LOGGER.info("getFlingEffect {}", id);
         try {
             ItemFlingEffect flingEffect = pokeApiClient.getResource(ItemFlingEffect.class, id).block();
@@ -135,7 +144,8 @@ class ItemApi extends BaseController {
     // Pockets
     @GetMapping(value = "/item-pocket")
     @ResponseBody
-    ResponseEntity<?> getItemPockets() {
+    ResponseEntity<?> getItemPockets()
+    {
         LOGGER.info("getItemPockets");
         try {
             NamedApiResourceList<ItemPocket> itemPocket = pokeApiClient.getResource(ItemPocket.class).block();
@@ -147,7 +157,8 @@ class ItemApi extends BaseController {
     }
 
     @GetMapping(value = "/item-pocket/{id}")
-    ResponseEntity<?> getItemPocket(@PathVariable(value = "id") String id) {
+    ResponseEntity<?> getItemPocket(@PathVariable(value = "id") String id)
+    {
         LOGGER.info("getItemPocket {}", id);
         try {
             ItemPocket itemPocket = pokeApiClient.getResource(ItemPocket.class, id).block();

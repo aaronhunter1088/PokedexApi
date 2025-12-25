@@ -19,20 +19,23 @@ import java.util.Arrays;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/nature")
-public class NatureApi extends BaseController {
+public class NatureApi extends BaseController
+{
     /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(NatureApi.class);
 
     @Autowired
-    NatureApi(PokemonService pokemonService, PokeApiClient client, @Qualifier("jsonMapper") JsonMapper jsonMapper) {
-        super(pokemonService, client, jsonMapper);
+    NatureApi(PokemonService pokemonService, PokeApiClient client)
+    {
+        super(pokemonService, client);
     }
 
     // Natures
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
     ResponseEntity<?> getNatures(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-                                 @RequestParam(value = "offset", required = false, defaultValue = "0") int offset) {
+                                 @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    {
         LOGGER.info("getNatures");
         try {
             NamedApiResourceList<Nature> natures = pokeApiClient.getResource(Nature.class, new PageQuery(limit, offset)).block();
@@ -46,7 +49,8 @@ public class NatureApi extends BaseController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getNature(@PathVariable(value = "id") String id) {
+    ResponseEntity<?> getNature(@PathVariable(value = "id") String id)
+    {
         LOGGER.info("getNature {}", id);
         try {
             Nature nature = pokeApiClient.getResource(Nature.class, id).block();

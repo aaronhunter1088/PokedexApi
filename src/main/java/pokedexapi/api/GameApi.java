@@ -19,15 +19,16 @@ import tools.jackson.databind.json.JsonMapper;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/game")
-class GameApi extends BaseController {
+class GameApi extends BaseController
+{
     /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(GameApi.class);
 
     @Autowired
-    GameApi(PokemonService pokemonService, PokeApiClient client, @Qualifier("jsonMapper") JsonMapper jsonMapper) {
-        super(pokemonService, client, jsonMapper);
+    GameApi(PokemonService pokemonService, PokeApiClient client)
+    {
+        super(pokemonService, client);
     }
-
 
     // Pokedex
     @GetMapping(value = "/pokedex")
@@ -42,7 +43,8 @@ class GameApi extends BaseController {
 
     @GetMapping(value = "/pokedex/{id}")
     @ResponseBody
-    ResponseEntity<?> getPokedex(@PathVariable("id") int id) {
+    ResponseEntity<?> getPokedex(@PathVariable("id") int id)
+    {
         LOGGER.info("getPokedex {}", id);
         Pokedex pokedex = pokeApiClient.getResource(Pokedex.class, String.valueOf(id)).block();
         if (null != pokedex) return ResponseEntity.ok(pokedex);
@@ -53,7 +55,8 @@ class GameApi extends BaseController {
     @GetMapping(value = "/version")
     @ResponseBody
     ResponseEntity<?> getVersions(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-                                  @RequestParam(value = "offset", required = false, defaultValue = "0") int offset) {
+                                  @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    {
         LOGGER.info("getVersions");
         NamedApiResourceList<Version> versions = pokeApiClient.getResource(Version.class, new PageQuery(limit, offset)).block();
         if (null != versions) return ResponseEntity.ok(versions);
@@ -62,7 +65,8 @@ class GameApi extends BaseController {
 
     @GetMapping(value = "/version/{id}")
     @ResponseBody
-    ResponseEntity<?> getVersion(@PathVariable("id") int id) {
+    ResponseEntity<?> getVersion(@PathVariable("id") int id)
+    {
         LOGGER.info("getVersion {}", id);
         Version version = pokeApiClient.getResource(Version.class, String.valueOf(id)).block();
         if (null != version) return ResponseEntity.ok(version);
@@ -73,7 +77,8 @@ class GameApi extends BaseController {
     @GetMapping(value = "/version-group")
     @ResponseBody
     ResponseEntity<?> getVersionGroups(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-                                       @RequestParam(value = "offset", required = false, defaultValue = "0") int offset) {
+                                       @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    {
         LOGGER.info("getVersionGroups");
         NamedApiResourceList<VersionGroup> versionGroups = pokeApiClient.getResource(VersionGroup.class, new PageQuery(limit, offset)).block();
         if (null != versionGroups) return ResponseEntity.ok(versionGroups);
@@ -82,7 +87,8 @@ class GameApi extends BaseController {
 
     @GetMapping(value = "/version-group/{id}")
     @ResponseBody
-    ResponseEntity<?> getVersionGroup(@PathVariable("id") int id) {
+    ResponseEntity<?> getVersionGroup(@PathVariable("id") int id)
+    {
         LOGGER.info("getVersionGroup {}", id);
         VersionGroup versionGroup = pokeApiClient.getResource(VersionGroup.class, String.valueOf(id)).block();
         if (null != versionGroup) return ResponseEntity.ok(versionGroup);

@@ -17,20 +17,23 @@ import java.net.http.HttpResponse;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/stat")
-public class StatApi extends BaseController {
+public class StatApi extends BaseController
+{
     /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(StatApi.class);
 
     @Autowired
-    StatApi(PokemonService pokemonService, PokeApiClient client, @Qualifier("jsonMapper") JsonMapper jsonMapper) {
-        super(pokemonService, client, jsonMapper);
+    StatApi(PokemonService pokemonService, PokeApiClient client)
+    {
+        super(pokemonService, client);
     }
 
     // Pokemon Stats
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
     ResponseEntity<?> getStats(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-                               @RequestParam(value = "offset", required = false, defaultValue = "0") int offset) {
+                               @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    {
         LOGGER.info("getPokemonStats limit:{} offset:{}", limit, offset);
         HttpResponse<String> stats;
         try {
@@ -48,7 +51,8 @@ public class StatApi extends BaseController {
 
     @RequestMapping(value = "/{nameOrId}", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getStat(@PathVariable("nameOrId") String nameOrId) {
+    ResponseEntity<?> getStat(@PathVariable("nameOrId") String nameOrId)
+    {
         LOGGER.info("getPokemonStat {}", nameOrId);
 //        HttpResponse<String> stat;
 //        try {

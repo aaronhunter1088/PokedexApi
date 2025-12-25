@@ -16,20 +16,23 @@ import java.net.http.HttpResponse;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/characteristic")
-public class CharacteristicApi extends BaseController {
+public class CharacteristicApi extends BaseController
+{
     /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(CharacteristicApi.class);
 
     @Autowired
-    CharacteristicApi(PokemonService pokemonService, PokeApiClient client, @Qualifier("jsonMapper") JsonMapper jsonMapper) {
-        super(pokemonService, client, jsonMapper);
+    CharacteristicApi(PokemonService pokemonService, PokeApiClient client)
+    {
+        super(pokemonService, client);
     }
 
     // Characteristics
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
     ResponseEntity<?> getCharacteristics(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-                                         @RequestParam(value = "offset", required = false, defaultValue = "0") int offset) {
+                                         @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    {
         LOGGER.info("getCharacteristics");
         HttpResponse<String> characteristics;
         try {
@@ -47,7 +50,8 @@ public class CharacteristicApi extends BaseController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getCharacteristic(@PathVariable(value = "id") String id) {
+    ResponseEntity<?> getCharacteristic(@PathVariable(value = "id") String id)
+    {
         LOGGER.info("getCharacteristic {}", id);
         try {
             HttpResponse<String> characteristic = pokemonService.callUrl(pokeApiBaseUrl + "characteristic/" + id);

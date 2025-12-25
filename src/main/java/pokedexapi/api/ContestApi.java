@@ -23,19 +23,22 @@ import java.util.Map;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/contest")
-class ContestApi extends BaseController {
+class ContestApi extends BaseController
+{
     /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(ContestApi.class);
 
     @Autowired
-    ContestApi(PokemonService pokemonService, PokeApiClient client, @Qualifier("jsonMapper") JsonMapper jsonMapper) {
-        super(pokemonService, client, jsonMapper);
+    ContestApi(PokemonService pokemonService, PokeApiClient client)
+    {
+        super(pokemonService, client);
     }
 
     // ContestType
     @GetMapping(value = "/contest-type")
     @ResponseBody
-    ResponseEntity<?> getAllContests() {
+    ResponseEntity<?> getAllContests()
+    {
         LOGGER.info("getAllContests");
         try {
             NamedApiResourceList<ContestType> contests = pokeApiClient.getResource(skaro.pokeapi.resource.contesttype.ContestType.class).block();
@@ -47,7 +50,8 @@ class ContestApi extends BaseController {
     }
 
     @GetMapping(value = "/contest-type/{id}")
-    ResponseEntity<?> getContestType(@PathVariable(value = "id") String id) {
+    ResponseEntity<?> getContestType(@PathVariable String id)
+    {
         LOGGER.info("getContestType {}", id);
         try {
             ContestType contestType = pokeApiClient.getResource(ContestType.class, id).block();
@@ -61,7 +65,8 @@ class ContestApi extends BaseController {
     // ContestEffect
     @GetMapping(value = "/contest-effect")
     @ResponseBody
-    ResponseEntity<?> getAllContestEffect() {
+    ResponseEntity<?> getAllContestEffect()
+    {
         LOGGER.info("getAllContestEffects");
         HttpResponse<String> response;
         JSONParser jsonParser;
@@ -85,7 +90,8 @@ class ContestApi extends BaseController {
 
     @GetMapping(value = "/contest-effect/{id}")
     @ResponseBody
-    ResponseEntity<?> getContestEffect(@PathVariable(value = "id") String id) {
+    ResponseEntity<?> getContestEffect(@PathVariable String id)
+    {
         LOGGER.info("getContestEffect with {}", id);
         HttpResponse<String> response;
         JSONParser jsonParser;
@@ -110,7 +116,8 @@ class ContestApi extends BaseController {
     // SuperContestEffects
     @GetMapping(value = "/super-contest-effect")
     @ResponseBody
-    ResponseEntity<?> getAllSuperContestEffect() {
+    ResponseEntity<?> getAllSuperContestEffect()
+    {
         LOGGER.info("getAllSuperContestEffects");
         HttpResponse<String> response;
         JSONParser jsonParser;
@@ -134,7 +141,8 @@ class ContestApi extends BaseController {
 
     @GetMapping(value = "/super-contest-effect/{id}")
     @ResponseBody
-    ResponseEntity<?> getSuperContestEffect(@PathVariable(value = "id") String id) {
+    ResponseEntity<?> getSuperContestEffect(@PathVariable String id)
+    {
         LOGGER.info("getSuperContestEffect with {}", id);
         HttpResponse<String> response;
         JSONParser jsonParser;

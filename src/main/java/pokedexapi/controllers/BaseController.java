@@ -20,25 +20,24 @@ import static pokedexapi.utilities.Constants.GIF_IMAGE_URL;
 
 @CrossOrigin(origins = "*")
 @Controller
-public class BaseController {
-
+public class BaseController
+{
+    /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(BaseController.class);
-
     protected final PokemonService pokemonService;
     protected final PokeApiClient pokeApiClient;
-    protected final JsonMapper jsonMapper;
-
     @Value("${skaro.pokeapi.baseUri}")
     protected String pokeApiBaseUrl;
 
-    protected BaseController(PokemonService pokemonService, PokeApiClient client, @Qualifier("jsonMapper") JsonMapper jsonMapper) {
+    protected BaseController(PokemonService pokemonService, PokeApiClient client)
+    {
         this.pokemonService = pokemonService;
         this.pokeApiClient = client;
-        this.jsonMapper = jsonMapper;
     }
 
     @Deprecated(forRemoval = true)
-    protected Integer getEvolutionChainID(Map<Integer, List<List<Integer>>> pokemonIDToEvolutionChainMap, String pokemonId) {
+    protected Integer getEvolutionChainID(Map<Integer, List<List<Integer>>> pokemonIDToEvolutionChainMap, String pokemonId)
+    {
         LOGGER.info("id: {}", pokemonId);
         List<Integer> keys = pokemonIDToEvolutionChainMap.keySet().stream().toList();
         Integer keyToReturn = 0;
@@ -63,12 +62,14 @@ public class BaseController {
      * @param nameOrId String the name or id of a Pokemon
      * @return the Pokemon or null
      */
-    protected Pokemon retrievePokemon(String nameOrId) {
+    protected Pokemon retrievePokemon(String nameOrId)
+    {
         return pokemonService.getPokemonByIdOrName(nameOrId);
     }
 
     @Deprecated(forRemoval = true)
-    protected void setGifImage(Pokemon pokemon) {
+    protected void setGifImage(Pokemon pokemon)
+    {
         HttpResponse<String> response = null;
         try {
             response = pokemonService.callUrl(GIF_IMAGE_URL(pokemon.id()));
@@ -79,7 +80,8 @@ public class BaseController {
     }
 
     @Deprecated(forRemoval = true)
-    protected Map<String, Object> generateDefaultAttributesMap() {
+    protected Map<String, Object> generateDefaultAttributesMap()
+    {
         return new TreeMap<>() {{
             put("name", null); // on screen
             put("gender", null);

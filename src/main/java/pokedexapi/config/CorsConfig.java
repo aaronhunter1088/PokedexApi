@@ -13,10 +13,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 //In order for Spring Boot to be able to recognize a filter, we just
 // needed to define it as a bean with the @Component annotation.
 @Configuration
-public class CorsConfig implements WebMvcConfigurer {
-
+public class CorsConfig implements WebMvcConfigurer
+{
     @Override
-    public void addCorsMappings(CorsRegistry registry) {
+    public void addCorsMappings(CorsRegistry registry)
+    {
         // can be blocked by spring-security
         // disabled by using proxy in Angular
         registry.addMapping("/**")

@@ -21,11 +21,8 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 @Import(PokeApiReactorCachingConfiguration.class)
 @EnableCaching
-public class MyPokeApiReactorCachingConfiguration {
-
-    @Value("${skaro.pokeapi.baseUri}")
-    private String pokeApiBaseUrl;
-
+public class MyPokeApiReactorCachingConfiguration
+{
     @Bean
     public Caffeine caffeineConfig() {
         return Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.MINUTES);

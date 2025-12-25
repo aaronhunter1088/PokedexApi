@@ -16,20 +16,23 @@ import java.net.http.HttpResponse;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/gender")
-public class GenderApi extends BaseController {
+public class GenderApi extends BaseController
+{
     /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(GenderApi.class);
 
     @Autowired
-    GenderApi(PokemonService pokemonService, PokeApiClient client, @Qualifier("jsonMapper") JsonMapper jsonMapper) {
-        super(pokemonService, client, jsonMapper);
+    GenderApi(PokemonService pokemonService, PokeApiClient client)
+    {
+        super(pokemonService, client);
     }
 
     // Genders
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
     ResponseEntity<?> getGenders(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-                                 @RequestParam(value = "offset", required = false, defaultValue = "0") int offset) {
+                                 @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    {
         LOGGER.info("getGenders");
         HttpResponse<String> genders;
         try {
@@ -47,7 +50,8 @@ public class GenderApi extends BaseController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<?> getGender(@PathVariable(value = "id") String id) {
+    ResponseEntity<?> getGender(@PathVariable(value = "id") String id)
+    {
         LOGGER.info("getGender {}", id);
         HttpResponse<String> gender;
         try {

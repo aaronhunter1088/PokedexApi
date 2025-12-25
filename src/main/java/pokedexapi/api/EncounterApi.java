@@ -18,19 +18,22 @@ import tools.jackson.databind.json.JsonMapper;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/encounter")
-class EncounterApi extends BaseController {
-
+class EncounterApi extends BaseController
+{
+    /* Logging instance */
     private static final Logger logger = LogManager.getLogger(EncounterApi.class);
 
     // Encounter Method
     @Autowired
-    EncounterApi(PokemonService pokemonService, PokeApiClient client, @Qualifier("jsonMapper") JsonMapper jsonMapper) {
-        super(pokemonService, client, jsonMapper);
+    EncounterApi(PokemonService pokemonService, PokeApiClient client)
+    {
+        super(pokemonService, client);
     }
 
     @GetMapping(value = "/encounter-method")
     @ResponseBody
-    ResponseEntity<?> getEncounterMethods() {
+    ResponseEntity<?> getEncounterMethods()
+    {
         logger.info("getEncounterMethods");
         try {
             NamedApiResourceList<EncounterMethod> encounters = pokeApiClient.getResource(skaro.pokeapi.resource.encountermethod.EncounterMethod.class).block();
@@ -42,7 +45,8 @@ class EncounterApi extends BaseController {
     }
 
     @GetMapping(value = "/encounter-method/{id}")
-    ResponseEntity<?> getEncounterMethod(@PathVariable(value = "id") String id) {
+    ResponseEntity<?> getEncounterMethod(@PathVariable(value = "id") String id)
+    {
         logger.info("getEncounterMethod {}", id);
         try {
             EncounterMethod encounterMethod = pokeApiClient.getResource(EncounterMethod.class, id).block();
@@ -56,7 +60,8 @@ class EncounterApi extends BaseController {
     // Conditions
     @GetMapping(value = "/encounter-condition")
     @ResponseBody
-    ResponseEntity<?> getConditions() {
+    ResponseEntity<?> getConditions()
+    {
         logger.info("getConditions");
         try {
             NamedApiResourceList<EncounterCondition> conditions = pokeApiClient.getResource(skaro.pokeapi.resource.encountercondition.EncounterCondition.class).block();
@@ -68,7 +73,8 @@ class EncounterApi extends BaseController {
     }
 
     @GetMapping(value = "/encounter-condition/{id}")
-    ResponseEntity<?> getCondition(@PathVariable(value = "id") String id) {
+    ResponseEntity<?> getCondition(@PathVariable(value = "id") String id)
+    {
         logger.info("getCondition {}", id);
         try {
             EncounterCondition encounterCondition = pokeApiClient.getResource(EncounterCondition.class, id).block();
@@ -82,7 +88,8 @@ class EncounterApi extends BaseController {
     // Condition Values
     @GetMapping(value = "/encounter-condition-value")
     @ResponseBody
-    ResponseEntity<?> getConditionValues() {
+    ResponseEntity<?> getConditionValues()
+    {
         logger.info("getConditionValues");
         try {
             NamedApiResourceList<EncounterConditionValue> conditionValues = pokeApiClient.getResource(skaro.pokeapi.resource.encounterconditionvalue.EncounterConditionValue.class).block();
@@ -94,7 +101,8 @@ class EncounterApi extends BaseController {
     }
 
     @GetMapping(value = "/encounter-condition-value/{id}")
-    ResponseEntity<?> getConditionValue(@PathVariable(value = "id") String id) {
+    ResponseEntity<?> getConditionValue(@PathVariable(value = "id") String id)
+    {
         logger.info("getConditionValue {}", id);
         try {
             EncounterConditionValue conditionValue = pokeApiClient.getResource(EncounterConditionValue.class, id).block();
