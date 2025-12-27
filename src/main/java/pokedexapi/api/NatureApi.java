@@ -3,23 +3,21 @@ package pokedexapi.api;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pokedexapi.controllers.BaseController;
+import pokedexapi.controllers.BaseApiController;
 import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.nature.Nature;
-import tools.jackson.databind.json.JsonMapper;
 
 import java.util.Arrays;
 
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/nature")
-public class NatureApi extends BaseController
+public class NatureApi extends BaseApiController
 {
     /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(NatureApi.class);
@@ -31,7 +29,7 @@ public class NatureApi extends BaseController
     }
 
     // Natures
-    @RequestMapping(value = "", method = RequestMethod.GET)
+    @GetMapping("")
     @ResponseBody
     ResponseEntity<?> getNatures(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                  @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -41,7 +39,8 @@ public class NatureApi extends BaseController
             NamedApiResourceList<Nature> natures = pokeApiClient.getResource(Nature.class, new PageQuery(limit, offset)).block();
             if (null != natures) return ResponseEntity.ok(natures);
             else return ResponseEntity.badRequest().body("Could not access Nature endpoint");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             Arrays.stream(e.getStackTrace()).forEach(LOGGER::error);
             return ResponseEntity.badRequest().body("Could not fetch all Nature because " + e.getMessage());
         }
@@ -56,7 +55,8 @@ public class NatureApi extends BaseController
             Nature nature = pokeApiClient.getResource(Nature.class, id).block();
             if (null != nature) return ResponseEntity.ok(nature);
             else return ResponseEntity.badRequest().body("Could not access Nature endpoint");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }

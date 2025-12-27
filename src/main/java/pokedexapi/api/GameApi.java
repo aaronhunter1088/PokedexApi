@@ -3,10 +3,9 @@ package pokedexapi.api;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pokedexapi.controllers.BaseController;
+import pokedexapi.controllers.BaseApiController;
 import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.query.PageQuery;
@@ -14,12 +13,11 @@ import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.pokedex.Pokedex;
 import skaro.pokeapi.resource.version.Version;
 import skaro.pokeapi.resource.versiongroup.VersionGroup;
-import tools.jackson.databind.json.JsonMapper;
 
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/game")
-class GameApi extends BaseController
+class GameApi extends BaseApiController
 {
     /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(GameApi.class);
@@ -34,7 +32,8 @@ class GameApi extends BaseController
     @GetMapping(value = "/pokedex")
     @ResponseBody
     ResponseEntity<?> getPokedexes(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-                                   @RequestParam(value = "offset", required = false, defaultValue = "0") int offset) {
+                                   @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    {
         LOGGER.info("getPokedexes");
         NamedApiResourceList<Pokedex> pokedexes = pokeApiClient.getResource(Pokedex.class, new PageQuery(limit, offset)).block();
         if (null != pokedexes) return ResponseEntity.ok(pokedexes);

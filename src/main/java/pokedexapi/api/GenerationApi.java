@@ -3,22 +3,20 @@ package pokedexapi.api;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pokedexapi.controllers.BaseController;
+import pokedexapi.controllers.BaseApiController;
 import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.generation.Generation;
-import tools.jackson.databind.json.JsonMapper;
 
 // TODO: Validate
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/generation")
-public class GenerationApi extends BaseController
+public class GenerationApi extends BaseApiController
 {
     /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(GenerationApi.class);

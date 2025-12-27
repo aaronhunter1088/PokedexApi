@@ -4,13 +4,14 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.resolver.DefaultAddressResolverGroup;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Profile;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.resources.ConnectionProvider;
 import skaro.pokeapi.PokeApiReactorCachingConfiguration;
@@ -18,25 +19,29 @@ import skaro.pokeapi.PokeApiReactorCachingConfiguration;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
-@Configuration
+@Profile("!test")
+@AutoConfiguration
 @Import(PokeApiReactorCachingConfiguration.class)
 @EnableCaching
 public class MyPokeApiReactorCachingConfiguration
 {
     @Bean
-    public Caffeine caffeineConfig() {
+    public Caffeine caffeineConfig()
+    {
         return Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.MINUTES);
     }
 
     @Bean
-    public CacheManager cacheManager(Caffeine caffeine) {
+    public CacheManager cacheManager(Caffeine caffeine)
+    {
         CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager();
         caffeineCacheManager.setCaffeine(caffeine);
         return caffeineCacheManager;
     }
 
     @Bean
-    public ConnectionProvider connectionProvider() {
+    public ConnectionProvider connectionProvider()
+    {
         return ConnectionProvider.builder("Auto refresh & no connection limit")
                 .maxIdleTime(Duration.ofSeconds(10))
                 .maxConnections(500)
@@ -45,7 +50,8 @@ public class MyPokeApiReactorCachingConfiguration
     }
 
     @Bean
-    public HttpClient httpClient(ConnectionProvider connectionProvider) {
+    public HttpClient httpClient(ConnectionProvider connectionProvider)
+    {
         return HttpClient.create(connectionProvider)
                 .compress(true)
                 .resolver(DefaultAddressResolverGroup.INSTANCE)

@@ -3,13 +3,11 @@ package pokedexapi.api;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pokedexapi.controllers.BaseController;
+import pokedexapi.controllers.BaseApiController;
 import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
-import tools.jackson.databind.json.JsonMapper;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -19,7 +17,7 @@ import java.net.http.HttpResponse;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/evolution")
-class EvolutionApi extends BaseController
+class EvolutionApi extends BaseApiController
 {
     /* Logging instance */
     private static final Logger logger = LogManager.getLogger(EvolutionApi.class);
@@ -48,7 +46,8 @@ class EvolutionApi extends BaseController
                     .send(request, HttpResponse.BodyHandlers.ofString());
             logger.info("response: {}", response.body());
             return ResponseEntity.ok(response.body());
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             logger.error("Error retrieving response because {}", e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
@@ -70,7 +69,8 @@ class EvolutionApi extends BaseController
                     .send(request, HttpResponse.BodyHandlers.ofString());
             logger.info("response: {}", response.body());
             return ResponseEntity.ok(response.body());
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             logger.error("Error retrieving response because {}", e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
@@ -94,7 +94,8 @@ class EvolutionApi extends BaseController
                     .send(request, HttpResponse.BodyHandlers.ofString());
             logger.info("response: {}", response.body());
             return ResponseEntity.ok(response.body());
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             logger.error("Error retrieving response because {}", e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
@@ -108,7 +109,8 @@ class EvolutionApi extends BaseController
         HttpResponse<String> response;
         try {
             response = pokemonService.callUrl(pokeApiBaseUrl + "/evolution-trigger/" + id);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             logger.error("Error retrieving response because {}", e.getMessage());
             return ResponseEntity.internalServerError().build();
         }

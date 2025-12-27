@@ -11,7 +11,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-class PokedexApiApplicationTest extends BaseApiTest {
+class PokedexApiApplicationTest extends BaseApiTest
+{
 
     @Autowired
     private PokedexApiApplication application;
@@ -19,17 +20,20 @@ class PokedexApiApplicationTest extends BaseApiTest {
     /*
      * Fixture: Executed before every test
      */
-    protected void setUp() {
+    protected void setUp()
+    {
     }
 
     /*
      * Fixture: Executed after every test
      */
-    protected void tearDown() {
+    protected void tearDown()
+    {
     }
 
     @Test
-    void contextLoads() {
+    void contextLoads()
+    {
         assertThat(application).isNotNull();
     }
 

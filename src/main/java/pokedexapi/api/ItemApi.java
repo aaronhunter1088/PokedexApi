@@ -3,10 +3,9 @@ package pokedexapi.api;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pokedexapi.controllers.BaseController;
+import pokedexapi.controllers.BaseApiController;
 import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.resource.NamedApiResourceList;
@@ -15,12 +14,11 @@ import skaro.pokeapi.resource.itemattribute.ItemAttribute;
 import skaro.pokeapi.resource.itemcategory.ItemCategory;
 import skaro.pokeapi.resource.itemflingeffect.ItemFlingEffect;
 import skaro.pokeapi.resource.itempocket.ItemPocket;
-import tools.jackson.databind.json.JsonMapper;
 
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/item")
-class ItemApi extends BaseController
+class ItemApi extends BaseApiController
 {
     /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(ItemApi.class);
@@ -40,7 +38,8 @@ class ItemApi extends BaseController
             NamedApiResourceList<Item> items = pokeApiClient.getResource(Item.class).block();
             if (null != items) return ResponseEntity.ok(items);
             else return ResponseEntity.badRequest().body("Could not access Item endpoint");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -53,7 +52,8 @@ class ItemApi extends BaseController
             Item item = pokeApiClient.getResource(Item.class, id).block();
             if (null != item) return ResponseEntity.ok(item);
             else return ResponseEntity.badRequest().body("Could not find an item with " + id);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -68,7 +68,8 @@ class ItemApi extends BaseController
             NamedApiResourceList<ItemAttribute> itemAttributes = pokeApiClient.getResource(ItemAttribute.class).block();
             if (null != itemAttributes) return ResponseEntity.ok(itemAttributes);
             else return ResponseEntity.badRequest().body("Could not access ItemAttribute endpoint");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -81,7 +82,8 @@ class ItemApi extends BaseController
             ItemAttribute itemAttribute = pokeApiClient.getResource(ItemAttribute.class, id).block();
             if (null != itemAttribute) return ResponseEntity.ok(itemAttribute);
             else return ResponseEntity.badRequest().body("Could not find an itemAttribute with " + id);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -89,13 +91,15 @@ class ItemApi extends BaseController
     // Categories
     @GetMapping(value = "/item-category")
     @ResponseBody
-    ResponseEntity<?> getItemCategories() {
+    ResponseEntity<?> getItemCategories()
+    {
         LOGGER.info("getItemCategories");
         try {
             NamedApiResourceList<ItemCategory> itemCategories = pokeApiClient.getResource(ItemCategory.class).block();
             if (null != itemCategories) return ResponseEntity.ok(itemCategories);
             else return ResponseEntity.badRequest().body("Could not access ItemCategory endpoint");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -108,7 +112,8 @@ class ItemApi extends BaseController
             ItemCategory itemCategory = pokeApiClient.getResource(ItemCategory.class, id).block();
             if (null != itemCategory) return ResponseEntity.ok(itemCategory);
             else return ResponseEntity.badRequest().body("Could not find an itemCategory with " + id);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -123,7 +128,8 @@ class ItemApi extends BaseController
             NamedApiResourceList<ItemFlingEffect> flingEffects = pokeApiClient.getResource(ItemFlingEffect.class).block();
             if (null != flingEffects) return ResponseEntity.ok(flingEffects);
             else return ResponseEntity.badRequest().body("Could not access ItemFlingEffect endpoint");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -136,7 +142,8 @@ class ItemApi extends BaseController
             ItemFlingEffect flingEffect = pokeApiClient.getResource(ItemFlingEffect.class, id).block();
             if (null != flingEffect) return ResponseEntity.ok(flingEffect);
             else return ResponseEntity.badRequest().body("Could not find a flingEffect with " + id);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -151,7 +158,8 @@ class ItemApi extends BaseController
             NamedApiResourceList<ItemPocket> itemPocket = pokeApiClient.getResource(ItemPocket.class).block();
             if (null != itemPocket) return ResponseEntity.ok(itemPocket);
             else return ResponseEntity.badRequest().body("Could not access ItemPocket endpoint");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -164,7 +172,8 @@ class ItemApi extends BaseController
             ItemPocket itemPocket = pokeApiClient.getResource(ItemPocket.class, id).block();
             if (null != itemPocket) return ResponseEntity.ok(itemPocket);
             else return ResponseEntity.badRequest().body("Could not find a itemPocket with " + id);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }

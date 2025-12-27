@@ -3,20 +3,18 @@ package pokedexapi.api;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pokedexapi.controllers.BaseController;
+import pokedexapi.controllers.BaseApiController;
 import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
-import tools.jackson.databind.json.JsonMapper;
 
 import java.net.http.HttpResponse;
 
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/machine")
-class MachineApi extends BaseController
+class MachineApi extends BaseApiController
 {
     /* Logging instance */
     private static final Logger logger = LogManager.getLogger(MachineApi.class);
@@ -36,7 +34,8 @@ class MachineApi extends BaseController
         HttpResponse<String> response;
         try {
             response = pokemonService.callUrl(pokeApiBaseUrl + "/machine");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             logger.error("Error retrieving response because {}", e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
@@ -54,7 +53,8 @@ class MachineApi extends BaseController
         HttpResponse<String> response;
         try {
             response = pokemonService.callUrl(pokeApiBaseUrl + "/machine/" + id);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             logger.error("Error retrieving response because {}", e.getMessage());
             return ResponseEntity.internalServerError().build();
         }

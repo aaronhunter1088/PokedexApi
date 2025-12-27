@@ -3,20 +3,18 @@ package pokedexapi.api;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pokedexapi.controllers.BaseController;
+import pokedexapi.controllers.BaseApiController;
 import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
-import tools.jackson.databind.json.JsonMapper;
 
 import java.net.http.HttpResponse;
 
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/type")
-public class TypeApi extends BaseController
+public class TypeApi extends BaseApiController
 {
     /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(TypeApi.class);
@@ -27,7 +25,7 @@ public class TypeApi extends BaseController
         super(pokemonService, client);
     }
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
+    @GetMapping("")
     @ResponseBody
     ResponseEntity<?> getTypes(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -36,7 +34,8 @@ public class TypeApi extends BaseController
         HttpResponse<String> types;
         try {
             types = pokemonService.callUrl(pokeApiBaseUrl + "type?limit=" + limit + "&offset=" + offset);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             LOGGER.error("Error retrieving response because {}", e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
@@ -55,7 +54,8 @@ public class TypeApi extends BaseController
         HttpResponse<String> type;
         try {
             type = pokemonService.callUrl(pokeApiBaseUrl + "type/" + nameOrId);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             LOGGER.error("Error retrieving response because {}", e.getMessage());
             return ResponseEntity.internalServerError().build();
         }

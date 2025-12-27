@@ -45,7 +45,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class BerryApiTests extends BaseApiTest {
+public class BerryApiTests extends BaseApiTest
+{
 
     private static final String BERRY_API = "/berry";
     NamedApiResourceList<Berry> getAllBerriesResponse;
@@ -59,15 +60,18 @@ public class BerryApiTests extends BaseApiTest {
     private MockMvc mockMvc;
 
     @BeforeEach
-    void setUpEach() throws IOException {
+    void setUpEach() throws IOException
+    {
         getAllBerriesResponse = jsonMapper.readValue(
                 new ClassPathResource("berryApi/getAllBerriesResponse.json").getFile(),
-                new TypeReference<NamedApiResourceList<Berry>>() {
+                new TypeReference<NamedApiResourceList<Berry>>()
+                {
                 }
         );
         getNext10BerriesResponse = jsonMapper.readValue(
                 new ClassPathResource("berryApi/getNext10BerriesResponse.json").getFile(),
-                new TypeReference<NamedApiResourceList<Berry>>() {
+                new TypeReference<NamedApiResourceList<Berry>>()
+                {
                 }
         );
         berry_1 = jsonMapper.readValue(
@@ -76,7 +80,8 @@ public class BerryApiTests extends BaseApiTest {
         );
         getAllBerryFirmnessResponse = jsonMapper.readValue(
                 new ClassPathResource("berryApi/getAllBerryFirmnessResponse.json").getFile(),
-                new TypeReference<NamedApiResourceList<BerryFirmness>>() {
+                new TypeReference<NamedApiResourceList<BerryFirmness>>()
+                {
                 }
         );
         berryFirmness_1 = jsonMapper.readValue(
@@ -85,7 +90,8 @@ public class BerryApiTests extends BaseApiTest {
         );
         getAllBerryFlavorsResponse = jsonMapper.readValue(
                 new ClassPathResource("berryApi/getAllBerryFlavorResponse.json").getFile(),
-                new TypeReference<NamedApiResourceList<BerryFlavor>>() {
+                new TypeReference<NamedApiResourceList<BerryFlavor>>()
+                {
                 }
         );
         berryFlavor_1 = jsonMapper.readValue(
@@ -96,21 +102,24 @@ public class BerryApiTests extends BaseApiTest {
 
     @Test
     @DisplayName("Test getAllBerries returns no berries")
-    void testGetAllBerriesReturnsNullResponse() throws Exception {
+    void testGetAllBerriesReturnsNullResponse() throws Exception
+    {
         when(pokeApiClient.getResource(any())).thenReturn(Mono.empty());
         this.mockMvc.perform(get(BERRY_API)).andExpect(status().isBadRequest());
     }
 
     @Test
     @DisplayName("Test getAllBerries returns the first 10 results")
-    void testGetAllBerries() throws Exception {
+    void testGetAllBerries() throws Exception
+    {
         Mono<?> mono = getMonoFromListResponse(getAllBerriesResponse, new NamedApiResource<Berry>());
         when(pokeApiClient.getResource(any())).thenReturn((Mono<NamedApiResourceList<PokeApiResource>>) mono);
         this.mockMvc.perform(get(BERRY_API)).andExpect(status()
                         .isOk())
                 .andExpect(result -> {
                     final var contentAsString = result.getResponse().getContentAsString();
-                    NamedApiResourceList<Berry> response = jsonMapper.readValue(contentAsString, new TypeReference<>() {
+                    NamedApiResourceList<Berry> response = jsonMapper.readValue(contentAsString, new TypeReference<>()
+                    {
                     });
                     List<NamedApiResource<Berry>> berries = response.results();
                     assertThat(berries).size().isEqualTo(getAllBerriesResponse.results().size());
@@ -122,14 +131,16 @@ public class BerryApiTests extends BaseApiTest {
 
     @Test
     @DisplayName("Test getAllBerries returns the second next 10 results")
-    void testNextTenBerries() throws Exception {
+    void testNextTenBerries() throws Exception
+    {
         Mono<?> mono = getMonoFromListResponse(getNext10BerriesResponse, new NamedApiResource<Berry>());
         when(pokeApiClient.getResource(any())).thenReturn((Mono<NamedApiResourceList<PokeApiResource>>) mono);
         this.mockMvc.perform(get(BERRY_API)).andExpect(status()
                         .isOk())
                 .andExpect(result -> {
                     final var contentAsString = result.getResponse().getContentAsString();
-                    NamedApiResourceList<Berry> response = jsonMapper.readValue(contentAsString, new TypeReference<>() {
+                    NamedApiResourceList<Berry> response = jsonMapper.readValue(contentAsString, new TypeReference<>()
+                    {
                     });
                     List<NamedApiResource<Berry>> berries = response.results();
                     assertThat(berries).size().isEqualTo(getNext10BerriesResponse.results().size());
@@ -141,7 +152,8 @@ public class BerryApiTests extends BaseApiTest {
 
     @Test
     @DisplayName("Test getAllBerries returns an exception")
-    void testGetAllBerriesThrowsAnException() throws Exception {
+    void testGetAllBerriesThrowsAnException() throws Exception
+    {
         when(pokeApiClient.getResource(any())).thenThrow(new RuntimeException("From testGetAllBerriesThrowsAnException"));
         this.mockMvc.perform(get(BERRY_API)).andExpect(status().isInternalServerError());
     }
@@ -150,7 +162,8 @@ public class BerryApiTests extends BaseApiTest {
 
     @Test
     @DisplayName("Test getBerry returns no berry")
-    void testGetBerryReturnsNullResponse() throws Exception {
+    void testGetBerryReturnsNullResponse() throws Exception
+    {
         when(pokeApiClient.getResource(any(), anyString())).thenReturn(Mono.empty());
         this.mockMvc.perform(get(BERRY_API + '/' + berry_1.getId()))
                 .andExpect(status().isBadRequest())
@@ -162,7 +175,8 @@ public class BerryApiTests extends BaseApiTest {
 
     @Test
     @DisplayName("Test getBerry returns expected berry")
-    void testGetBerryReturnsExpectedBerry() throws Exception {
+    void testGetBerryReturnsExpectedBerry() throws Exception
+    {
         Mono<PokeApiResource> mono = Mono.just(berry_1);
         when(pokeApiClient.getResource(any(), anyString())).thenReturn(mono);
         this.mockMvc.perform(get(BERRY_API + '/' + berry_1.getId()))
@@ -177,7 +191,8 @@ public class BerryApiTests extends BaseApiTest {
 
     @Test
     @DisplayName("Test getBerry returns an exception")
-    void testGetBerryThrowsAnException() throws Exception {
+    void testGetBerryThrowsAnException() throws Exception
+    {
         when(pokeApiClient.getResource(any(), anyString())).thenThrow(new RuntimeException("From testGetBerryThrowsAnException"));
         this.mockMvc.perform(get(BERRY_API + '/' + berry_1.getId()))
                 .andExpect(status().isInternalServerError())
@@ -191,7 +206,8 @@ public class BerryApiTests extends BaseApiTest {
 
     @Test
     @DisplayName("Test getBerryFirmness returns no berry firmnesses")
-    void testGetAllBerryFirmnessReturnsNullResponse() throws Exception {
+    void testGetAllBerryFirmnessReturnsNullResponse() throws Exception
+    {
         when(pokeApiClient.getResource(any(), any(PageQuery.class))).thenReturn(Mono.empty());
         this.mockMvc.perform(get(BERRY_API + "/berry-firmness"))
                 .andExpect(status().isBadRequest())
@@ -203,14 +219,16 @@ public class BerryApiTests extends BaseApiTest {
 
     @Test
     @DisplayName("Test getBerryFirmness returns the expected results")
-    void testGetBerryFirmness() throws Exception {
+    void testGetBerryFirmness() throws Exception
+    {
         Mono<?> mono = getMonoFromListResponse(getAllBerryFirmnessResponse, new NamedApiResource<BerryFirmness>());
         when(pokeApiClient.getResource(any(), any(PageQuery.class))).thenReturn((Mono<NamedApiResourceList<PokeApiResource>>) mono);
         this.mockMvc.perform(get(BERRY_API + "/berry-firmness"))
                 //.andExpect(status().is(200))
                 .andExpect(result -> {
                     final var contentAsString = result.getResponse().getContentAsString();
-                    NamedApiResourceList<Berry> response = jsonMapper.readValue(contentAsString, new TypeReference<>() {
+                    NamedApiResourceList<Berry> response = jsonMapper.readValue(contentAsString, new TypeReference<>()
+                    {
                     });
                     List<NamedApiResource<Berry>> berries = response.results();
                     assertThat(berries).size().isEqualTo(getAllBerryFirmnessResponse.results().size());
@@ -222,7 +240,8 @@ public class BerryApiTests extends BaseApiTest {
 
     @Test
     @DisplayName("Test getBerryFirmness returns an exception")
-    void testGetBerryFirmnessThrowsAnException() throws Exception {
+    void testGetBerryFirmnessThrowsAnException() throws Exception
+    {
         when(pokeApiClient.getResource(any(), any(PageQuery.class))).thenThrow(new RuntimeException("From testGetBerryFirmnessThrowsAnException"));
         this.mockMvc.perform(get(BERRY_API + "/berry-firmness"))
                 .andExpect(status().isInternalServerError())
@@ -236,7 +255,8 @@ public class BerryApiTests extends BaseApiTest {
 
     @Test
     @DisplayName("Test getBerryFirmness returns no berry firmness")
-    void testGetBerryFirmnessReturnsNullResponse() throws Exception {
+    void testGetBerryFirmnessReturnsNullResponse() throws Exception
+    {
         when(pokeApiClient.getResource(any(), anyString())).thenReturn(Mono.empty());
         this.mockMvc.perform(get(BERRY_API + "/berry-firmness/" + berryFirmness_1.getId()))
                 .andExpect(status().isBadRequest())
@@ -248,7 +268,8 @@ public class BerryApiTests extends BaseApiTest {
 
     @Test
     @DisplayName("Test getBerryFirmness returns expected berry firmness")
-    void testGetBerryFirmnessReturnsExpectedBerryFirmness() throws Exception {
+    void testGetBerryFirmnessReturnsExpectedBerryFirmness() throws Exception
+    {
         Mono<PokeApiResource> mono = Mono.just(berryFirmness_1);
         when(pokeApiClient.getResource(any(), anyString())).thenReturn(mono);
         this.mockMvc.perform(get(BERRY_API + "/berry-firmness/" + berryFirmness_1.getId()))
@@ -263,7 +284,8 @@ public class BerryApiTests extends BaseApiTest {
 
     @Test
     @DisplayName("Test getBerryFirmness/1 returns an exception")
-    void testGetBerryFirmness1ThrowsAnException() throws Exception {
+    void testGetBerryFirmness1ThrowsAnException() throws Exception
+    {
         when(pokeApiClient.getResource(any(), anyString())).thenThrow(new RuntimeException("From testGetBerryFirmness1ThrowsAnException"));
         this.mockMvc.perform(get(BERRY_API + "/berry-firmness/" + berryFirmness_1.getId()))
                 .andExpect(status().isInternalServerError())
@@ -277,7 +299,8 @@ public class BerryApiTests extends BaseApiTest {
 
     @Test
     @DisplayName("Test getBerryFlavor returns no berry flavors")
-    void testGetAllBerryFlavorsReturnsNullResponse() throws Exception {
+    void testGetAllBerryFlavorsReturnsNullResponse() throws Exception
+    {
         when(pokeApiClient.getResource(any(), any(PageQuery.class))).thenReturn(Mono.empty());
         this.mockMvc.perform(get(BERRY_API + "/berry-flavor"))
                 .andExpect(status().isBadRequest())
@@ -289,14 +312,16 @@ public class BerryApiTests extends BaseApiTest {
 
     @Test
     @DisplayName("Test getBerryFlavors returns the expected results")
-    void testGetBerryFlavors() throws Exception {
+    void testGetBerryFlavors() throws Exception
+    {
         Mono<?> mono = getMonoFromListResponse(getAllBerryFlavorsResponse, new NamedApiResource<BerryFlavor>());
         when(pokeApiClient.getResource(any(), any(PageQuery.class))).thenReturn((Mono<NamedApiResourceList<PokeApiResource>>) mono);
         this.mockMvc.perform(get(BERRY_API + "/berry-flavor"))
                 .andExpect(status().isOk())
                 .andExpect(result -> {
                     final var contentAsString = result.getResponse().getContentAsString();
-                    NamedApiResourceList<Berry> response = jsonMapper.readValue(contentAsString, new TypeReference<>() {
+                    NamedApiResourceList<Berry> response = jsonMapper.readValue(contentAsString, new TypeReference<>()
+                    {
                     });
                     List<NamedApiResource<Berry>> berries = response.results();
                     assertThat(berries).size().isEqualTo(getAllBerryFlavorsResponse.results().size());
@@ -308,7 +333,8 @@ public class BerryApiTests extends BaseApiTest {
 
     @Test
     @DisplayName("Test getBerryFlavors returns an exception")
-    void testGetBerryFlavorsThrowsAnException() throws Exception {
+    void testGetBerryFlavorsThrowsAnException() throws Exception
+    {
         when(pokeApiClient.getResource(any(), any(PageQuery.class))).thenThrow(new RuntimeException("From getBerryFlavorsThrowsAnException"));
         this.mockMvc.perform(get(BERRY_API + "/berry-flavor"))
                 .andExpect(status().isInternalServerError())
@@ -322,7 +348,8 @@ public class BerryApiTests extends BaseApiTest {
 
     @Test
     @DisplayName("Test getBerryFlavor/1 returns no berry flavor")
-    void testGetBerryFlavorReturnsNullResponse() throws Exception {
+    void testGetBerryFlavorReturnsNullResponse() throws Exception
+    {
         when(pokeApiClient.getResource(any(), anyString())).thenReturn(Mono.empty());
         this.mockMvc.perform(get(BERRY_API + "/berry-flavor/" + berryFlavor_1.getId()))
                 .andExpect(status().isBadRequest())
@@ -334,7 +361,8 @@ public class BerryApiTests extends BaseApiTest {
 
     @Test
     @DisplayName("Test getBerryFlavor/1 returns expected berry flavor")
-    void testGetBerryFlavorReturnsExpectedBerryFlavor() throws Exception {
+    void testGetBerryFlavorReturnsExpectedBerryFlavor() throws Exception
+    {
         Mono<PokeApiResource> mono = Mono.just(berryFlavor_1);
         when(pokeApiClient.getResource(any(), anyString())).thenReturn(mono);
         this.mockMvc.perform(get(BERRY_API + "/berry-flavor/" + berryFlavor_1.getId()))
@@ -349,7 +377,8 @@ public class BerryApiTests extends BaseApiTest {
 
     @Test
     @DisplayName("Test getBerryFlavor/1 returns an exception")
-    void testGetBerryFlavor1ThrowsAnException() throws Exception {
+    void testGetBerryFlavor1ThrowsAnException() throws Exception
+    {
         when(pokeApiClient.getResource(any(), anyString())).thenThrow(new RuntimeException("From testGetBerryFlavor1ThrowsAnException"));
         this.mockMvc.perform(get(BERRY_API + "/berry-flavor/" + berryFlavor_1.getId()))
                 .andExpect(status().isInternalServerError())

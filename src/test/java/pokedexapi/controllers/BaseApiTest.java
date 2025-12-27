@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import pokedexapi.service.PokemonService;
+import pokedexapi.service.PokemonApiService;
 import reactor.core.publisher.Mono;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.resource.NamedApiResource;
@@ -36,12 +36,12 @@ import static pokedexapi.utilities.Constants.GIF_IMAGE_URL;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class BaseApiTest {
-
+public class BaseApiTest
+{
     private static final Logger logger = LogManager.getLogger(BaseApiTest.class);
 
     @Autowired
-    protected PokemonService pokemonService;
+    protected PokemonApiService pokemonApiService;
     @MockitoBean
     protected PokeApiClient pokeApiClient;
     @Autowired
@@ -50,7 +50,8 @@ public class BaseApiTest {
     @Value("${skaro.pokeapi.baseUri}")
     protected String pokeApiBaseUrl;
 
-    protected Integer getEvolutionChainID(Map<Integer, List<List<Integer>>> pokemonIDToEvolutionChainMap, String pokemonId) {
+    protected Integer getEvolutionChainID(Map<Integer, List<List<Integer>>> pokemonIDToEvolutionChainMap, String pokemonId)
+    {
         logger.info("id: {}", pokemonId);
         List<Integer> keys = pokemonIDToEvolutionChainMap.keySet().stream().toList();
         Integer keyToReturn = 0;
@@ -74,30 +75,36 @@ public class BaseApiTest {
      * @param nameOrId String the name or id of a Pokemon
      * @return the Pokemon or null
      */
-    protected skaro.pokeapi.resource.pokemon.Pokemon retrievePokemon(String nameOrId) {
+    protected skaro.pokeapi.resource.pokemon.Pokemon retrievePokemon(String nameOrId)
+    {
         logger.info("retrievePokemon");
         try {
             // validate nameOrId here
             return pokeApiClient.getResource(skaro.pokeapi.resource.pokemon.Pokemon.class, nameOrId).block();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             logger.error("Could not find pokemon with value: {}", nameOrId);
             return null;
         }
     }
 
-    protected void setGifImage(Pokemon pokemon) {
+    protected void setGifImage(Pokemon pokemon)
+    {
         String gifUrl = GIF_IMAGE_URL(pokemon.id());
         HttpResponse<String> response;
         try {
-            response = pokemonService.callUrl(gifUrl);
+            response = pokemonApiService.callUrl(gifUrl);
             if (response.statusCode() == 404) throw new Exception("Gif not found");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             logger.error("Could not find gif image for pokemon with id: {}", pokemon.id());
         }
     }
 
-    protected Map<String, Object> generateDefaultAttributesMap() {
-        return new TreeMap<>() {{
+    protected Map<String, Object> generateDefaultAttributesMap()
+    {
+        return new TreeMap<>()
+        {{
             put("name", null); // on screen
             put("gender", null);
             put("id", null);
@@ -130,7 +137,8 @@ public class BaseApiTest {
      * @param response NamedApiResourceList<Berry> the response to convert
      * @return Mono<?> the response as a Mono
      */
-    protected <T extends PokeApiResource> Mono<NamedApiResourceList<T>> getMonoFromListResponse(NamedApiResourceList<?> response, NamedApiResource<T> namedApiResource) {
+    protected <T extends PokeApiResource> Mono<NamedApiResourceList<T>> getMonoFromListResponse(NamedApiResourceList<?> response, NamedApiResource<T> namedApiResource)
+    {
         NamedApiResourceList<T> just = (NamedApiResourceList<T>) Mono.just(response).block();
         return Mono.just((NamedApiResourceList<T>) response);
     }

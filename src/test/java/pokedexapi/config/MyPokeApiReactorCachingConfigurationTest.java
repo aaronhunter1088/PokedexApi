@@ -12,17 +12,20 @@ import reactor.netty.resources.ConnectionProvider;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
-public class MyPokeApiReactorCachingConfigurationTest {
+public class MyPokeApiReactorCachingConfigurationTest
+{
 
     @InjectMocks
     private MyPokeApiReactorCachingConfiguration config;
 
     @BeforeAll
-    public static void setUp() {
+    public static void setUp()
+    {
     }
 
     @BeforeEach
-    public void init() {
+    public void init()
+    {
         config = new MyPokeApiReactorCachingConfiguration();
     }
 
@@ -40,13 +43,15 @@ public class MyPokeApiReactorCachingConfigurationTest {
 //    }
 
     @Test
-    public void testConnectionProvider() {
+    public void testConnectionProvider()
+    {
         ConnectionProvider provider = config.connectionProvider();
         assertNotNull(provider);
     }
 
     @Test
-    public void testHttpClient() {
+    public void testHttpClient()
+    {
         ConnectionProvider provider = config.connectionProvider();
         HttpClient client = config.httpClient(provider);
         assertNotNull(client);

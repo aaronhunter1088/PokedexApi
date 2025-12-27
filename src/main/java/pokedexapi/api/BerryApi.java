@@ -3,10 +3,9 @@ package pokedexapi.api;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pokedexapi.controllers.BaseController;
+import pokedexapi.controllers.BaseApiController;
 import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.query.PageQuery;
@@ -14,12 +13,11 @@ import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.berry.Berry;
 import skaro.pokeapi.resource.berryfirmness.BerryFirmness;
 import skaro.pokeapi.resource.berryflavor.BerryFlavor;
-import tools.jackson.databind.json.JsonMapper;
 
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/berry")
-class BerryApi extends BaseController
+class BerryApi extends BaseApiController
 {
     /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(BerryApi.class);
@@ -39,7 +37,8 @@ class BerryApi extends BaseController
             NamedApiResourceList<Berry> berries = pokeApiClient.getResource(Berry.class).block();
             if (null != berries) return ResponseEntity.ok(berries);
             else return ResponseEntity.badRequest().body("Could not access Berry endpoint");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -52,7 +51,8 @@ class BerryApi extends BaseController
             Berry berry = pokeApiClient.getResource(Berry.class, id).block();
             if (null != berry) return ResponseEntity.ok(berry);
             else return ResponseEntity.badRequest().body("Could not find a berry with " + id);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -67,7 +67,8 @@ class BerryApi extends BaseController
             NamedApiResourceList<BerryFirmness> berryFirmnesses = pokeApiClient.getResource(BerryFirmness.class, new PageQuery(limit, offset)).block();
             if (null != berryFirmnesses) return ResponseEntity.ok(berryFirmnesses);
             else return ResponseEntity.badRequest().body("Could not access berry-firmness endpoint");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -80,7 +81,8 @@ class BerryApi extends BaseController
             BerryFirmness berryFirmness = pokeApiClient.getResource(BerryFirmness.class, id).block();
             if (null != berryFirmness) return ResponseEntity.ok(berryFirmness);
             else return ResponseEntity.badRequest().body("Could not find berry-firmness with " + id);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -95,7 +97,8 @@ class BerryApi extends BaseController
             NamedApiResourceList<BerryFlavor> berryFlavors = pokeApiClient.getResource(BerryFlavor.class, new PageQuery(limit, offset)).block();
             if (null != berryFlavors) return ResponseEntity.ok(berryFlavors);
             else return ResponseEntity.badRequest().body("Could not access berry-flavor endpoint");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -108,7 +111,8 @@ class BerryApi extends BaseController
             BerryFlavor berryFlavor = pokeApiClient.getResource(BerryFlavor.class, id).block();
             if (null != berryFlavor) return ResponseEntity.ok(berryFlavor);
             return ResponseEntity.badRequest().body("Could not find berry-flavor with " + id);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }

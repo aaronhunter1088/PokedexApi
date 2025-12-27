@@ -23,7 +23,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class PokemonTest extends BaseApiTest {
+public class PokemonTest extends BaseApiTest
+{
 
     skaro.pokeapi.resource.pokemon.Pokemon skaroPichu;
     skaro.pokeapi.resource.pokemon.Pokemon skaroPikachu;
@@ -32,7 +33,8 @@ public class PokemonTest extends BaseApiTest {
     Pokemon pikachu;
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() throws IOException
+    {
         skaroPichu = jsonMapper.readValue(
                 new ClassPathResource("entity/pichu.json").getFile(),
                 skaro.pokeapi.resource.pokemon.Pokemon.class
@@ -51,37 +53,43 @@ public class PokemonTest extends BaseApiTest {
 
     @Test
     @DisplayName("Test pokemon toString are the same")
-    void testPokemonToString() {
+    void testPokemonToString()
+    {
         assertEquals(ditto.toString(), pikachu.toString());
     }
 
     @Test
     @DisplayName("Test pokemon hash are the same")
-    void testPokemonHash() {
+    void testPokemonHash()
+    {
         assertEquals(ditto.hashCode(), pikachu.hashCode());
     }
 
     @Test
     @DisplayName("Test ditto is the same as pikachu")
-    void testDittoIsSameAsPikachu() {
+    void testDittoIsSameAsPikachu()
+    {
         assertEquals(ditto, pikachu);
     }
 
     @Test
     @DisplayName("Test pichu is not the same as pikachu")
-    void testPichuIsNotSameAsPikachu() {
+    void testPichuIsNotSameAsPikachu()
+    {
         assertNotEquals(pichu, pikachu);
     }
 
     @Test
     @DisplayName("pichu compareTo pikachu returns 1")
-    void testPichuCompareToPikachu() {
+    void testPichuCompareToPikachu()
+    {
         assertSame(1, pichu.compareTo(pikachu));
     }
 
     @Test
     @DisplayName("ditto compareTo pikachu returns 0")
-    void testDittoCompareToPikachu() {
+    void testDittoCompareToPikachu()
+    {
         assertSame(0, ditto.compareTo(pikachu));
     }
 }

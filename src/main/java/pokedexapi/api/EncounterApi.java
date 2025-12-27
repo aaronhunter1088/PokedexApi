@@ -3,22 +3,20 @@ package pokedexapi.api;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pokedexapi.controllers.BaseController;
+import pokedexapi.controllers.BaseApiController;
 import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.encountercondition.EncounterCondition;
 import skaro.pokeapi.resource.encounterconditionvalue.EncounterConditionValue;
 import skaro.pokeapi.resource.encountermethod.EncounterMethod;
-import tools.jackson.databind.json.JsonMapper;
 
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/encounter")
-class EncounterApi extends BaseController
+class EncounterApi extends BaseApiController
 {
     /* Logging instance */
     private static final Logger logger = LogManager.getLogger(EncounterApi.class);
@@ -39,7 +37,8 @@ class EncounterApi extends BaseController
             NamedApiResourceList<EncounterMethod> encounters = pokeApiClient.getResource(skaro.pokeapi.resource.encountermethod.EncounterMethod.class).block();
             if (null != encounters) return ResponseEntity.ok(encounters);
             else return ResponseEntity.badRequest().body("Could not access EncounterMethod endpoint");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -52,7 +51,8 @@ class EncounterApi extends BaseController
             EncounterMethod encounterMethod = pokeApiClient.getResource(EncounterMethod.class, id).block();
             if (null != encounterMethod) return ResponseEntity.ok(encounterMethod);
             else return ResponseEntity.badRequest().body("Could not find an encounterMethod with " + id);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -67,7 +67,8 @@ class EncounterApi extends BaseController
             NamedApiResourceList<EncounterCondition> conditions = pokeApiClient.getResource(skaro.pokeapi.resource.encountercondition.EncounterCondition.class).block();
             if (null != conditions) return ResponseEntity.ok(conditions);
             else return ResponseEntity.badRequest().body("Could not access EncounterCondition endpoint");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -80,7 +81,8 @@ class EncounterApi extends BaseController
             EncounterCondition encounterCondition = pokeApiClient.getResource(EncounterCondition.class, id).block();
             if (null != encounterCondition) return ResponseEntity.ok(encounterCondition);
             else return ResponseEntity.badRequest().body("Could not find an encounterCondition with " + id);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -95,7 +97,8 @@ class EncounterApi extends BaseController
             NamedApiResourceList<EncounterConditionValue> conditionValues = pokeApiClient.getResource(skaro.pokeapi.resource.encounterconditionvalue.EncounterConditionValue.class).block();
             if (null != conditionValues) return ResponseEntity.ok(conditionValues);
             else return ResponseEntity.badRequest().body("Could not access EncounterConditionValue endpoint");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -108,7 +111,8 @@ class EncounterApi extends BaseController
             EncounterConditionValue conditionValue = pokeApiClient.getResource(EncounterConditionValue.class, id).block();
             if (null != conditionValue) return ResponseEntity.ok(conditionValue);
             else return ResponseEntity.badRequest().body("Could not find an conditionValue with " + id);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }

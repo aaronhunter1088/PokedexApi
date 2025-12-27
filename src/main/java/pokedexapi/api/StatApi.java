@@ -3,21 +3,19 @@ package pokedexapi.api;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pokedexapi.controllers.BaseController;
+import pokedexapi.controllers.BaseApiController;
 import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.resource.stat.Stat;
-import tools.jackson.databind.json.JsonMapper;
 
 import java.net.http.HttpResponse;
 
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/stat")
-public class StatApi extends BaseController
+public class StatApi extends BaseApiController
 {
     /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(StatApi.class);
@@ -29,7 +27,7 @@ public class StatApi extends BaseController
     }
 
     // Pokemon Stats
-    @RequestMapping(value = "", method = RequestMethod.GET)
+    @GetMapping("")
     @ResponseBody
     ResponseEntity<?> getStats(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -38,7 +36,8 @@ public class StatApi extends BaseController
         HttpResponse<String> stats;
         try {
             stats = pokemonService.callUrl(pokeApiBaseUrl + "stat?limit=" + limit + "&offset=" + offset);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             LOGGER.error("Error retrieving response because {}", e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
@@ -56,7 +55,7 @@ public class StatApi extends BaseController
         LOGGER.info("getPokemonStat {}", nameOrId);
 //        HttpResponse<String> stat;
 //        try {
-//            stat = pokemonService.callUrl(pokeApiBaseUrl+"stat/"+nameOrId);
+//            stat = pokemonApiService.callUrl(pokeApiBaseUrl+"stat/"+nameOrId);
 //        } catch (Exception e) {
 //            LOGGER.error("Error retrieving response because {}", e.getMessage());
 //            return ResponseEntity.internalServerError().build();
@@ -71,7 +70,8 @@ public class StatApi extends BaseController
             Stat stat = pokeApiClient.getResource(Stat.class, nameOrId).block();
             if (null != stat) return ResponseEntity.ok(stat);
             else return ResponseEntity.badRequest().body("Could not access Stat endpoint");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }

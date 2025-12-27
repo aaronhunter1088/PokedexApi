@@ -4,15 +4,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pokedexapi.controllers.BaseController;
+import pokedexapi.controllers.BaseApiController;
 import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.contesttype.ContestType;
-import tools.jackson.databind.json.JsonMapper;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -23,7 +21,7 @@ import java.util.Map;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/contest")
-class ContestApi extends BaseController
+class ContestApi extends BaseApiController
 {
     /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(ContestApi.class);
@@ -44,7 +42,8 @@ class ContestApi extends BaseController
             NamedApiResourceList<ContestType> contests = pokeApiClient.getResource(skaro.pokeapi.resource.contesttype.ContestType.class).block();
             if (null != contests) return ResponseEntity.ok(contests);
             else return ResponseEntity.badRequest().body("Could not access ContestType endpoint");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -57,7 +56,8 @@ class ContestApi extends BaseController
             ContestType contestType = pokeApiClient.getResource(ContestType.class, id).block();
             if (null != contestType) return ResponseEntity.ok(contestType);
             else return ResponseEntity.badRequest().body("Could not find a contestType with " + id);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -83,7 +83,8 @@ class ContestApi extends BaseController
             Map<String, Object> results = (Map<String, Object>) jsonParser.parse();
             if (null != results && !results.isEmpty()) return ResponseEntity.ok(results);
             else return ResponseEntity.badRequest().body("Could not access ContestEffect endpoint");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -108,7 +109,8 @@ class ContestApi extends BaseController
             Map<String, Object> results = (Map<String, Object>) jsonParser.parse();
             if (null != results && !results.isEmpty()) return ResponseEntity.ok(results);
             else return ResponseEntity.badRequest().body("Could not find a ContestEffect with " + id);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -134,7 +136,8 @@ class ContestApi extends BaseController
             Map<String, Object> results = (Map<String, Object>) jsonParser.parse();
             if (null != results && !results.isEmpty()) return ResponseEntity.ok(results);
             else return ResponseEntity.badRequest().body("Could not access SuperContestEffect endpoint");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -159,7 +162,8 @@ class ContestApi extends BaseController
             Map<String, Object> results = (Map<String, Object>) jsonParser.parse();
             if (null != results && !results.isEmpty()) return ResponseEntity.ok(results);
             else return ResponseEntity.badRequest().body("Could not find a SuperContestEffect with " + id);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }

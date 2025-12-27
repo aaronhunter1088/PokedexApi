@@ -3,10 +3,9 @@ package pokedexapi.api;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pokedexapi.controllers.BaseController;
+import pokedexapi.controllers.BaseApiController;
 import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.resource.NamedApiResourceList;
@@ -17,12 +16,11 @@ import skaro.pokeapi.resource.movecategory.MoveCategory;
 import skaro.pokeapi.resource.movedamageclass.MoveDamageClass;
 import skaro.pokeapi.resource.movelearnmethod.MoveLearnMethod;
 import skaro.pokeapi.resource.movetarget.MoveTarget;
-import tools.jackson.databind.json.JsonMapper;
 
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/move")
-class MovesApi extends BaseController
+class MovesApi extends BaseApiController
 {
     /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(MovesApi.class);
@@ -43,7 +41,8 @@ class MovesApi extends BaseController
             NamedApiResourceList<Move> moves = pokeApiClient.getResource(Move.class).block();
             if (null != moves) return ResponseEntity.ok(moves);
             else return ResponseEntity.badRequest().body("Could not access Move endpoint");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -56,7 +55,8 @@ class MovesApi extends BaseController
             Move move = pokeApiClient.getResource(Move.class, id).block();
             if (null != move) return ResponseEntity.ok(move);
             else return ResponseEntity.badRequest().body("Could not find a move with " + id);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -71,7 +71,8 @@ class MovesApi extends BaseController
             NamedApiResourceList<MoveAilment> moveAilments = pokeApiClient.getResource(MoveAilment.class).block();
             if (null != moveAilments) return ResponseEntity.ok(moveAilments);
             else return ResponseEntity.badRequest().body("Could not access MoveAilment endpoint");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -84,7 +85,8 @@ class MovesApi extends BaseController
             MoveAilment moveAilment = pokeApiClient.getResource(MoveAilment.class, id).block();
             if (null != moveAilment) return ResponseEntity.ok(moveAilment);
             else return ResponseEntity.badRequest().body("Could not find a moveAilment with " + id);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -99,7 +101,8 @@ class MovesApi extends BaseController
             NamedApiResourceList<MoveBattleStyle> moveAilments = pokeApiClient.getResource(MoveBattleStyle.class).block();
             if (null != moveAilments) return ResponseEntity.ok(moveAilments);
             else return ResponseEntity.badRequest().body("Could not access MoveBattleStyle endpoint");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -112,7 +115,8 @@ class MovesApi extends BaseController
             MoveBattleStyle battleStyle = pokeApiClient.getResource(MoveBattleStyle.class, id).block();
             if (null != battleStyle) return ResponseEntity.ok(battleStyle);
             else return ResponseEntity.badRequest().body("Could not find a battleStyle with " + id);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -127,7 +131,8 @@ class MovesApi extends BaseController
             NamedApiResourceList<MoveCategory> moveCategories = pokeApiClient.getResource(MoveCategory.class).block();
             if (null != moveCategories) return ResponseEntity.ok(moveCategories);
             else return ResponseEntity.badRequest().body("Could not access MoveCategory endpoint");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -140,7 +145,8 @@ class MovesApi extends BaseController
             MoveCategory moveCategory = pokeApiClient.getResource(MoveCategory.class, id).block();
             if (null != moveCategory) return ResponseEntity.ok(moveCategory);
             else return ResponseEntity.badRequest().body("Could not find a moveCategory with " + id);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -155,7 +161,8 @@ class MovesApi extends BaseController
             NamedApiResourceList<MoveDamageClass> moveDamages = pokeApiClient.getResource(MoveDamageClass.class).block();
             if (null != moveDamages) return ResponseEntity.ok(moveDamages);
             else return ResponseEntity.badRequest().body("Could not access MoveDamageClass endpoint");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -168,7 +175,8 @@ class MovesApi extends BaseController
             MoveDamageClass moveDamageClass = pokeApiClient.getResource(MoveDamageClass.class, id).block();
             if (null != moveDamageClass) return ResponseEntity.ok(moveDamageClass);
             else return ResponseEntity.badRequest().body("Could not find a moveDamageClass with " + id);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -183,7 +191,8 @@ class MovesApi extends BaseController
             NamedApiResourceList<MoveLearnMethod> learnMoves = pokeApiClient.getResource(MoveLearnMethod.class).block();
             if (null != learnMoves) return ResponseEntity.ok(learnMoves);
             else return ResponseEntity.badRequest().body("Could not access MoveLearnMethod endpoint");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -196,7 +205,8 @@ class MovesApi extends BaseController
             MoveLearnMethod moveLearnMethod = pokeApiClient.getResource(MoveLearnMethod.class, id).block();
             if (null != moveLearnMethod) return ResponseEntity.ok(moveLearnMethod);
             else return ResponseEntity.badRequest().body("Could not find a moveLearnMethod with " + id);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -211,7 +221,8 @@ class MovesApi extends BaseController
             NamedApiResourceList<MoveTarget> learnMoves = pokeApiClient.getResource(MoveTarget.class).block();
             if (null != learnMoves) return ResponseEntity.ok(learnMoves);
             else return ResponseEntity.badRequest().body("Could not access MoveTarget endpoint");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -224,7 +235,8 @@ class MovesApi extends BaseController
             MoveTarget moveTarget = pokeApiClient.getResource(MoveTarget.class, id).block();
             if (null != moveTarget) return ResponseEntity.ok(moveTarget);
             else return ResponseEntity.badRequest().body("Could not find a moveTarget with " + id);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }

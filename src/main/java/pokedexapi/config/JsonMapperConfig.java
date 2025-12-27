@@ -8,7 +8,8 @@ import tools.jackson.databind.json.JsonMapper;
 public class JsonMapperConfig
 {
     @Bean({"jsonMapper"})
-    JsonMapper jsonMapper() {
+    JsonMapper jsonMapper()
+    {
         return JsonMapper.builder().build();
     }
 }

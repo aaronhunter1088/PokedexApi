@@ -2,14 +2,15 @@ package pokedexapi.controllers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import pokedexapi.service.PokemonLocationEncounterService;
 import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.resource.pokemon.Pokemon;
-import tools.jackson.databind.json.JsonMapper;
 
 import java.net.http.HttpResponse;
 import java.util.List;
@@ -20,19 +21,32 @@ import static pokedexapi.utilities.Constants.GIF_IMAGE_URL;
 
 @CrossOrigin(origins = "*")
 @Controller
-public class BaseController
+public class BaseApiController
 {
     /* Logging instance */
-    private static final Logger LOGGER = LogManager.getLogger(BaseController.class);
-    protected final PokemonService pokemonService;
-    protected final PokeApiClient pokeApiClient;
+    private static final Logger LOGGER = LogManager.getLogger(BaseApiController.class);
     @Value("${skaro.pokeapi.baseUri}")
     protected String pokeApiBaseUrl;
+    protected final PokemonService pokemonService;
+    protected final PokeApiClient pokeApiClient;
+    protected final PokemonLocationEncounterService pokemonLocationEncounterService;
 
-    protected BaseController(PokemonService pokemonService, PokeApiClient client)
+    @Autowired
+    protected BaseApiController(@Qualifier("PokemonApiService") PokemonService pokemonService,
+                                PokeApiClient client,
+                                PokemonLocationEncounterService pokemonLocationEncounterService)
     {
         this.pokemonService = pokemonService;
         this.pokeApiClient = client;
+        this.pokemonLocationEncounterService = pokemonLocationEncounterService;
+    }
+
+    protected BaseApiController(@Qualifier("PokemonApiService") PokemonService pokemonService,
+                                PokeApiClient client)
+    {
+        this.pokemonService = pokemonService;
+        this.pokeApiClient = client;
+        this.pokemonLocationEncounterService = null;
     }
 
     @Deprecated(forRemoval = true)
@@ -64,7 +78,13 @@ public class BaseController
      */
     protected Pokemon retrievePokemon(String nameOrId)
     {
-        return pokemonService.getPokemonByIdOrName(nameOrId);
+        try {
+            return pokemonService.getPokemonByIdOrName(nameOrId);
+        }
+        catch (Exception e) {
+            LOGGER.error("Failed to retrieve Pokemon with name or id: {}", nameOrId, e);
+            return null;
+        }
     }
 
     @Deprecated(forRemoval = true)
@@ -74,7 +94,8 @@ public class BaseController
         try {
             response = pokemonService.callUrl(GIF_IMAGE_URL(pokemon.id()));
             if (response.statusCode() == 404) throw new Exception("Gif image not found");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             LOGGER.error("Failed to fetch the gif image at: {}", GIF_IMAGE_URL(pokemon.id()));
         }
     }
@@ -82,7 +103,8 @@ public class BaseController
     @Deprecated(forRemoval = true)
     protected Map<String, Object> generateDefaultAttributesMap()
     {
-        return new TreeMap<>() {{
+        return new TreeMap<>()
+        {{
             put("name", null); // on screen
             put("gender", null);
             put("id", null);
@@ -105,5 +127,18 @@ public class BaseController
             put("tradeSpecies", null);
             put("turnUpsideDown", null); // on screen
         }};
+    }
+
+    protected HttpResponse<String> fallbackCallUrl(String url) throws Exception
+    {
+        try {
+            HttpResponse<String> response = pokemonService.callUrl(url);
+            LOGGER.info("status: {}", response.statusCode());
+            return response;
+        }
+        catch (Exception e) {
+            LOGGER.error("Failed to call URL: {}", url, e);
+            throw e;
+        }
     }
 }
