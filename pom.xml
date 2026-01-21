@@ -13,7 +13,7 @@
     <artifactId>PokedexApi</artifactId>
     <version>1.3.0</version>
     <name>PokedexApi</name>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
     <description>Backend service used by the PokedexApiUI</description>
 
     <properties>
@@ -21,9 +21,9 @@
         <finalName>${project.artifactId}-${project.version}</finalName>
         <outputDirectory>${basedir}/dist/${project.version}</outputDirectory>
         <main.class>pokedexapi.PokedexApiApplication</main.class>
-        <springdoc.openapi.swagger-ui>http://localhost:4202/pokedexapi/swagger-ui/index.html
+        <springdoc.openapi.swagger-ui>https://mypokedex.us/swagger-ui/index.html
         </springdoc.openapi.swagger-ui>
-        <springdoc.openapi.url>http://localhost:4202/pokedexapi/v3/api-docs</springdoc.openapi.url>
+        <springdoc.openapi.url>https://mypokedex.us/v3/api-docs</springdoc.openapi.url>
     </properties>
 
     <!-- Included in Parent. Left as a reference -->
@@ -265,6 +265,23 @@
                      Found in parent -->
             <!-- JaCoCo configuration for code analysis
                      Found in parent -->
+            <!-- Spring boot Maven
+                     Must be specifically inherited
+                     Purpose: It repackages your built artifact into an executable
+                     Spring Boot archive (a "fat" jar/war) that embeds dependencies
+                     and the Spring Boot loader so you can run the app with java -jar.
+                     It ensure the manifest and main class are there. -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>
