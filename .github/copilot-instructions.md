@@ -40,7 +40,7 @@ src/
 ### Java Style
 - Use Java 17+ features
 - Follow Spring Boot best practices
-- Use `@NonNull` annotations from `org.jspecify.annotations` where appropriate (available via parent POM dependencies)
+- Use `@NonNull` annotations from `org.jspecify.annotations` where appropriate (as seen in existing code)
 - Prefer dependency injection via constructor
 - Use Log4j2 for logging with proper logger initialization:
   ```java
