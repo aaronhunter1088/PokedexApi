@@ -7,7 +7,7 @@ PokedexApi is a RESTful Spring Boot API that provides comprehensive information 
 ## Technology Stack
 
 - **Language**: Java
-- **Framework**: Spring Boot 3.x
+- **Framework**: Spring Boot (version managed by parent POM)
 - **Build Tool**: Maven
 - **Testing**: JUnit 5 (Jupiter), Spring Boot Test, AssertJ
 - **Logging**: Log4j2
@@ -40,7 +40,7 @@ src/
 ### Java Style
 - Use Java 17+ features
 - Follow Spring Boot best practices
-- Use `@NonNull` annotations from jspecify where appropriate
+- Use `@NonNull` annotations from `org.jspecify.annotations` where appropriate (available via parent POM dependencies)
 - Prefer dependency injection via constructor
 - Use Log4j2 for logging with proper logger initialization:
   ```java
