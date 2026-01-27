@@ -7,7 +7,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 @SpringBootApplication
-class PokedexApiApplication extends SpringBootServletInitializer
+class PokedexApiApplication //extends SpringBootServletInitializer
 {
     /* Main method */
     static void main(String[] args)
@@ -15,11 +15,11 @@ class PokedexApiApplication extends SpringBootServletInitializer
         SpringApplication.run(PokedexApiApplication.class, args);
     }
 
-    @NonNull
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder)
-    {
-        return builder.sources(PokedexApiApplication.class);
-    }
+//    @NonNull
+//    @Override
+//    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder)
+//    {
+//        return builder.sources(PokedexApiApplication.class);
+//    }
 
 }
