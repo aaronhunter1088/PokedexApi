@@ -14,13 +14,14 @@ PokedexApi is a RESTful Spring Boot API that provides comprehensive information 
 - **API Documentation**: SpringDoc OpenAPI (Swagger)
 - **Caching**: Spring Cache with Caffeine
 - **External API Client**: pokeapi-reactor (for accessing PokeAPI)
-- **Packaging**: WAR (with additional JAR artifacts)
+- **Packaging**: Jar
 
 ## Build Artifacts
 
 The Maven build creates multiple artifacts:
 - **JAR files**: `PokedexApi-{version}-code.jar` and `PokedexApi-{version}-tests.jar` (created by maven-jar-plugin with classifiers)
-- **WAR file**: `PokedexApi-{version}-boot.war` (executable WAR created by spring-boot-maven-plugin repackaging)
+  and `PokedexApi-{version}-source.jar`
+- openapi.json
 - Output directory: `dist/{version}/`
 
 ## Project Structure
@@ -131,7 +132,7 @@ When adding new dependencies:
 ## API Documentation
 
 The API is documented using SpringDoc OpenAPI:
-- Swagger UI available at: `/swagger-ui/index.html`
+- Swagger UI available at: `http://host:port:context/swagger-ui/index.html`
 - OpenAPI JSON generated during build: `dist/{version}/pokedexSwagger.json`
 
 ## Configuration
