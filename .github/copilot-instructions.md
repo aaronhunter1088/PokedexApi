@@ -14,7 +14,7 @@ PokedexApi is a RESTful Spring Boot API that provides comprehensive information 
 - **API Documentation**: SpringDoc OpenAPI (Swagger)
 - **Caching**: Spring Cache with Caffeine
 - **External API Client**: pokeapi-reactor (for accessing PokeAPI)
-- **Packaging**: WAR file
+- **Packaging**: JAR files with classifiers (`-code.jar`, `-tests.jar`) created by maven-jar-plugin; WAR file (declared packaging type) created by spring-boot-maven-plugin
 
 ## Project Structure
 
