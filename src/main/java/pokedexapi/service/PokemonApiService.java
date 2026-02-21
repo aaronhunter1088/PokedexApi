@@ -884,7 +884,7 @@ public class PokemonApiService implements PokemonService
     private <T> void logResponse(HttpResponse<T> response)
     {
         LOGGER.debug("response: {}", response);
-        LOGGER.info("response body: {}", response.body());
-        LOGGER.info("response status: {}", response.statusCode());
+        LOGGER.debug("response body: {}", response.body());
+        LOGGER.debug("response status: {}", response.statusCode());
     }
 }

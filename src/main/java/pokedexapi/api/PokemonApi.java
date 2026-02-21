@@ -256,7 +256,7 @@ class PokemonApi extends BaseApiController
                 return ResponseEntity.ok().body(true);
             } else {
                 LOGGER.warn("invalid nameOrId: {}", nameOrId);
-                return ResponseEntity.badRequest().body(false);
+                return ResponseEntity.notFound().build();
             }
         }
         catch (Exception e) {
