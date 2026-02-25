@@ -21,10 +21,10 @@
         <finalName>${project.artifactId}-${project.version}</finalName>
         <outputDirectory>${basedir}/dist/${project.version}</outputDirectory>
         <main.class>pokedexapi.PokedexApiApplication</main.class>
-        <springdoc.openapi.swagger-ui>https://mypokedex.us/combined/swagger-ui/index.html
+        <springdoc.openapi.swagger-ui>https://mypokedex.us/springboot/swagger-ui/index.html
         </springdoc.openapi.swagger-ui>
-        <springdoc.openapi.url>http://localhost:4204/combined/v3/api-docs</springdoc.openapi.url>
-        <springdoc.openapi.prod.url>https://mypokedex.us/combined/v3/api-docs</springdoc.openapi.prod.url>
+        <springdoc.openapi.url>http://localhost:4204/pokedexapi/v3/api-docs</springdoc.openapi.url>
+        <springdoc.openapi.prod.url>https://mypokedex.us/pokedexapi/v3/api-docs</springdoc.openapi.prod.url>
     </properties>
 
     <!-- Included in Parent. Left as a reference -->
