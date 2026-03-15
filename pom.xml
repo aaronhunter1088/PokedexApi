@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>PokedexApi</artifactId>
-    <version>1.5.0</version>
+    <version>1.6.0</version>
     <name>PokedexApi</name>
     <packaging>jar</packaging>
     <description>Backend service used by the PokedexApiUI</description>
@@ -23,8 +23,8 @@
         <main.class>pokedexapi.PokedexApiApplication</main.class>
         <springdoc.openapi.swagger-ui>https://mypokedex.us/springboot/swagger-ui/index.html
         </springdoc.openapi.swagger-ui>
-        <springdoc.openapi.url>http://localhost:4204/pokedexapi/v3/api-docs</springdoc.openapi.url>
-        <springdoc.openapi.prod.url>https://mypokedex.us/pokedexapi/v3/api-docs</springdoc.openapi.prod.url>
+        <springdoc.openapi.url>http://localhost:4201/springboot/v3/api-docs</springdoc.openapi.url>
+        <springdoc.openapi.prod.url>https://mypokedex.us/springboot/v3/api-docs</springdoc.openapi.prod.url>
     </properties>
 
     <!-- Included in Parent. Left as a reference -->

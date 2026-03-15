@@ -27,7 +27,7 @@ public interface PokemonService
 
     List<String> getAllTypes() throws Exception;
 
-    int getTotalPokemon(String pokedexId);
+    Integer getTotalPokemon(String pokedexId);
 
     List<String> getPokemonNamesThatEvolveFromTrading() throws Exception;
 

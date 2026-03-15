@@ -247,7 +247,7 @@ public class PokemonApiService implements PokemonService
      * @return the total number of Pokemon in the Pokedex or -1
      */
     @Override
-    public int getTotalPokemon(String pokedexId)
+    public Integer getTotalPokemon(String pokedexId)
     {
         Pokedex pokedex = pokeApiClient.getResource(Pokedex.class, Objects.requireNonNullElse(pokedexId, "1")).block();
         if (pokedex != null) return pokedex.getPokemonEntries().size();
