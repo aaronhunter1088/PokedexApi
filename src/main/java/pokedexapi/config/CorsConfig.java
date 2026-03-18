@@ -21,7 +21,9 @@ public class CorsConfig implements WebMvcConfigurer
         // can be blocked by spring-security
         // disabled by using proxy in Angular
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:4203") // Replace with your frontend url
+                .allowedOrigins("http://localhost:4200", // landing page
+                        "http://localhost:4201", // springboot app
+                        "http://localhost:4203") // combo app
                 .allowedMethods("GET") //.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*");
     }
