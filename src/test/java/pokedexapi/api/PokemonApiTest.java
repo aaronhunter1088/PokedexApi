@@ -1,7 +1,6 @@
 package pokedexapi.api;
 
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -10,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
+import skaro.pokeapi.resource.pokemon.Pokemon;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -36,28 +35,28 @@ class PokemonApiTest
     @ParameterizedTest
     @DisplayName("Test validateNameOrId with valid cases")
     @CsvSource({
-        "pikachu, true",
-        "25, true",
+        "pikachu",
+        "25",
+        "deoxys"
     })
-    void testValidateNameOrIdExpectsTrue(String name, boolean expectedResult)
+    void testValidateNameOrIdExpectsTrue(String name)
     {
-        ResponseEntity<Boolean> result = pokemonApi.validateNameOrId(name);
-        Boolean actual = result.getBody() != null ?  result.getBody() : false;
-        assertEquals(expectedResult, actual);
+        ResponseEntity<?> result = pokemonApi.getAPokemon(name);
+        Pokemon actual = result.getBody() != null ? (Pokemon) result.getBody() : null;
+        assertNotNull(actual);
     }
 
     @ParameterizedTest
     @DisplayName("Test validateNameOrId with invalid cases")
     @CsvSource({
-            "invalidName, false",
-            "-1, false",
-            "0, false",
-            "9999, false"
+            "invalidName",
+            "-1",
+            "0",
+            "9999"
     })
-    void testValidateNameOrIdExpectsFalse(String name, boolean expectedResult)
+    void testValidateNameOrIdExpectsFalse(String name)
     {
-        ResponseEntity<Boolean> result = pokemonApi.validateNameOrId(name);
-        boolean actual = result.getBody() != null ?  result.getBody() : false;
-        assertFalse(actual);
+        ResponseEntity<?> result = pokemonApi.getAPokemon(name);
+        assertEquals(400,  result.getStatusCode().value());
     }
 }

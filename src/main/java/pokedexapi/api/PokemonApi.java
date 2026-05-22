@@ -1,5 +1,7 @@
 package pokedexapi.api;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -106,12 +108,24 @@ class PokemonApi extends BaseApiController
     ResponseEntity<?> getAPokemon(@PathVariable("nameOrId") String nameOrId)
     {
         LOGGER.info("getAPokemon: {}", nameOrId);
-        Pokemon pokemon = retrievePokemon(nameOrId);
-        if (null != pokemon) {
-            return ResponseEntity.ok(pokemon);
-        } else {
-            LOGGER.warn("pokemon was not found!");
-            return ResponseEntity.badRequest().body(nameOrId + " was not found!");
+        Pokemon pokemon = null;
+        try {
+            pokemon = retrievePokemon(nameOrId);
+            if (pokemon == null) {
+                nameOrId = checkSpecificNames(nameOrId);
+                pokemon = retrievePokemon(nameOrId);
+            }
+            if (null != pokemon) {
+                LOGGER.info("Valid nameOrId: {}", nameOrId);
+                return ResponseEntity.ok(pokemon);
+            } else {
+                LOGGER.warn("Pokemon with nameOrId: {} was not found!", nameOrId);
+                return ResponseEntity.badRequest().body(nameOrId + " was not found!");
+            }
+        }
+        catch (Exception e) {
+            LOGGER.warn("There was an error fetching the Pokemon '{}' because {}", nameOrId, e.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -251,6 +265,11 @@ class PokemonApi extends BaseApiController
     {
         try {
             Pokemon pokemon = retrievePokemon(nameOrId);
+            // TODO: update logic if null to check for specific use cases
+            if (pokemon == null) {
+                nameOrId = checkSpecificNames(nameOrId);
+                pokemon = retrievePokemon(nameOrId);
+            }
             if (null != pokemon) {
                 LOGGER.info("valid nameOrId: {}", nameOrId);
                 return ResponseEntity.ok().body(true);
@@ -263,6 +282,20 @@ class PokemonApi extends BaseApiController
             LOGGER.warn("There was an error fetching the Pokemon '{}' because {}", nameOrId, e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    /**
+     * A small method that will attempt to fetch one Pokémon
+     * variation versus nothing at all.
+     * @param nameOrId the name or id to check
+     * @return a name to use instead or an IllegalArgumentException
+     */
+    private String checkSpecificNames(String nameOrId)
+    {
+        return switch (nameOrId.toLowerCase()) {
+            case "deoxys" -> "deoxys-normal";
+            default -> nameOrId;
+        };
     }
 
     @GetMapping(value = "/{nameOrId}/description")
@@ -336,8 +369,8 @@ class PokemonApi extends BaseApiController
 
         List<Map<String, Object>> encounters;
         try {
-            encounters = new com.fasterxml.jackson.databind.ObjectMapper()
-                    .readValue(body, new com.fasterxml.jackson.core.type.TypeReference<List<Map<String, Object>>>() {});
+            encounters = new ObjectMapper()
+                    .readValue(body, new TypeReference<List<Map<String, Object>>>() {});
         } catch (Exception e) {
             LOGGER.error("Failed to parse encounters JSON: {}", e.getMessage());
             return ResponseEntity.internalServerError().build();
