@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * This class contains integration tests for the BerryApi controllers.
+ * This class contains unit tests for the BerryApi controller.
  * It uses Spring Boot's testing support to load the application context
  * and configure MockMvc for testing the web layer.
  * <p>
