@@ -2,7 +2,9 @@
 
 ## Project Overview
 
-PokedexApi is a RESTful Spring Boot API that provides comprehensive information about Pokémon. It serves as a backend service for PokedexApiUI, offering endpoints to retrieve details about Pokémon including their types, abilities, stats, evolutions, and more.
+PokedexApi is a RESTful Spring Boot API that provides comprehensive information about Pokémon. It serves as a backend 
+service for the Springboot version and the combo version, offering endpoints to retrieve details about Pokémon including
+their types, abilities, stats, evolutions, and more.
 
 ## Technology Stack
 
