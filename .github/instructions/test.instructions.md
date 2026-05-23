@@ -4,12 +4,35 @@ description: 'Java Testing Standards'
 ---
 Apply these instructions when generating test classes.
 
-- Use JUnit 5
-- Use AssertThrows for exception testing
-- Use @DisplayName to provide a readable name for the test
-- Use @ParameterizedTest with @MethodSource for testing multiple scenarios.
-  Place the method for the parameterized test directly below the test method for quick access.
-- Use the ArgumentsForTests class for setting up calculator scenarios and expected results when applicable.
-- Do not use Thread.sleep(). If you need to test asynchronous code, use appropriate synchronization techniques or testing utilities.
-- Mock external dependencies
-- Keep tests independent
+## Core standards
+
+- Use JUnit 5 (`@Test`, `@BeforeEach`, `@BeforeAll`, `@ParameterizedTest`).
+- Use `assertThrows(...)` for exception testing.
+- Use `@DisplayName` for readable test intent where it improves clarity.
+- Do not use `Thread.sleep()`; use proper synchronization/testing utilities for async behavior.
+- Keep tests independent and deterministic.
+- Use the files in `src/test/resources/**/**.json` as needed for test data. Add new files accordingly and give each one an appropriate name.
+
+## Project test patterns
+
+- For Spring integration-style tests, prefer:
+  - `@ExtendWith(SpringExtension.class)`
+  - `@SpringBootTest`
+  - `@AutoConfigureMockMvc` when endpoint/MockMvc behavior is tested
+- Reuse shared test support by extending `BaseApiTest` when appropriate.
+- For non-Spring unit tests, use Mockito with `@ExtendWith(MockitoExtension.class)` and `@InjectMocks`.
+- Mock external dependencies (`PokeApiClient`, services, HTTP clients) instead of making real network calls.
+- Load fixture JSON with `ClassPathResource` + `JsonMapper` in `@BeforeEach` setup.
+
+## Parameterized tests
+
+- Use parameterized tests for multi-scenario cases.
+- `@CsvSource` is acceptable for simple scalar inputs already common in this codebase.
+- `@MethodSource` is preferred for more complex scenario objects.
+- Place scenario provider methods directly below their corresponding parameterized tests.
+
+## Assertions and structure
+
+- Use JUnit assertions and AssertJ consistently within a test class.
+- Verify both HTTP status and key response body fields for controller tests.
+- Keep test method order aligned with source method order only when it improves readability (for example, large API test classes using `@TestMethodOrder(OrderAnnotation.class)`).
