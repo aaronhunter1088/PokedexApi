@@ -91,14 +91,12 @@ class PokemonApiServiceTest extends BaseApiTest
     }
 
     @Test
-    @DisplayName("Test getPokemonByName logs an exception")
-    void testGetPokemonByIdOrNameLogsException()
+    @DisplayName("Test getPokemonByIdOrName with monchumon returns null")
+    void testGetPokemonByIdOrNameWithMonchumonReturnsNull()
     {
-        when(pokeApiClient.getResource(any(), anyString())).thenThrow(new RuntimeException("Mocked Exception"));
+        Pokemon notFound = pokemonApiService.getPokemonByIdOrName("monchumon");
 
-        RuntimeException runtimeException = assertThrows(RuntimeException.class,
-                () -> pokemonApiService.getPokemonByIdOrName("pikachu"));
-        assertEquals("Mocked Exception", runtimeException.getMessage());
+        assertNull(notFound);
         verify(pokeApiClient, times(1)).getResource(any(), anyString());
     }
 

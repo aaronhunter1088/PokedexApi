@@ -297,52 +297,8 @@ class PokemonApiTest
         assertSame(shape, result.getBody());
     }
 
-    @ParameterizedTest
-    @CsvSource({
-            "pikachu",
-            "25",
-            "deoxys"
-    })
-    @Order(15)
-    @DisplayName("Test validateNameOrId returns true for valid values")
-    void testValidateNameOrIdReturnsTrue(String nameOrId)
-    {
-        if ("deoxys".equals(nameOrId)) {
-            Pokemon deoxysNormal = mock(Pokemon.class);
-            when(pokemonApiService.getPokemonByIdOrName("deoxys")).thenReturn(null);
-            when(pokemonApiService.getPokemonByIdOrName("deoxys-normal")).thenReturn(deoxysNormal);
-        }
-        else {
-            when(pokemonApiService.getPokemonByIdOrName(nameOrId)).thenReturn(pikachu);
-        }
-
-        ResponseEntity<Boolean> result = pokemonApi.validateNameOrId(nameOrId);
-
-        assertEquals(200, result.getStatusCode().value());
-        assertEquals(Boolean.TRUE, result.getBody());
-    }
-
-    @ParameterizedTest
-    @CsvSource({
-            "invalidName",
-            "-1",
-            "0",
-            "9999"
-    })
-    @Order(16)
-    @DisplayName("Test validateNameOrId returns not found for invalid values")
-    void testValidateNameOrIdReturnsFalse(String nameOrId)
-    {
-        when(pokemonApiService.getPokemonByIdOrName(nameOrId)).thenReturn(null);
-
-        ResponseEntity<Boolean> result = pokemonApi.validateNameOrId(nameOrId);
-
-        assertEquals(404, result.getStatusCode().value());
-        assertNull(result.getBody());
-    }
-
     @Test
-    @Order(17)
+    @Order(15)
     @DisplayName("Test getPokemonDescription returns an English flavor text")
     void testGetPokemonDescriptionReturnsOk()
     {
@@ -362,7 +318,7 @@ class PokemonApiTest
     }
 
     @Test
-    @Order(18)
+    @Order(16)
     @DisplayName("Test getPokemonColor returns the Pokemon species color")
     void testGetPokemonColorReturnsOk()
     {
@@ -375,7 +331,7 @@ class PokemonApiTest
     }
 
     @Test
-    @Order(19)
+    @Order(17)
     @DisplayName("Test getPokemonLocations returns the list of location area names")
     void testGetPokemonLocationsReturnsOk()
     {
@@ -390,7 +346,7 @@ class PokemonApiTest
     }
 
     @Test
-    @Order(20)
+    @Order(18)
     @DisplayName("Test getPokemonEncounters returns the proxied response body")
     void testGetPokemonEncountersReturnsOk() throws Exception
     {
@@ -407,7 +363,7 @@ class PokemonApiTest
     }
 
     @Test
-    @Order(21)
+    @Order(19)
     @DisplayName("Test getEvolutionChain returns the evolution chain response")
     void testGetEvolutionChainReturnsOk() throws Exception
     {

@@ -94,7 +94,7 @@ public class PokemonApiService implements PokemonService
         }
         catch (Exception e) {
             LOGGER.error("Pokemon not found using {}. Exception: {}", nameOrId, e.getMessage());
-            throw e;
+            return null;
         }
         return pokemon;
     }

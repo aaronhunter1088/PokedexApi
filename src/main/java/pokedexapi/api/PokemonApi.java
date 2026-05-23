@@ -124,9 +124,23 @@ class PokemonApi extends BaseApiController
             }
         }
         catch (Exception e) {
-            LOGGER.warn("There was an error fetching the Pokemon '{}' because {}", nameOrId, e.getMessage());
+            LOGGER.error("There was an error fetching the Pokemon '{}' because {}", nameOrId, e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    /**
+     * A small method that will attempt to fetch one Pokémon
+     * variation versus nothing at all.
+     * @param nameOrId the name or id to check
+     * @return a name to use instead or an IllegalArgumentException
+     */
+    private String checkSpecificNames(String nameOrId)
+    {
+        return switch (nameOrId.toLowerCase()) {
+            case "deoxys" -> "deoxys-normal";
+            default -> nameOrId;
+        };
     }
 
     // Pokemon Color
@@ -259,44 +273,30 @@ class PokemonApi extends BaseApiController
     }
 
     // Personal Endpoints
-    @GetMapping(value = "/{nameOrId}/validateNameOrId")
-    @ResponseBody
-    ResponseEntity<Boolean> validateNameOrId(@PathVariable String nameOrId)
-    {
-        try {
-            Pokemon pokemon = retrievePokemon(nameOrId);
-            // TODO: update logic if null to check for specific use cases
-            if (pokemon == null) {
-                nameOrId = checkSpecificNames(nameOrId);
-                pokemon = retrievePokemon(nameOrId);
-            }
-            if (null != pokemon) {
-                LOGGER.info("valid nameOrId: {}", nameOrId);
-                return ResponseEntity.ok().body(true);
-            } else {
-                LOGGER.warn("invalid nameOrId: {}", nameOrId);
-                return ResponseEntity.notFound().build();
-            }
-        }
-        catch (Exception e) {
-            LOGGER.warn("There was an error fetching the Pokemon '{}' because {}", nameOrId, e.getMessage());
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-
-    /**
-     * A small method that will attempt to fetch one Pokémon
-     * variation versus nothing at all.
-     * @param nameOrId the name or id to check
-     * @return a name to use instead or an IllegalArgumentException
-     */
-    private String checkSpecificNames(String nameOrId)
-    {
-        return switch (nameOrId.toLowerCase()) {
-            case "deoxys" -> "deoxys-normal";
-            default -> nameOrId;
-        };
-    }
+//    @GetMapping(value = "/{nameOrId}/validateNameOrId")
+//    @ResponseBody
+//    ResponseEntity<Boolean> validateNameOrId(@PathVariable String nameOrId)
+//    {
+//        try {
+//            Pokemon pokemon = retrievePokemon(nameOrId);
+//            // TODO: update logic if null to check for specific use cases
+//            if (pokemon == null) {
+//                nameOrId = checkSpecificNames(nameOrId);
+//                pokemon = retrievePokemon(nameOrId);
+//            }
+//            if (null != pokemon) {
+//                LOGGER.info("valid nameOrId: {}", nameOrId);
+//                return ResponseEntity.ok().body(true);
+//            } else {
+//                LOGGER.warn("invalid nameOrId: {}", nameOrId);
+//                return ResponseEntity.notFound().build();
+//            }
+//        }
+//        catch (Exception e) {
+//            LOGGER.warn("There was an error fetching the Pokemon '{}' because {}", nameOrId, e.getMessage());
+//            return ResponseEntity.internalServerError().build();
+//        }
+//    }
 
     @GetMapping(value = "/{nameOrId}/description")
     @ResponseBody
