@@ -105,7 +105,7 @@ class PokemonApi extends BaseApiController
             @ApiResponse(responseCode = "400", description = "Bad request", content = @Content)})
     @GetMapping("/{nameOrId}")
     @ResponseBody
-    ResponseEntity<?> getAPokemon(@PathVariable("nameOrId") String nameOrId)
+    ResponseEntity<?> getAPokemon(@PathVariable String nameOrId)
     {
         LOGGER.info("getAPokemon: {}", nameOrId);
         Pokemon pokemon = null;
