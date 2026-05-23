@@ -96,8 +96,9 @@ class PokemonApiServiceTest extends BaseApiTest
     {
         when(pokeApiClient.getResource(any(), anyString())).thenThrow(new RuntimeException("Mocked Exception"));
 
-        skaro.pokeapi.resource.pokemon.Pokemon notFound = pokemonApiService.getPokemonByIdOrName("pikachu");
-        assertNull(notFound);
+        RuntimeException runtimeException = assertThrows(RuntimeException.class,
+                () -> pokemonApiService.getPokemonByIdOrName("pikachu"));
+        assertEquals("Mocked Exception", runtimeException.getMessage());
         verify(pokeApiClient, times(1)).getResource(any(), anyString());
     }
 
