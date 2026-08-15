@@ -34,7 +34,7 @@ jobs:
           java-version: '25'
 
       - name: Install Parent POM
-        run: ./parent/mvnw install -DskipTests
+        run: mvn -f parent/pom.xml install -DskipTests
 
       - name: Build Pokédex API JAR
         run: ./mvnw clean package
