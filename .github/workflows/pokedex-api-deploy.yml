@@ -48,24 +48,30 @@ jobs:
           script: |
             # Stop script on a failing command rather than blindly continuing
             set -e
+
+            # Verify new JAR exists before touching production
+            test -n "$(find /tmp/deploy/dist -type f -name 'PokedexApi-*-code.jar' -print -quit)"
+
             # Stop Tomcat 11 Service
             sudo systemctl stop tomcat11
 
+            # Remove Backup JAR.
+            sudo rm -f /opt/tomcat11/MyPokedexBackup/springboot/WEB-INF/lib/PokedexApi-*-code.jar
+
             # Copy Previous Working Version
-            cd /opt/tomcat11/MyPokedex/springboot/WEB-INF/lib
-            sudo cp -a PokedexApi-*-code.jar MyPokedexBackup/springboot/WEB-INF/lib/
+            sudo cp -a /opt/tomcat11/MyPokedex/springboot/WEB-INF/lib/PokedexApi-*-code.jar \
+                       /opt/tomcat11/MyPokedexBackup/springboot/WEB-INF/lib/
 
-            # Prepare New Version
+            # Remove Current JAR. 
+            sudo rm -f /opt/tomcat11/MyPokedex/springboot/WEB-INF/lib/PokedexApi-*-code.jar
+            
+            # Install New JAR
             sudo mv /tmp/deploy/dist/*/PokedexApi-*-code.jar \
-                    /opt/tomcat11/MyPokedex/springboot/WEB-INF/lib
-
-            # Update Ownership
-            sudo chown -R tomcat:tomcat /opt/tomcat11/MyPokedex/springboot
-            sudo chown -R tomcat:tomcat /opt/tomcat11/MyPokedexBackup/springboot
+                    /opt/tomcat11/MyPokedex/springboot/WEB-INF/lib/
 
             # Update Permissions
-            sudo find /opt/tomcat11/MyPokedex/springboot -type d -exec chmod 755 {} \;
-            sudo find /opt/tomcat11/MyPokedex/springboot -type f -exec chmod 644 {} \;
+            sudo chown tomcat:tomcat /opt/tomcat11/MyPokedex/springboot/WEB-INF/lib/PokedexApi-*-code.jar
+            sudo chmod 644 /opt/tomcat11/MyPokedex/springboot/WEB-INF/lib/PokedexApi-*-code.jar
 
             # Start Tomcat 11 Service
             sudo systemctl start tomcat11
