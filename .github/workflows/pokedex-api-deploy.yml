@@ -17,14 +17,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Checkout Parent
+        uses: actions/checkout@v4
+        with:
+          repository: aaronhunter1088/parent
+          path: parent
 
       - name: Set up Java
         uses: actions/setup-java@v5.7.0
         with:
           distribution: temurin
           java-version: '25'
+
+      - name: Install Parent POM
+        run: ./parent/mvnw install -DskipTests
 
       - name: Build Pokédex API JAR
         run: ./mvnw clean package
