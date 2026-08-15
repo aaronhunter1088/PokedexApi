@@ -27,6 +27,13 @@ jobs:
           path: parent
           token: ${{ secrets.PARENT_REPO_TOKEN }}
 
+      - name: Checkout pokeapi-reactor
+        uses: actions/checkout@v4
+        with:
+          repository: aaronhunter1088/pokeapi-reactor
+          path: reactor
+          token: ${{ secrets.REACTOR_REPO_TOKEN }}
+
       - name: Set up Java
         uses: actions/setup-java@v5.7.0
         with:
@@ -35,6 +42,9 @@ jobs:
 
       - name: Install Parent POM
         run: mvn -f parent/pom.xml install -DskipTests
+
+      - name: Install pokeapi-reactor
+        run: mvn -f reactor/pom.xml install -DskipTests
 
       - name: Build Pokédex API JAR
         run: ./mvnw clean package
