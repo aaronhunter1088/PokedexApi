@@ -50,7 +50,7 @@ class PokemonApiServiceTest extends BaseApiTest
     Pokedex pokedex2Response;
 
     @BeforeEach
-    void setUp() throws IOException
+    public void setup() throws IOException
     {
         pikachu = jsonMapper.readValue(
                 new ClassPathResource("entity/pikachu.json").getFile(),

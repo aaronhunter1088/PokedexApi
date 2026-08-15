@@ -35,7 +35,8 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          source: "build/libs/PokedexApi-*-code.jar"
+          # Maven outputs the code jar to dist/<version>/PokedexApi-<version>-code.jar
+          source: "dist/*/PokedexApi-*-code.jar"
           target: "/tmp/deploy"
 
       - name: Copy Previous Working Version, Deploy JAR
@@ -55,7 +56,7 @@ jobs:
             sudo cp -a PokedexApi-*-code.jar MyPokedexBackup/springboot/WEB-INF/lib/
 
             # Prepare New Version
-            sudo mv /tmp/deploy/build/libs/PokedexApi-*-code.jar \
+            sudo mv /tmp/deploy/dist/*/PokedexApi-*-code.jar \
                     /opt/tomcat11/MyPokedex/springboot/WEB-INF/lib
 
             # Update Ownership
