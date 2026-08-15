@@ -41,9 +41,7 @@ jobs:
             # Stop Tomcat 11 Service
             sudo systemctl stop tomcat11
 
-            # Revert to Previous Working Version
-            cd /opt/tomcat11/MyPokedex/springboot/WEB-INF/lib
-            sudo rm -rf PokedexApi-*-code.jar
+            # Copy Previous Jar into Current Deployment
             sudo cp -a /opt/tomcat11/MyPokedexBackup/springboot/WEB-INF/lib/PokedexApi-*-code.jar \
                        /opt/tomcat11/MyPokedex/springboot/WEB-INF/lib
 
