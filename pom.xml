@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>PokedexApi</artifactId>
-    <version>1.6.1</version>
+    <version>1.6.2</version>
     <name>PokedexApi</name>
     <packaging>jar</packaging>
     <description>Backend service used by the PokedexApiUI</description>
@@ -21,8 +21,8 @@
         <finalName>${project.artifactId}-${project.version}</finalName>
         <outputDirectory>${basedir}/dist/${project.version}</outputDirectory>
         <main.class>pokedexapi.PokedexApiApplication</main.class>
-        <!-- Used to test new versions -->
-        <spring.boot.version>4.1.0-M4</spring.boot.version>
+        <!-- Used to test new versions --><!--
+        <spring.boot.version>4.1.0</spring.boot.version> -->
         <springdoc.openapi.swagger-ui>https://mypokedex.us/springboot/swagger-ui/index.html
         </springdoc.openapi.swagger-ui>
         <springdoc.openapi.url>http://localhost:4201/springboot/v3/api-docs</springdoc.openapi.url>
