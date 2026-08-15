@@ -1,5 +1,7 @@
 # PokedexApi
 
+![pokedex-api.png](src/main/resources/pokedex-api.png)
+
 ## Overview
 PokedexApi is a RESTful API that provides information about various Pokémon. It allows users to
 retrieve details about Pokémon, including their types, abilities, and stats.
