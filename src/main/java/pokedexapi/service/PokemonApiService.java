@@ -110,7 +110,13 @@ public class PokemonApiService implements PokemonService
     public PokemonSpecies getPokemonSpeciesData(String id)
     {
         LOGGER.info("getPokemonSpeciesData: {}", id);
-        return pokeApiClient.getResource(PokemonSpecies.class, id).block();
+        try {
+            return pokeApiClient.getResource(PokemonSpecies.class, id).block();
+        }
+        catch (Exception e) {
+            LOGGER.error("PokemonSpecies not found for id {}. Exception: {}", id, e.getMessage());
+            return null;
+        }
     }
 
     /**
