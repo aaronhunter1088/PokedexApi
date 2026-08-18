@@ -65,7 +65,7 @@ public class PokemonApiService implements PokemonService
     public NamedApiResourceList<Pokemon> getAllPokemons(Integer _limit, Integer offset)
     {
         LOGGER.info("getListOfPokemon");
-        NamedApiResourceList<Pokemon> pokemonList = null;
+        NamedApiResourceList<Pokemon> pokemonList = new NamedApiResourceList<>();
         try {
             pokemonList = pokeApiClient.getResource(Pokemon.class, new PageQuery(_limit, offset)).block();
             if (pokemonList != null) LOGGER.info("Pokemon list found");
