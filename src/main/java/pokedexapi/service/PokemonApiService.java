@@ -45,6 +45,7 @@ public class PokemonApiService implements PokemonService
     @Value("${skaro.pokeapi.baseUri}")
     protected String pokeApiBaseUrl;
     protected PokemonLocationEncounterService pokemonLocationEncounterService;
+    private int lastSuccessfulPokemonIdForSpeciesCall = 0;
 
     @Autowired
     public PokemonApiService(PokeApiClient client, JsonMapper jsonMapper)
@@ -111,11 +112,16 @@ public class PokemonApiService implements PokemonService
     {
         LOGGER.info("getPokemonSpeciesData: {}", id);
         try {
-            return pokeApiClient.getResource(PokemonSpecies.class, id).block();
+            PokemonSpecies speciesData = pokeApiClient.getResource(PokemonSpecies.class, id).block();
+            if (speciesData != null) {
+                lastSuccessfulPokemonIdForSpeciesCall = Integer.parseInt(id);
+                return speciesData;
+            }
+            return pokeApiClient.getResource(PokemonSpecies.class, String.valueOf(lastSuccessfulPokemonIdForSpeciesCall)).block();
         }
         catch (Exception e) {
             LOGGER.error("PokemonSpecies not found for id {}. Exception: {}", id, e.getMessage());
-            return null;
+            return pokeApiClient.getResource(PokemonSpecies.class, String.valueOf(lastSuccessfulPokemonIdForSpeciesCall)).block();
         }
     }
 
