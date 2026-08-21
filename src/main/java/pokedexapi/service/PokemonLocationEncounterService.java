@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 
-import static pokedexapi.utilities.Constants.POKEAPI_BASE_URL;
+import static pokedexapi.utilities.Constants.MY_POKEAPI_BASE_URL;
 
-@HttpExchange(url = POKEAPI_BASE_URL, accept = "application/json")
+@HttpExchange(url = MY_POKEAPI_BASE_URL, accept = "application/json")
 public interface PokemonLocationEncounterService
 {
     @GetExchange(value = "/pokemon/{id}/encounters")

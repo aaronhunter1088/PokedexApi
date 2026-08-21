@@ -9,7 +9,7 @@ import org.springframework.web.service.annotation.HttpExchange;
 import java.lang.reflect.Method;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static pokedexapi.utilities.Constants.POKEAPI_BASE_URL;
+import static pokedexapi.utilities.Constants.MY_POKEAPI_BASE_URL;
 
 class PokemonLocationEncounterServiceTest
 {
@@ -20,7 +20,7 @@ class PokemonLocationEncounterServiceTest
         HttpExchange annotation = PokemonLocationEncounterService.class.getAnnotation(HttpExchange.class);
 
         assertThat(annotation).isNotNull();
-        assertThat(annotation.url()).isEqualTo(POKEAPI_BASE_URL);
+        assertThat(annotation.url()).isEqualTo(MY_POKEAPI_BASE_URL);
         assertThat(annotation.accept()).containsExactly("application/json");
     }
 

@@ -4,14 +4,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-/**
- * Servlet Filter implementation class CORSFilter
- */
 // Enable it for Servlet 3.x implementations
 /* @ WebFilter(asyncSupported = true, urlPatterns = { "/*" }) */
-
-//In order for Spring Boot to be able to recognize a filter, we just
-// needed to define it as a bean with the @Component annotation.
+/**
+ * Servlet Filter implementation class CORSFilter.
+ * <p>
+ * In order for Spring Boot to be able to recognize
+ * a filter, we just needed to define it as a bean
+ * with the @Component annotation. @Configuration
+ * extends @Component.
+ */
 @Configuration
 public class CorsConfig implements WebMvcConfigurer
 {

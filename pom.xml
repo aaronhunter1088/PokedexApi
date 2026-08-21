@@ -11,22 +11,20 @@
     </parent>
 
     <artifactId>PokedexApi</artifactId>
-    <version>1.6.3</version>
+    <version>1.6.4</version>
     <name>PokedexApi</name>
     <packaging>jar</packaging>
     <description>Backend service used by the PokedexApiUI</description>
 
     <properties>
-        <caffeine.cache.version>3.2.3</caffeine.cache.version>
         <finalName>${project.artifactId}-${project.version}</finalName>
         <outputDirectory>${basedir}/dist/${project.version}</outputDirectory>
         <main.class>pokedexapi.PokedexApiApplication</main.class>
         <!-- Used to test new versions --><!--
         <spring.boot.version>4.1.0</spring.boot.version> -->
-        <springdoc.openapi.swagger-ui>https://mypokedex.us/springboot/swagger-ui/index.html
-        </springdoc.openapi.swagger-ui>
-        <springdoc.openapi.url>http://localhost:4201/springboot/v3/api-docs</springdoc.openapi.url>
-        <springdoc.openapi.prod.url>https://mypokedex.us/springboot/v3/api-docs</springdoc.openapi.prod.url>
+        <springdoc.openapi.swagger-ui>https://mypokedex.us/springboot/swagger-ui/index.html</springdoc.openapi.swagger-ui>
+        <springdoc.openapi.docs.url>https://mypokedex.us/springboot/v3/api-docs</springdoc.openapi.docs.url>
+        <caffeine.cache.version>3.2.3</caffeine.cache.version>
     </properties>
 
     <!-- Included in Parent. Left as a reference

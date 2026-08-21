@@ -67,12 +67,17 @@ public class PokemonApiService implements PokemonService
     {
         LOGGER.info("getListOfPokemon");
         NamedApiResourceList<Pokemon> pokemonList = null;
-        try {
-            pokemonList = pokeApiClient.getResource(Pokemon.class, new PageQuery(_limit, offset)).block();
-            if (pokemonList != null) LOGGER.info("Pokemon list found");
-        }
-        catch (Exception e) {
-            LOGGER.error("Pokemon list not found. Exception: {}", e.getMessage());
+        while (pokemonList == null) {
+            try {
+                LOGGER.debug("OFFSET: {}", offset);
+                LOGGER.debug("LIMIT: {}", _limit);
+                pokemonList = pokeApiClient.getResource(Pokemon.class, new PageQuery(_limit, offset)).block();
+                if (pokemonList != null) LOGGER.info("Pokemon list found");
+                else LOGGER.warn("Pokemon list not found!");
+            }
+            catch (Exception e) {
+                LOGGER.error("Pokemon list not found. Exception: {}", e.getMessage());
+            }
         }
         return pokemonList;
     }
