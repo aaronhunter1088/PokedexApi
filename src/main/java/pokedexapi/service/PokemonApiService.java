@@ -7,6 +7,7 @@ import org.apache.tomcat.util.json.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import skaro.pokeapi.client.PokeApiClient;
@@ -29,6 +30,7 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.*;
 
 import static skaro.pokeapi.utils.PokeApiConstants.POKEAPI_JSON_DECODER_BEAN;
@@ -63,23 +65,38 @@ public class PokemonApiService implements PokemonService
      * @return a list of pokemon or null if not found
      */
     @Override
+    @Cacheable(value = "pokemon", key = "'all:' + #_limit + ':' + #offset")
     public NamedApiResourceList<Pokemon> getAllPokemons(Integer _limit, Integer offset)
     {
         LOGGER.info("getListOfPokemon");
-        NamedApiResourceList<Pokemon> pokemonList = null;
-        while (pokemonList == null) {
+        LOGGER.debug("Cache miss for pokemon page key all:{}:{}; fetching from PokeAPI", _limit, offset);
+        for (int attempt = 1; attempt <= 3; attempt++) {
             try {
-                LOGGER.debug("OFFSET: {}", offset);
-                LOGGER.debug("LIMIT: {}", _limit);
-                pokemonList = pokeApiClient.getResource(Pokemon.class, new PageQuery(_limit, offset)).block();
-                if (pokemonList != null) LOGGER.info("Pokemon list found");
-                else LOGGER.warn("Pokemon list not found!");
+                NamedApiResourceList<Pokemon> result =
+                        pokeApiClient.getResource(Pokemon.class, new PageQuery(_limit, offset))
+                                .timeout(Duration.ofSeconds(15))
+                                .block();
+
+                if (result != null) {
+                    LOGGER.info("Returning results after {} {}", attempt,
+                            attempt == 1 ? "attempt" : "attempts");
+                    return result;
+                }
+            } catch (Exception e) {
+                LOGGER.warn("Pokemon page fetch failed attempt {} / 3: {}", attempt, e.getMessage());
             }
-            catch (Exception e) {
-                LOGGER.error("Pokemon list not found. Exception: {}", e.getMessage());
+
+            if (attempt < 3) {
+                try {
+                    Thread.sleep(30_000L);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
             }
         }
-        return pokemonList;
+
+        return null;
     }
 
     /**
@@ -90,9 +107,11 @@ public class PokemonApiService implements PokemonService
      * @return the Pokemon object or null if not found
      */
     @Override
+    @Cacheable(value = "pokemon", key = "'pokemon:' + #nameOrId")
     public Pokemon getPokemonByIdOrName(String nameOrId)
     {
         LOGGER.info("getPokemonByIdOrName: {}", nameOrId);
+        LOGGER.debug("Cache miss for pokemon key pokemon:{}; fetching from PokeAPI", nameOrId);
         Pokemon pokemon = null;
         try {
             pokemon = pokeApiClient.getResource(Pokemon.class, nameOrId).block();
