@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>PokedexApi</artifactId>
-    <version>1.6.5</version>
+    <version>1.10.0</version>
     <name>PokedexApi</name>
     <packaging>jar</packaging>
     <description>Backend service used by the PokedexApiUI</description>
@@ -22,8 +22,10 @@
         <main.class>pokedexapi.PokedexApiApplication</main.class>
         <!-- Used to test new versions --><!--
         <spring.boot.version>4.1.0</spring.boot.version> -->
-        <springdoc.openapi.swagger-ui>https://mypokedex.us/springboot/swagger-ui/index.html</springdoc.openapi.swagger-ui>
-        <springdoc.openapi.docs.url>https://mypokedex.us/springboot/v3/api-docs</springdoc.openapi.docs.url>
+        <springdoc.openapi.swagger-ui-url>http://localhost:4204/pokedexapi/swagger-ui/index.html</springdoc.openapi.swagger-ui-url>
+        <springdoc.openapi.docs-url>http://localhost:4204/pokedexapi/v3/api-docs</springdoc.openapi.docs-url>
+        <springdoc.openapi.prod.swagger-ui-url>https://mypokedex.us/springboot/swagger-ui/index.html</springdoc.openapi.prod.swagger-ui-url>
+        <springdoc.openapi.prod.docs.url>https://mypokedex.us/springboot/v3/api-docs</springdoc.openapi.prod.docs.url>
         <caffeine.cache.version>3.2.3</caffeine.cache.version>
     </properties>
 
@@ -270,7 +272,7 @@
                     <outputFileName>pokedexSwagger.json</outputFileName>
                     <!-- Defaults to /target directory -->
                     <outputDir>${outputDirectory}</outputDir>
-                    <apiDocsUrl>${springdoc.openapi.url}</apiDocsUrl>
+                    <apiDocsUrl>${springdoc.openapi.docs-url}</apiDocsUrl>
                 </configuration>
             </plugin>
             <!-- Compile found in parent -->
