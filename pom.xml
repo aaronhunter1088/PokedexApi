@@ -82,12 +82,13 @@
             </exclusions>
         </dependency>
         <!-- spring boot starter devtools -->
+        <!--
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
-        </dependency>
-<!--        &lt;!&ndash; spring boot starter data jpa &ndash;&gt;-->
+            <optional>true</optional>
+        </dependency> --><!--        &lt;!&ndash; spring boot starter data jpa &ndash;&gt;-->
 <!--        <dependency>-->
 <!--            <groupId>org.springframework.boot</groupId>-->
 <!--            <artifactId>spring-boot-starter-data-jpa</artifactId>-->
