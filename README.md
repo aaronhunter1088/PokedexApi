@@ -1,5 +1,7 @@
 # PokedexApi
 
+[![Dependabot Updates](https://github.com/aaronhunter1088/PokedexApi/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/aaronhunter1088/PokedexApi/actions/workflows/dependabot/dependabot-updates)
+
 ![pokedex-api.png](src/main/resources/pokedex-api.png)
 
 ## Overview
