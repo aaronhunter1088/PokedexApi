@@ -26,7 +26,7 @@
         <springdoc.openapi.docs-url>http://localhost:4204/pokedexapi/v3/api-docs</springdoc.openapi.docs-url>
         <springdoc.openapi.prod.swagger-ui-url>https://mypokedex.us/springboot/swagger-ui/index.html</springdoc.openapi.prod.swagger-ui-url>
         <springdoc.openapi.prod.docs.url>https://mypokedex.us/springboot/v3/api-docs</springdoc.openapi.prod.docs.url>
-        <caffeine.cache.version>3.2.3</caffeine.cache.version>
+        <caffeine.cache.version>3.2.4</caffeine.cache.version>
     </properties>
 
     <!-- Included in Parent. Left as a reference
