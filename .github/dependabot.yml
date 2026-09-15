@@ -18,5 +18,11 @@ updates:
       - "dependabot"
     commit-message:
       prefix: "deps"
+    ignore:
+      # Maven wrapper/tooling updates run mvn against this project during update
+      # and currently fail because the custom parent POM isn't available to
+      # Dependabot's isolated environment.
+      - dependency-name: "org.apache.maven.wrapper:maven-wrapper"
+      - dependency-name: "org.apache.maven:apache-maven"
     # Allow normal stable semver updates (major/minor/patch).
     # No ignore rules here, so stable updates are created.
