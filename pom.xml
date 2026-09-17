@@ -39,6 +39,7 @@
          Note: Jackson 3.x (tools.jackson, used by Spring Boot 4.x) and 2.x (com.fasterxml.jackson,
          used by swagger-core-jakarta) have different package names and coexist safely.
          Remove when Swaggerdoc's upgrades to Jackson 3.x. -->
+    <!--
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -49,6 +50,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    -->
 
     <dependencies>
         <!-- spring boot starter -->
