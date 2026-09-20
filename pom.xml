@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>PokedexApi</artifactId>
-    <version>1.10.0</version>
+    <version>1.10.1</version>
     <name>PokedexApi</name>
     <packaging>jar</packaging>
     <description>Backend service used by the PokedexApiUI</description>
@@ -26,6 +26,9 @@
         <springdoc.openapi.docs-url>http://localhost:4204/pokedexapi/v3/api-docs</springdoc.openapi.docs-url>
         <springdoc.openapi.prod.swagger-ui-url>https://mypokedex.us/springboot/swagger-ui/index.html</springdoc.openapi.prod.swagger-ui-url>
         <springdoc.openapi.prod.docs.url>https://mypokedex.us/springboot/v3/api-docs</springdoc.openapi.prod.docs.url>
+        <springdoc.openapi.version>1.5</springdoc.openapi.version>
+        <springdoc.version>3.1.1</springdoc.version>
+
         <caffeine.cache.version>3.2.4</caffeine.cache.version>
     </properties>
 
@@ -39,6 +42,7 @@
          Note: Jackson 3.x (tools.jackson, used by Spring Boot 4.x) and 2.x (com.fasterxml.jackson,
          used by swagger-core-jakarta) have different package names and coexist safely.
          Remove when Swaggerdoc's upgrades to Jackson 3.x. -->
+    <!--
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -49,6 +53,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    -->
 
     <dependencies>
         <!-- spring boot starter -->
@@ -152,13 +157,20 @@
             <version>3.2.6</version>
         </dependency>
         <!-- springdoc/swagger: creates openapi.json in /target, open at /context/swagger-ui/index.html -->
+        <!-- springdoc/swagger --><!-- not part of spring-boot-dependencies
+                 creates openapi.json in /target, open at /context/swagger-ui/index.html
+                 https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc.version}</version>
         </dependency>
+        <!-- springdoc/swagger api --><!--
+                 https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-api -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+            <version>${springdoc.version}</version>
         </dependency>
         <!-- servlet api -->
         <dependency>
@@ -256,7 +268,13 @@
                     </includes>
                 </configuration>
             </plugin>
-            <!-- App must be running to generate openapi.json file -->
+            <!-- Springdoc OpenAPI SwaggerUI: Exists just here --><!--
+                 App must be running to generate swagger.json file.
+                 App should update: <outputFileName>, <outputDir>,
+                 and <apiDocsUrl>. Execute mvn springdoc-openapi:generate
+                 springdoc.openapi.docs-url=http(s)\://localhost\:port/context/v3/api-docs
+                 springdoc.openapi.url=http(s)\://localhost\:port/context/swagger-ui/index.html
+                 -->
             <plugin>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-maven-plugin</artifactId>
@@ -276,6 +294,7 @@
                     <apiDocsUrl>${springdoc.openapi.docs-url}</apiDocsUrl>
                 </configuration>
             </plugin>
+
             <!-- Compile found in parent -->
             <!-- Test-compile found in parent -->
             <!-- Generate resources found in parent -->
