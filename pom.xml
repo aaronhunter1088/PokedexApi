@@ -271,7 +271,7 @@
                     <!-- Defaults to 'openapi.json' -->
                     <outputFileName>pokedexSwagger.json</outputFileName>
                     <!-- Defaults to /target directory -->
-                    <outputDir>${outputDirectory}</outputDir>
+                    <outputDir>${basedir}/src/main/resources</outputDir>
                     <apiDocsUrl>${springdoc.openapi.docs-url}</apiDocsUrl>
                 </configuration>
             </plugin>
