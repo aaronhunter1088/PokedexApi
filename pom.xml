@@ -29,7 +29,7 @@
         <springdoc.openapi.version>1.5</springdoc.openapi.version>
         <springdoc.version>3.1.1</springdoc.version>
 
-        <caffeine.cache.version>3.2.4</caffeine.cache.version>
+        <caffeine.cache.version>3.3.0</caffeine.cache.version>
     </properties>
 
     <dependencies>
