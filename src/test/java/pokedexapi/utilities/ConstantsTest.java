@@ -12,7 +12,7 @@ class ConstantsTest
     void testPokemonSpeciesUrl()
     {
         assertThat(Constants.POKEMON_SPECIES_URL("pikachu"))
-                .isEqualTo("https://pokeapi.co/api/v2/pokemon-species/pikachu");
+                .isEqualTo("https://mypokedex.us/pokemon-species/pikachu");
     }
 
     @Test

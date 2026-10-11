@@ -4,7 +4,7 @@ public class Constants
 {
     // Retired. But left for reference. Use MY_POKEAPI_BASE_URL instead.
     public static final String POKEAPI_BASE_URL = "https://pokeapi.co/api/v2";
-    public static final String MY_POKEAPI_BASE_URL = "https://mypokedex.us/";
+    public static final String MY_POKEAPI_BASE_URL = "https://mypokedex.us";
 
     // Endpoints
     public static final String POKEMON_SPECIES_ENDPOINT = MY_POKEAPI_BASE_URL + "/pokemon-species/%s";
