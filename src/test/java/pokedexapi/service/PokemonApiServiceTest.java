@@ -204,7 +204,7 @@ class PokemonApiServiceTest extends BaseApiTest
     @DisplayName("Test callUrl with a valid url returns a resource")
     void testCallUrlWithValidUrlReturnsResponse() throws Exception
     {
-        HttpResponse<String> resource = pokemonApiService.callUrl(pokeApiBaseUrl + "/ability/1");
+        HttpResponse<String> resource = pokemonApiService.callUrl(pokeApiBaseUrl + "ability/1");
         assertNotNull(resource);
         assertEquals(200, resource.statusCode());
         Ability ability = jsonMapper.readValue(
@@ -218,7 +218,7 @@ class PokemonApiServiceTest extends BaseApiTest
     @DisplayName("Test callUrl with an invalid url returns not found")
     void testCallUrlWithInvalidUrlReturnsNotFound() throws Exception
     {
-        HttpResponse<String> resource = pokemonApiService.callUrl(pokeApiBaseUrl + "/ability/0");
+        HttpResponse<String> resource = pokemonApiService.callUrl(pokeApiBaseUrl + "ability/0");
         assertNotNull(resource);
         assertEquals(500, resource.statusCode());
     }

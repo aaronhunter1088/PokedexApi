@@ -65,9 +65,14 @@ public class PokemonApiService implements PokemonService
      * @return a list of pokemon or null if not found
      */
     @Override
-    @Cacheable(value = "pokemon", key = "'all:' + #_limit + ':' + #offset")
+    @Cacheable(
+            value = "pokemon",
+            key = "'all:' + #_limit + ':' + #offset",
+            unless = "#result == null || #result.results() == null || #result.results().isEmpty()"
+    )
     public NamedApiResourceList<Pokemon> getAllPokemons(Integer _limit, Integer offset)
     {
+        LOGGER.info("Configured PokeAPI base URI: {}", pokeApiBaseUrl);
         LOGGER.info("getListOfPokemon");
         LOGGER.debug("Cache miss for pokemon page key all:{}:{}; fetching from PokeAPI", _limit, offset);
         for (int attempt = 1; attempt <= 3; attempt++) {
@@ -77,11 +82,12 @@ public class PokemonApiService implements PokemonService
                                 .timeout(Duration.ofSeconds(15))
                                 .block();
 
-                if (result != null) {
-                    LOGGER.info("Returning results after {} {}", attempt,
-                            attempt == 1 ? "attempt" : "attempts");
-                    return result;
-                }
+                LOGGER.info("getAllPokemons result: null={}, results count={}",
+                        result == null,
+                        result == null || result.results() == null
+                                ? null
+                                : result.results().size());
+                return result;
             } catch (Exception e) {
                 LOGGER.warn("Pokemon page fetch failed attempt {} / 3: {}", attempt, e.getMessage());
             }
