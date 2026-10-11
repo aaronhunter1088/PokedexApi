@@ -220,6 +220,6 @@ class PokemonApiServiceTest extends BaseApiTest
     {
         HttpResponse<String> resource = pokemonApiService.callUrl(pokeApiBaseUrl + "ability/0");
         assertNotNull(resource);
-        assertEquals(500, resource.statusCode());
+        assertEquals(404, resource.statusCode());
     }
 }
