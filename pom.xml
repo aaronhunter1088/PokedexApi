@@ -27,9 +27,9 @@
         <springdoc.openapi.prod.swagger-ui-url>https://mypokedex.us/springboot/swagger-ui/index.html</springdoc.openapi.prod.swagger-ui-url>
         <springdoc.openapi.prod.docs.url>https://mypokedex.us/springboot/v3/api-docs</springdoc.openapi.prod.docs.url>
         <springdoc.openapi.version>1.5</springdoc.openapi.version>
-        <springdoc.version>3.1.1</springdoc.version>
+        <springdoc.version>3.2.0</springdoc.version>
 
-        <caffeine.cache.version>3.2.4</caffeine.cache.version>
+        <caffeine.cache.version>3.3.1</caffeine.cache.version>
     </properties>
 
     <dependencies>
@@ -135,7 +135,7 @@
         <dependency>
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
-            <version>3.2.6</version>
+            <version>3.2.8</version>
         </dependency>
         <!-- springdoc/swagger: creates openapi.json in /target, open at /context/swagger-ui/index.html -->
         <!-- springdoc/swagger --><!-- not part of spring-boot-dependencies
