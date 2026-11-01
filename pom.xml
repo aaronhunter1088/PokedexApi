@@ -28,7 +28,6 @@
         <springdoc.openapi.prod.docs.url>https://mypokedex.us/springboot/v3/api-docs</springdoc.openapi.prod.docs.url>
         <springdoc.openapi.version>1.5</springdoc.openapi.version>
         <springdoc.version>3.2.0</springdoc.version>
-
         <caffeine.cache.version>3.3.1</caffeine.cache.version>
     </properties>
 
