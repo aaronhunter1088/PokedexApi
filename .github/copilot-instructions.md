@@ -139,7 +139,7 @@ The API is documented using SpringDoc OpenAPI:
 
 ## Configuration
 
-- Application properties in `src/main/resources/application.properties`
+- Application properties in `src/main/resources/pokedexapi.properties` (and `pokedexapi-local.properties` for the `local` profile), loaded via `@PropertySource` in `PokedexApiApplication`
 - Spring profiles for different environments
 - External PokeAPI base URL configured via `skaro.pokeapi.baseUri`
 
