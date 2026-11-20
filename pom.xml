@@ -206,6 +206,15 @@
         <!-- Mvn:package creates PokedexApi-#-jar-with-dependencies.jar -->
         <!-- Mvn:install adds PokedexApi-#-jar-with-dependencies.jar to local repo -->
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <spring.config.additional-location>classpath:/pokedexapi-test.properties</spring.config.additional-location>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
             <!-- Maven Jar Plugin --><!--
                      Creates two jars:
                      App-version-code.jar and App-version-tests.jar

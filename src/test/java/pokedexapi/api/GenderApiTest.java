@@ -8,12 +8,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import pokedexapi.service.PokemonApiService;
+import reactor.core.publisher.Mono;
 import skaro.pokeapi.client.PokeApiClient;
-
-import java.net.http.HttpResponse;
+import skaro.pokeapi.query.PageQuery;
+import skaro.pokeapi.resource.NamedApiResourceList;
+import skaro.pokeapi.resource.gender.Gender;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -32,34 +35,28 @@ class GenderApiTest
 
     @Test
     @DisplayName("getGenders returns ok")
-    void testGetGenders() throws Exception
+    @SuppressWarnings("unchecked")
+    void testGetGenders()
     {
-        @SuppressWarnings("unchecked")
-        HttpResponse<String> response = (HttpResponse<String>) mock(HttpResponse.class);
-        when(response.statusCode()).thenReturn(200);
-        when(response.body()).thenReturn("{\"results\":[]}");
-        when(pokemonApiService.callUrl(contains("gender?limit=10&offset=0"))).thenReturn(response);
+        NamedApiResourceList<Gender> response = (NamedApiResourceList<Gender>) mock(NamedApiResourceList.class);
+        when(pokeApiClient.getResource(eq(Gender.class), any(PageQuery.class))).thenReturn(Mono.just(response));
 
         var result = genderApi.getGenders(10, 0);
 
         assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isEqualTo("{\"results\":[]}");
+        assertThat(result.getBody()).isEqualTo(response.results());
     }
 
     @Test
     @DisplayName("getGender returns ok")
-    void testGetGender() throws Exception
+    void testGetGender()
     {
-        @SuppressWarnings("unchecked")
-        HttpResponse<String> response = (HttpResponse<String>) mock(HttpResponse.class);
-        when(response.statusCode()).thenReturn(200);
-        when(response.body()).thenReturn("{\"id\":1}");
-        when(pokemonApiService.callUrl(contains("gender/1"))).thenReturn(response);
+        Gender response = mock(Gender.class);
+        when(pokeApiClient.getResource(Gender.class, "1")).thenReturn(Mono.just(response));
 
         var result = genderApi.getGender("1");
 
         assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isEqualTo("{\"id\":1}");
+        assertThat(result.getBody()).isSameAs(response);
     }
 }
-

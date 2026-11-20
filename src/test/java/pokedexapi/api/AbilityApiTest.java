@@ -48,7 +48,7 @@ class AbilityApiTest
         var result = abilityApi.getAllAbilities(10, 0);
 
         assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isSameAs(response);
+        assertThat(result.getBody()).isEqualTo(response.results());
     }
 
     @Test

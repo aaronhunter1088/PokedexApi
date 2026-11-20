@@ -102,7 +102,7 @@ class PokemonApiTest
         ResponseEntity<?> result = pokemonApi.getPokeathlonStats(10, 0);
 
         assertEquals(200, result.getStatusCode().value());
-        assertSame(response, result.getBody());
+        assertEquals(response.results(), result.getBody());
     }
 
     @Test
@@ -196,7 +196,7 @@ class PokemonApiTest
         ResponseEntity<?> result = pokemonApi.getColors(10, 0);
 
         assertEquals(200, result.getStatusCode().value());
-        assertSame(response, result.getBody());
+        assertEquals(response.results(), result.getBody());
     }
 
     @Test
@@ -224,7 +224,7 @@ class PokemonApiTest
         ResponseEntity<?> result = pokemonApi.getForms(10, 0);
 
         assertEquals(200, result.getStatusCode().value());
-        assertSame(response, result.getBody());
+        assertEquals(response.results(), result.getBody());
     }
 
     @Test
@@ -252,7 +252,7 @@ class PokemonApiTest
         ResponseEntity<?> result = pokemonApi.getHabitats(10, 0);
 
         assertEquals(200, result.getStatusCode().value());
-        assertSame(response, result.getBody());
+        assertEquals(response.results(), result.getBody());
     }
 
     @Test
@@ -280,7 +280,7 @@ class PokemonApiTest
         ResponseEntity<?> result = pokemonApi.getShapes(10, 0);
 
         assertEquals(200, result.getStatusCode().value());
-        assertSame(response, result.getBody());
+        assertEquals(response.results(), result.getBody());
     }
 
     @Test

@@ -8,11 +8,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import pokedexapi.service.PokemonApiService;
+import reactor.core.publisher.Mono;
 import skaro.pokeapi.client.PokeApiClient;
-
-import java.net.http.HttpResponse;
+import skaro.pokeapi.query.PageQuery;
+import skaro.pokeapi.resource.NamedApiResourceList;
+import skaro.pokeapi.resource.characteristic.Characteristic;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -31,35 +35,28 @@ class CharacteristicApiTest
 
     @Test
     @DisplayName("getCharacteristics returns ok")
-    void testGetCharacteristics() throws Exception
+    @SuppressWarnings("unchecked")
+    void testGetCharacteristics()
     {
-        @SuppressWarnings("unchecked")
-        HttpResponse<String> response = (HttpResponse<String>) mock(HttpResponse.class);
-        when(response.statusCode()).thenReturn(200);
-        when(response.body()).thenReturn("{\"results\":[]}");
-        when(pokemonApiService.callUrl(org.mockito.ArgumentMatchers.contains("characteristic?limit=10&offset=0")))
-                .thenReturn(response);
+        NamedApiResourceList<Characteristic> response = (NamedApiResourceList<Characteristic>) mock(NamedApiResourceList.class);
+        when(pokeApiClient.getResource(eq(Characteristic.class), any(PageQuery.class))).thenReturn(Mono.just(response));
 
         var result = characteristicApi.getCharacteristics(10, 0);
 
         assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isEqualTo("{\"results\":[]}");
+        assertThat(result.getBody()).isEqualTo(response.results());
     }
 
     @Test
     @DisplayName("getCharacteristic returns ok")
-    void testGetCharacteristic() throws Exception
+    void testGetCharacteristic()
     {
-        @SuppressWarnings("unchecked")
-        HttpResponse<String> response = (HttpResponse<String>) mock(HttpResponse.class);
-        when(response.body()).thenReturn("{\"id\":1}");
-        when(pokemonApiService.callUrl(org.mockito.ArgumentMatchers.contains("characteristic/1")))
-                .thenReturn(response);
+        Characteristic response = mock(Characteristic.class);
+        when(pokeApiClient.getResource(Characteristic.class, "1")).thenReturn(Mono.just(response));
 
         var result = characteristicApi.getCharacteristic("1");
 
         assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isEqualTo("{\"id\":1}");
+        assertThat(result.getBody()).isSameAs(response);
     }
 }
-

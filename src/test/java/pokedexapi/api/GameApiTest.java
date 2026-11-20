@@ -52,7 +52,7 @@ class GameApiTest
         var result = gameApi.getVersions(10, 0);
 
         assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isSameAs(response);
+        assertThat(result.getBody()).isEqualTo(response.results());
     }
 
     @Test
@@ -78,7 +78,7 @@ class GameApiTest
         var result = gameApi.getVersionGroups(10, 0);
 
         assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isSameAs(response);
+        assertThat(result.getBody()).isEqualTo(response.results());
     }
 
     @Test

@@ -104,7 +104,7 @@ public class BerryApiTests extends BaseApiTest
     @DisplayName("Test getAllBerries returns no berries")
     void testGetAllBerriesReturnsNullResponse() throws Exception
     {
-        when(pokeApiClient.getResource(any())).thenReturn(Mono.empty());
+        when(pokeApiClient.getResource(any(), any(PageQuery.class))).thenReturn(Mono.empty());
         this.mockMvc.perform(get(BERRY_API)).andExpect(status().isBadRequest());
     }
 
@@ -113,19 +113,15 @@ public class BerryApiTests extends BaseApiTest
     void testGetAllBerries() throws Exception
     {
         Mono<?> mono = getMonoFromListResponse(getAllBerriesResponse, new NamedApiResource<Berry>());
-        when(pokeApiClient.getResource(any())).thenReturn((Mono<NamedApiResourceList<PokeApiResource>>) mono);
+        when(pokeApiClient.getResource(any(), any(PageQuery.class))).thenReturn((Mono<NamedApiResourceList<PokeApiResource>>) mono);
         this.mockMvc.perform(get(BERRY_API)).andExpect(status()
                         .isOk())
                 .andExpect(result -> {
                     final var contentAsString = result.getResponse().getContentAsString();
-                    NamedApiResourceList<Berry> response = jsonMapper.readValue(contentAsString, new TypeReference<>()
+                    List<NamedApiResource<Berry>> berries = jsonMapper.readValue(contentAsString, new TypeReference<>()
                     {
                     });
-                    List<NamedApiResource<Berry>> berries = response.results();
                     assertThat(berries).size().isEqualTo(getAllBerriesResponse.results().size());
-                    assertThat(response.count()).isEqualTo(getAllBerriesResponse.count());
-//                    assertThat(response.count()).isEqualTo(getAllBerriesResponse.next());
-//                    assertThat(response.count()).isEqualTo(null);
                 });
     }
 
@@ -134,19 +130,15 @@ public class BerryApiTests extends BaseApiTest
     void testNextTenBerries() throws Exception
     {
         Mono<?> mono = getMonoFromListResponse(getNext10BerriesResponse, new NamedApiResource<Berry>());
-        when(pokeApiClient.getResource(any())).thenReturn((Mono<NamedApiResourceList<PokeApiResource>>) mono);
+        when(pokeApiClient.getResource(any(), any(PageQuery.class))).thenReturn((Mono<NamedApiResourceList<PokeApiResource>>) mono);
         this.mockMvc.perform(get(BERRY_API)).andExpect(status()
                         .isOk())
                 .andExpect(result -> {
                     final var contentAsString = result.getResponse().getContentAsString();
-                    NamedApiResourceList<Berry> response = jsonMapper.readValue(contentAsString, new TypeReference<>()
+                    List<NamedApiResource<Berry>> berries = jsonMapper.readValue(contentAsString, new TypeReference<>()
                     {
                     });
-                    List<NamedApiResource<Berry>> berries = response.results();
                     assertThat(berries).size().isEqualTo(getNext10BerriesResponse.results().size());
-                    assertThat(response.count()).isEqualTo(getNext10BerriesResponse.count());
-                    assertThat(response.next()).isEqualTo(getNext10BerriesResponse.next());
-                    assertThat(response.previous()).isEqualTo(getNext10BerriesResponse.previous());
                 });
     }
 
@@ -227,14 +219,10 @@ public class BerryApiTests extends BaseApiTest
                 //.andExpect(status().is(200))
                 .andExpect(result -> {
                     final var contentAsString = result.getResponse().getContentAsString();
-                    NamedApiResourceList<Berry> response = jsonMapper.readValue(contentAsString, new TypeReference<>()
+                    List<NamedApiResource<Berry>> berries = jsonMapper.readValue(contentAsString, new TypeReference<>()
                     {
                     });
-                    List<NamedApiResource<Berry>> berries = response.results();
                     assertThat(berries).size().isEqualTo(getAllBerryFirmnessResponse.results().size());
-                    assertThat(response.count()).isEqualTo(getAllBerryFirmnessResponse.count());
-                    assertThat(response.next()).isEqualTo(null);
-                    assertThat(response.previous()).isEqualTo(null);
                 });
     }
 
@@ -320,14 +308,10 @@ public class BerryApiTests extends BaseApiTest
                 .andExpect(status().isOk())
                 .andExpect(result -> {
                     final var contentAsString = result.getResponse().getContentAsString();
-                    NamedApiResourceList<Berry> response = jsonMapper.readValue(contentAsString, new TypeReference<>()
+                    List<NamedApiResource<Berry>> berries = jsonMapper.readValue(contentAsString, new TypeReference<>()
                     {
                     });
-                    List<NamedApiResource<Berry>> berries = response.results();
                     assertThat(berries).size().isEqualTo(getAllBerryFlavorsResponse.results().size());
-                    assertThat(response.count()).isEqualTo(getAllBerryFlavorsResponse.count());
-                    assertThat(response.next()).isEqualTo(null);
-                    assertThat(response.previous()).isEqualTo(null);
                 });
     }
 

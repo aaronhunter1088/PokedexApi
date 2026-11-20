@@ -14,12 +14,9 @@ import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.machine.Machine;
 
-import java.net.http.HttpResponse;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -52,18 +49,14 @@ class MachineApiTest
 
     @Test
     @DisplayName("getMachine returns ok")
-    void testGetMachine() throws Exception
+    void testGetMachine()
     {
-        @SuppressWarnings("unchecked")
-        HttpResponse<String> response = (HttpResponse<String>) mock(HttpResponse.class);
-        when(response.statusCode()).thenReturn(200);
-        when(response.body()).thenReturn("{\"id\":1}");
-        when(pokemonApiService.callUrl(contains("/machine/1"))).thenReturn(response);
+        Machine response = mock(Machine.class);
+        when(pokeApiClient.getResource(Machine.class, "1")).thenReturn(Mono.just(response));
 
         var result = machineApi.getMachine("1");
 
         assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isEqualTo("{\"id\":1}");
+        assertThat(result.getBody()).isSameAs(response);
     }
 }
-

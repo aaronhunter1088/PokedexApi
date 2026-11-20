@@ -10,12 +10,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import pokedexapi.service.PokemonApiService;
 import reactor.core.publisher.Mono;
 import skaro.pokeapi.client.PokeApiClient;
+import skaro.pokeapi.query.PageQuery;
+import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.stat.Stat;
 
-import java.net.http.HttpResponse;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -34,18 +35,16 @@ class StatApiTest
 
     @Test
     @DisplayName("getStats returns ok")
-    void testGetStats() throws Exception
+    @SuppressWarnings("unchecked")
+    void testGetStats()
     {
-        @SuppressWarnings("unchecked")
-        HttpResponse<String> response = (HttpResponse<String>) mock(HttpResponse.class);
-        when(response.statusCode()).thenReturn(200);
-        when(response.body()).thenReturn("{\"results\":[]}");
-        when(pokemonApiService.callUrl(contains("stat?limit=10&offset=0"))).thenReturn(response);
+        NamedApiResourceList<Stat> response = (NamedApiResourceList<Stat>) mock(NamedApiResourceList.class);
+        when(pokeApiClient.getResource(eq(Stat.class), any(PageQuery.class))).thenReturn(Mono.just(response));
 
         var result = statApi.getStats(10, 0);
 
         assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isEqualTo("{\"results\":[]}");
+        assertThat(result.getBody()).isEqualTo(response.results());
     }
 
     @Test
@@ -61,4 +60,3 @@ class StatApiTest
         assertThat(result.getBody()).isSameAs(response);
     }
 }
-
