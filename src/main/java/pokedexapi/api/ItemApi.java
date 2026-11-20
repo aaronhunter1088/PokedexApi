@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
 import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
+import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.item.Item;
 import skaro.pokeapi.resource.itemattribute.ItemAttribute;
@@ -26,11 +27,12 @@ class ItemApi extends BaseApiController
     }
 
     @GetMapping(value = "")
-    ResponseEntity<?> getItems()
+    ResponseEntity<?> getItems(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getItems");
         try {
-            NamedApiResourceList<Item> items = pokeApiClient.getResource(Item.class).block();
+            NamedApiResourceList<Item> items = pokeApiClient.getResource(Item.class, new PageQuery(limit, offset)).block();
             if (null != items) return ResponseEntity.ok(items.results());
             else return ResponseEntity.badRequest().body("Could not access Item endpoint");
         }
@@ -56,11 +58,12 @@ class ItemApi extends BaseApiController
     // Attributes
 
     @GetMapping(value = "/item-attribute")
-    ResponseEntity<?> getItemAttributes()
+    ResponseEntity<?> getItemAttributes(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getItemAttributes");
         try {
-            NamedApiResourceList<ItemAttribute> itemAttributes = pokeApiClient.getResource(ItemAttribute.class).block();
+            NamedApiResourceList<ItemAttribute> itemAttributes = pokeApiClient.getResource(ItemAttribute.class, new PageQuery(limit, offset)).block();
             if (null != itemAttributes) return ResponseEntity.ok(itemAttributes.results());
             else return ResponseEntity.badRequest().body("Could not access ItemAttribute endpoint");
         }
@@ -86,11 +89,12 @@ class ItemApi extends BaseApiController
     // Categories
 
     @GetMapping(value = "/item-category")
-    ResponseEntity<?> getItemCategories()
+    ResponseEntity<?> getItemCategories(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getItemCategories");
         try {
-            NamedApiResourceList<ItemCategory> itemCategories = pokeApiClient.getResource(ItemCategory.class).block();
+            NamedApiResourceList<ItemCategory> itemCategories = pokeApiClient.getResource(ItemCategory.class, new PageQuery(limit, offset)).block();
             if (null != itemCategories) return ResponseEntity.ok(itemCategories.results());
             else return ResponseEntity.badRequest().body("Could not access ItemCategory endpoint");
         }
@@ -116,11 +120,12 @@ class ItemApi extends BaseApiController
     // Fling Effects
 
     @GetMapping(value = "/item-fling-effect")
-    ResponseEntity<?> getFlingEffects()
+    ResponseEntity<?> getFlingEffects(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getFlingEffects");
         try {
-            NamedApiResourceList<ItemFlingEffect> flingEffects = pokeApiClient.getResource(ItemFlingEffect.class).block();
+            NamedApiResourceList<ItemFlingEffect> flingEffects = pokeApiClient.getResource(ItemFlingEffect.class, new PageQuery(limit, offset)).block();
             if (null != flingEffects) return ResponseEntity.ok(flingEffects.results());
             else return ResponseEntity.badRequest().body("Could not access ItemFlingEffect endpoint");
         }
@@ -146,11 +151,12 @@ class ItemApi extends BaseApiController
     // Pockets
 
     @GetMapping(value = "/item-pocket")
-    ResponseEntity<?> getItemPockets()
+    ResponseEntity<?> getItemPockets(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getItemPockets");
         try {
-            NamedApiResourceList<ItemPocket> itemPocket = pokeApiClient.getResource(ItemPocket.class).block();
+            NamedApiResourceList<ItemPocket> itemPocket = pokeApiClient.getResource(ItemPocket.class, new PageQuery(limit, offset)).block();
             if (null != itemPocket) return ResponseEntity.ok(itemPocket.results());
             else return ResponseEntity.badRequest().body("Could not access ItemPocket endpoint");
         }

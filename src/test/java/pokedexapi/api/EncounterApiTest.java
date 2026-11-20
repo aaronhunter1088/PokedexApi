@@ -1,5 +1,8 @@
 package pokedexapi.api;
 
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import skaro.pokeapi.query.PageQuery;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,12 +47,12 @@ class EncounterApiTest
     void testGetEncounterMethods()
     {
         NamedApiResourceList<EncounterMethod> response = mockNamedApiResourceList();
-        when(pokeApiClient.getResource(EncounterMethod.class)).thenReturn(Mono.just(response));
+        when(pokeApiClient.getResource(eq(EncounterMethod.class), any(PageQuery.class))).thenReturn(Mono.just(response));
 
-        var result = encounterApi.getEncounterMethods();
+        var result = encounterApi.getEncounterMethods(10, 0);
 
         assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isSameAs(response);
+        assertThat(result.getBody()).isEqualTo(response.results());
     }
 
     @Test
@@ -70,12 +73,12 @@ class EncounterApiTest
     void testGetConditions()
     {
         NamedApiResourceList<EncounterCondition> response = mockNamedApiResourceList();
-        when(pokeApiClient.getResource(EncounterCondition.class)).thenReturn(Mono.just(response));
+        when(pokeApiClient.getResource(eq(EncounterCondition.class), any(PageQuery.class))).thenReturn(Mono.just(response));
 
-        var result = encounterApi.getConditions();
+        var result = encounterApi.getConditions(10, 0);
 
         assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isSameAs(response);
+        assertThat(result.getBody()).isEqualTo(response.results());
     }
 
     @Test
@@ -96,12 +99,12 @@ class EncounterApiTest
     void testGetConditionValues()
     {
         NamedApiResourceList<EncounterConditionValue> response = mockNamedApiResourceList();
-        when(pokeApiClient.getResource(EncounterConditionValue.class)).thenReturn(Mono.just(response));
+        when(pokeApiClient.getResource(eq(EncounterConditionValue.class), any(PageQuery.class))).thenReturn(Mono.just(response));
 
-        var result = encounterApi.getConditionValues();
+        var result = encounterApi.getConditionValues(10, 0);
 
         assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isSameAs(response);
+        assertThat(result.getBody()).isEqualTo(response.results());
     }
 
     @Test

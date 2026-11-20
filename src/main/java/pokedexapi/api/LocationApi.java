@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
 import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
+import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.location.Location;
 import skaro.pokeapi.resource.locationarea.LocationArea;
@@ -27,11 +28,12 @@ class LocationApi extends BaseApiController
     // Locations
 
     @GetMapping(value = "")
-    ResponseEntity<?> getLocations()
+    ResponseEntity<?> getLocations(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         logger.info("getLocations");
         try {
-            NamedApiResourceList<Location> locations = pokeApiClient.getResource(Location.class).block();
+            NamedApiResourceList<Location> locations = pokeApiClient.getResource(Location.class, new PageQuery(limit, offset)).block();
             if (null != locations) return ResponseEntity.ok(locations.results());
             else return ResponseEntity.badRequest().body("Could not access Location endpoint");
         }
@@ -57,11 +59,12 @@ class LocationApi extends BaseApiController
     // Location Areas
 
     @GetMapping(value = "/location-area")
-    ResponseEntity<?> getLocationAreas()
+    ResponseEntity<?> getLocationAreas(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         logger.info("getLocationAreas");
         try {
-            NamedApiResourceList<LocationArea> locationAreas = pokeApiClient.getResource(LocationArea.class).block();
+            NamedApiResourceList<LocationArea> locationAreas = pokeApiClient.getResource(LocationArea.class, new PageQuery(limit, offset)).block();
             if (null != locationAreas) return ResponseEntity.ok(locationAreas.results());
             else return ResponseEntity.badRequest().body("Could not access LocationArea endpoint");
         }
@@ -87,11 +90,12 @@ class LocationApi extends BaseApiController
     // Pal Park Areas
 
     @GetMapping(value = "/pal-park-area")
-    ResponseEntity<?> getPalParkAreas()
+    ResponseEntity<?> getPalParkAreas(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         logger.info("getPalParkAreas");
         try {
-            NamedApiResourceList<PalParkArea> palParkAreas = pokeApiClient.getResource(PalParkArea.class).block();
+            NamedApiResourceList<PalParkArea> palParkAreas = pokeApiClient.getResource(PalParkArea.class, new PageQuery(limit, offset)).block();
             if (null != palParkAreas) return ResponseEntity.ok(palParkAreas.results());
             else return ResponseEntity.badRequest().body("Could not access PalParkArea endpoint");
         }
@@ -117,11 +121,12 @@ class LocationApi extends BaseApiController
     // Regions
 
     @GetMapping(value = "/region")
-    ResponseEntity<?> getRegions()
+    ResponseEntity<?> getRegions(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         logger.info("getRegions");
         try {
-            NamedApiResourceList<Region> regions = pokeApiClient.getResource(Region.class).block();
+            NamedApiResourceList<Region> regions = pokeApiClient.getResource(Region.class, new PageQuery(limit, offset)).block();
             if (null != regions) return ResponseEntity.ok(regions.results());
             else return ResponseEntity.badRequest().body("Could not access Region endpoint");
         }

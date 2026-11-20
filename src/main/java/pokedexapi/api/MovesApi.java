@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
 import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
+import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.move.Move;
 import skaro.pokeapi.resource.moveailment.MoveAilment;
@@ -30,11 +31,12 @@ class MovesApi extends BaseApiController
     // Moves
 
     @GetMapping(value = "")
-    ResponseEntity<?> getMoves()
+    ResponseEntity<?> getMoves(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getMoves");
         try {
-            NamedApiResourceList<Move> moves = pokeApiClient.getResource(Move.class).block();
+            NamedApiResourceList<Move> moves = pokeApiClient.getResource(Move.class, new PageQuery(limit, offset)).block();
             if (null != moves) return ResponseEntity.ok(moves.results());
             else return ResponseEntity.badRequest().body("Could not access Move endpoint");
         }
@@ -60,11 +62,12 @@ class MovesApi extends BaseApiController
     // Move Ailment
 
     @GetMapping(value = "/move-ailment")
-    ResponseEntity<?> getMoveAilments()
+    ResponseEntity<?> getMoveAilments(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getMoveAilments");
         try {
-            NamedApiResourceList<MoveAilment> moveAilments = pokeApiClient.getResource(MoveAilment.class).block();
+            NamedApiResourceList<MoveAilment> moveAilments = pokeApiClient.getResource(MoveAilment.class, new PageQuery(limit, offset)).block();
             if (null != moveAilments) return ResponseEntity.ok(moveAilments.results());
             else return ResponseEntity.badRequest().body("Could not access MoveAilment endpoint");
         }
@@ -90,11 +93,12 @@ class MovesApi extends BaseApiController
     // Battle Styles
 
     @GetMapping(value = "/move-battle-style")
-    ResponseEntity<?> getMoveBattleStyles()
+    ResponseEntity<?> getMoveBattleStyles(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getMoveMoveBattleStyles");
         try {
-            NamedApiResourceList<MoveBattleStyle> moveAilments = pokeApiClient.getResource(MoveBattleStyle.class).block();
+            NamedApiResourceList<MoveBattleStyle> moveAilments = pokeApiClient.getResource(MoveBattleStyle.class, new PageQuery(limit, offset)).block();
             if (null != moveAilments) return ResponseEntity.ok(moveAilments.results());
             else return ResponseEntity.badRequest().body("Could not access MoveBattleStyle endpoint");
         }
@@ -120,11 +124,12 @@ class MovesApi extends BaseApiController
     // Categories
 
     @GetMapping(value = "/move-category")
-    ResponseEntity<?> getCategories()
+    ResponseEntity<?> getCategories(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getCategories");
         try {
-            NamedApiResourceList<MoveCategory> moveCategories = pokeApiClient.getResource(MoveCategory.class).block();
+            NamedApiResourceList<MoveCategory> moveCategories = pokeApiClient.getResource(MoveCategory.class, new PageQuery(limit, offset)).block();
             if (null != moveCategories) return ResponseEntity.ok(moveCategories.results());
             else return ResponseEntity.badRequest().body("Could not access MoveCategory endpoint");
         }
@@ -150,11 +155,12 @@ class MovesApi extends BaseApiController
     // Damage Classes
 
     @GetMapping(value = "/move-damage-class")
-    ResponseEntity<?> getDamageClasses()
+    ResponseEntity<?> getDamageClasses(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getDamageClasses");
         try {
-            NamedApiResourceList<MoveDamageClass> moveDamages = pokeApiClient.getResource(MoveDamageClass.class).block();
+            NamedApiResourceList<MoveDamageClass> moveDamages = pokeApiClient.getResource(MoveDamageClass.class, new PageQuery(limit, offset)).block();
             if (null != moveDamages) return ResponseEntity.ok(moveDamages.results());
             else return ResponseEntity.badRequest().body("Could not access MoveDamageClass endpoint");
         }
@@ -180,11 +186,12 @@ class MovesApi extends BaseApiController
     // Learn Moves
 
     @GetMapping(value = "/move-learn-method")
-    ResponseEntity<?> getLearnMoves()
+    ResponseEntity<?> getLearnMoves(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getLearnMoves");
         try {
-            NamedApiResourceList<MoveLearnMethod> learnMoves = pokeApiClient.getResource(MoveLearnMethod.class).block();
+            NamedApiResourceList<MoveLearnMethod> learnMoves = pokeApiClient.getResource(MoveLearnMethod.class, new PageQuery(limit, offset)).block();
             if (null != learnMoves) return ResponseEntity.ok(learnMoves.results());
             else return ResponseEntity.badRequest().body("Could not access MoveLearnMethod endpoint");
         }
@@ -210,11 +217,12 @@ class MovesApi extends BaseApiController
     // Targets
 
     @GetMapping(value = "/move-target")
-    ResponseEntity<?> getMoveTargets()
+    ResponseEntity<?> getMoveTargets(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getTargets");
         try {
-            NamedApiResourceList<MoveTarget> learnMoves = pokeApiClient.getResource(MoveTarget.class).block();
+            NamedApiResourceList<MoveTarget> learnMoves = pokeApiClient.getResource(MoveTarget.class, new PageQuery(limit, offset)).block();
             if (null != learnMoves) return ResponseEntity.ok(learnMoves.results());
             else return ResponseEntity.badRequest().body("Could not access MoveTarget endpoint");
         }

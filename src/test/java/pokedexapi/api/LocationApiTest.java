@@ -1,5 +1,8 @@
 package pokedexapi.api;
 
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import skaro.pokeapi.query.PageQuery;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,12 +48,12 @@ class LocationApiTest
     void testGetLocations()
     {
         NamedApiResourceList<Location> response = mockNamedApiResourceList();
-        when(pokeApiClient.getResource(Location.class)).thenReturn(Mono.just(response));
+        when(pokeApiClient.getResource(eq(Location.class), any(PageQuery.class))).thenReturn(Mono.just(response));
 
-        var result = locationApi.getLocations();
+        var result = locationApi.getLocations(10, 0);
 
         assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isSameAs(response);
+        assertThat(result.getBody()).isEqualTo(response.results());
     }
 
     @Test
@@ -71,12 +74,12 @@ class LocationApiTest
     void testGetLocationAreas()
     {
         NamedApiResourceList<LocationArea> response = mockNamedApiResourceList();
-        when(pokeApiClient.getResource(LocationArea.class)).thenReturn(Mono.just(response));
+        when(pokeApiClient.getResource(eq(LocationArea.class), any(PageQuery.class))).thenReturn(Mono.just(response));
 
-        var result = locationApi.getLocationAreas();
+        var result = locationApi.getLocationAreas(10, 0);
 
         assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isSameAs(response);
+        assertThat(result.getBody()).isEqualTo(response.results());
     }
 
     @Test
@@ -97,12 +100,12 @@ class LocationApiTest
     void testGetPalParkAreas()
     {
         NamedApiResourceList<PalParkArea> response = mockNamedApiResourceList();
-        when(pokeApiClient.getResource(PalParkArea.class)).thenReturn(Mono.just(response));
+        when(pokeApiClient.getResource(eq(PalParkArea.class), any(PageQuery.class))).thenReturn(Mono.just(response));
 
-        var result = locationApi.getPalParkAreas();
+        var result = locationApi.getPalParkAreas(10, 0);
 
         assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isSameAs(response);
+        assertThat(result.getBody()).isEqualTo(response.results());
     }
 
     @Test
@@ -123,12 +126,12 @@ class LocationApiTest
     void testGetRegions()
     {
         NamedApiResourceList<Region> response = mockNamedApiResourceList();
-        when(pokeApiClient.getResource(Region.class)).thenReturn(Mono.just(response));
+        when(pokeApiClient.getResource(eq(Region.class), any(PageQuery.class))).thenReturn(Mono.just(response));
 
-        var result = locationApi.getRegions();
+        var result = locationApi.getRegions(10, 0);
 
         assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isSameAs(response);
+        assertThat(result.getBody()).isEqualTo(response.results());
     }
 
     @Test

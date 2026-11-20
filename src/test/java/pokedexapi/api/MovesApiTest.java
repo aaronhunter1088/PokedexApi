@@ -1,5 +1,8 @@
 package pokedexapi.api;
 
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import skaro.pokeapi.query.PageQuery;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,8 +51,8 @@ class MovesApiTest
     void testGetMoves()
     {
         NamedApiResourceList<Move> response = mockNamedApiResourceList();
-        when(pokeApiClient.getResource(Move.class)).thenReturn(Mono.just(response));
-        var result = movesApi.getMoves();
+        when(pokeApiClient.getResource(eq(Move.class), any(PageQuery.class))).thenReturn(Mono.just(response));
+        var result = movesApi.getMoves(10, 0);
         assertThat(result.getStatusCode().value()).isEqualTo(200);
     }
 
@@ -68,8 +71,8 @@ class MovesApiTest
     void testGetMoveAilments()
     {
         NamedApiResourceList<MoveAilment> response = mockNamedApiResourceList();
-        when(pokeApiClient.getResource(MoveAilment.class)).thenReturn(Mono.just(response));
-        var result = movesApi.getMoveAilments();
+        when(pokeApiClient.getResource(eq(MoveAilment.class), any(PageQuery.class))).thenReturn(Mono.just(response));
+        var result = movesApi.getMoveAilments(10, 0);
         assertThat(result.getStatusCode().value()).isEqualTo(200);
     }
 
@@ -88,8 +91,8 @@ class MovesApiTest
     void testGetMoveBattleStyles()
     {
         NamedApiResourceList<MoveBattleStyle> response = mockNamedApiResourceList();
-        when(pokeApiClient.getResource(MoveBattleStyle.class)).thenReturn(Mono.just(response));
-        var result = movesApi.getMoveBattleStyles();
+        when(pokeApiClient.getResource(eq(MoveBattleStyle.class), any(PageQuery.class))).thenReturn(Mono.just(response));
+        var result = movesApi.getMoveBattleStyles(10, 0);
         assertThat(result.getStatusCode().value()).isEqualTo(200);
     }
 
@@ -108,8 +111,8 @@ class MovesApiTest
     void testGetCategories()
     {
         NamedApiResourceList<MoveCategory> response = mockNamedApiResourceList();
-        when(pokeApiClient.getResource(MoveCategory.class)).thenReturn(Mono.just(response));
-        var result = movesApi.getCategories();
+        when(pokeApiClient.getResource(eq(MoveCategory.class), any(PageQuery.class))).thenReturn(Mono.just(response));
+        var result = movesApi.getCategories(10, 0);
         assertThat(result.getStatusCode().value()).isEqualTo(200);
     }
 
@@ -128,8 +131,8 @@ class MovesApiTest
     void testGetDamageClasses()
     {
         NamedApiResourceList<MoveDamageClass> response = mockNamedApiResourceList();
-        when(pokeApiClient.getResource(MoveDamageClass.class)).thenReturn(Mono.just(response));
-        var result = movesApi.getDamageClasses();
+        when(pokeApiClient.getResource(eq(MoveDamageClass.class), any(PageQuery.class))).thenReturn(Mono.just(response));
+        var result = movesApi.getDamageClasses(10, 0);
         assertThat(result.getStatusCode().value()).isEqualTo(200);
     }
 
@@ -148,8 +151,8 @@ class MovesApiTest
     void testGetLearnMoves()
     {
         NamedApiResourceList<MoveLearnMethod> response = mockNamedApiResourceList();
-        when(pokeApiClient.getResource(MoveLearnMethod.class)).thenReturn(Mono.just(response));
-        var result = movesApi.getLearnMoves();
+        when(pokeApiClient.getResource(eq(MoveLearnMethod.class), any(PageQuery.class))).thenReturn(Mono.just(response));
+        var result = movesApi.getLearnMoves(10, 0);
         assertThat(result.getStatusCode().value()).isEqualTo(200);
     }
 
@@ -168,8 +171,8 @@ class MovesApiTest
     void testGetMoveTargets()
     {
         NamedApiResourceList<MoveTarget> response = mockNamedApiResourceList();
-        when(pokeApiClient.getResource(MoveTarget.class)).thenReturn(Mono.just(response));
-        var result = movesApi.getMoveTargets();
+        when(pokeApiClient.getResource(eq(MoveTarget.class), any(PageQuery.class))).thenReturn(Mono.just(response));
+        var result = movesApi.getMoveTargets(10, 0);
         assertThat(result.getStatusCode().value()).isEqualTo(200);
     }
 

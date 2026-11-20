@@ -24,11 +24,12 @@ class MachineApi extends BaseApiController
     }
 
     @GetMapping(value = "")
-    ResponseEntity<?> getMachines()
+    ResponseEntity<?> getMachines(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         logger.info("getMachines");
         try {
-            NamedApiResourceList<Machine> page = pokeApiClient.getResource(Machine.class, new PageQuery(20, 0)).block();
+            NamedApiResourceList<Machine> page = pokeApiClient.getResource(Machine.class, new PageQuery(limit, offset)).block();
             if (null != page) return ResponseEntity.ok(page.results());
             else return ResponseEntity.badRequest().body("Could not access Machine endpoint");
         }

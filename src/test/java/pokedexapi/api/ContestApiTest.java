@@ -1,5 +1,8 @@
 package pokedexapi.api;
 
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import skaro.pokeapi.query.PageQuery;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,7 +16,9 @@ import reactor.core.publisher.Mono;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.PokeApiResource;
+import skaro.pokeapi.resource.contesteffect.ContestEffect;
 import skaro.pokeapi.resource.contesttype.ContestType;
+import skaro.pokeapi.resource.supercontesteffect.SuperContestEffect;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -43,12 +48,12 @@ class ContestApiTest
     void testGetAllContests()
     {
         NamedApiResourceList<ContestType> response = mockNamedApiResourceList();
-        when(pokeApiClient.getResource(ContestType.class)).thenReturn(Mono.just(response));
+        when(pokeApiClient.getResource(eq(ContestType.class), any(PageQuery.class))).thenReturn(Mono.just(response));
 
-        var result = contestApi.getAllContests();
+        var result = contestApi.getAllContests(10, 0);
 
         assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isSameAs(response);
+        assertThat(result.getBody()).isEqualTo(response.results());
     }
 
     @Test
@@ -65,14 +70,16 @@ class ContestApiTest
     }
 
     @Test
-    @DisplayName("getAllContestEffect handles invalid base URI")
+    @DisplayName("getAllContestEffect returns ok")
     void testGetAllContestEffect()
     {
-        ReflectionTestUtils.setField(contestApi, "pokeApiBaseUrl", "::bad-uri::");
+        NamedApiResourceList<ContestEffect> response = mockNamedApiResourceList();
+        when(pokeApiClient.getResource(eq(ContestEffect.class), any(PageQuery.class))).thenReturn(Mono.just(response));
 
-        var result = contestApi.getAllContestEffect();
+        var result = contestApi.getAllContestEffect(10, 0);
 
-        assertThat(result.getStatusCode().value()).isEqualTo(500);
+        assertThat(result.getStatusCode().value()).isEqualTo(200);
+        assertThat(result.getBody()).isEqualTo(response.results());
     }
 
     @Test
@@ -87,14 +94,16 @@ class ContestApiTest
     }
 
     @Test
-    @DisplayName("getAllSuperContestEffect handles invalid base URI")
+    @DisplayName("getAllSuperContestEffect returns ok")
     void testGetAllSuperContestEffect()
     {
-        ReflectionTestUtils.setField(contestApi, "pokeApiBaseUrl", "::bad-uri::");
+        NamedApiResourceList<SuperContestEffect> response = mockNamedApiResourceList();
+        when(pokeApiClient.getResource(eq(SuperContestEffect.class), any(PageQuery.class))).thenReturn(Mono.just(response));
 
-        var result = contestApi.getAllSuperContestEffect();
+        var result = contestApi.getAllSuperContestEffect(10, 0);
 
-        assertThat(result.getStatusCode().value()).isEqualTo(500);
+        assertThat(result.getStatusCode().value()).isEqualTo(200);
+        assertThat(result.getBody()).isEqualTo(response.results());
     }
 
     @Test

@@ -8,8 +8,11 @@ import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
 import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
+import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
+import skaro.pokeapi.resource.contesteffect.ContestEffect;
 import skaro.pokeapi.resource.contesttype.ContestType;
+import skaro.pokeapi.resource.supercontesteffect.SuperContestEffect;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -30,11 +33,12 @@ class ContestApi extends BaseApiController
 
     // ContestType
     @GetMapping(value = "/contest-type")
-    ResponseEntity<?> getAllContests()
+    ResponseEntity<?> getAllContests(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getAllContests");
         try {
-            NamedApiResourceList<ContestType> contests = pokeApiClient.getResource(skaro.pokeapi.resource.contesttype.ContestType.class).block();
+            NamedApiResourceList<ContestType> contests = pokeApiClient.getResource(skaro.pokeapi.resource.contesttype.ContestType.class, new PageQuery(limit, offset)).block();
             if (null != contests) return ResponseEntity.ok(contests.results());
             else return ResponseEntity.badRequest().body("Could not access ContestType endpoint");
         }
@@ -59,21 +63,13 @@ class ContestApi extends BaseApiController
 
     // ContestEffect
     @GetMapping(value = "/contest-effect")
-    ResponseEntity<?> getAllContestEffect()
+    ResponseEntity<?> getAllContestEffect(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getAllContestEffects");
-        HttpResponse<String> response;
-        JSONParser jsonParser;
+        LOGGER.info("getAllContestEffects limit:{} offset:{}", limit, offset);
         try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(pokeApiBaseUrl + "contest-effect/"))
-                    .GET()
-                    .build();
-            response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-            LOGGER.debug("response: {}", response.body());
-            jsonParser = new JSONParser(response.body());
-            Map<String, Object> results = (Map<String, Object>) jsonParser.parse();
-            if (null != results && !results.isEmpty()) return ResponseEntity.ok(results);
+            NamedApiResourceList<ContestEffect> page = pokeApiClient.getResource(ContestEffect.class, new PageQuery(limit, offset)).block();
+            if (null != page) return ResponseEntity.ok(page.results());
             else return ResponseEntity.badRequest().body("Could not access ContestEffect endpoint");
         }
         catch (Exception e) {
@@ -106,21 +102,13 @@ class ContestApi extends BaseApiController
 
     // SuperContestEffects
     @GetMapping(value = "/super-contest-effect")
-    ResponseEntity<?> getAllSuperContestEffect()
+    ResponseEntity<?> getAllSuperContestEffect(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getAllSuperContestEffects");
-        HttpResponse<String> response;
-        JSONParser jsonParser;
+        LOGGER.info("getAllSuperContestEffects limit:{} offset:{}", limit, offset);
         try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(pokeApiBaseUrl + "super-contest-effect/"))
-                    .GET()
-                    .build();
-            response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-            LOGGER.debug("response: {}", response.body());
-            jsonParser = new JSONParser(response.body());
-            Map<String, Object> results = (Map<String, Object>) jsonParser.parse();
-            if (null != results && !results.isEmpty()) return ResponseEntity.ok(results);
+            NamedApiResourceList<SuperContestEffect> page = pokeApiClient.getResource(SuperContestEffect.class, new PageQuery(limit, offset)).block();
+            if (null != page) return ResponseEntity.ok(page.results());
             else return ResponseEntity.badRequest().body("Could not access SuperContestEffect endpoint");
         }
         catch (Exception e) {

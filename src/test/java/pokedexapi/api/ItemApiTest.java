@@ -1,5 +1,8 @@
 package pokedexapi.api;
 
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import skaro.pokeapi.query.PageQuery;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,12 +49,12 @@ class ItemApiTest
     void testGetItems()
     {
         NamedApiResourceList<Item> response = mockNamedApiResourceList();
-        when(pokeApiClient.getResource(Item.class)).thenReturn(Mono.just(response));
+        when(pokeApiClient.getResource(eq(Item.class), any(PageQuery.class))).thenReturn(Mono.just(response));
 
-        var result = itemApi.getItems();
+        var result = itemApi.getItems(10, 0);
 
         assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isSameAs(response);
+        assertThat(result.getBody()).isEqualTo(response.results());
     }
 
     @Test
@@ -72,12 +75,12 @@ class ItemApiTest
     void testGetItemAttributes()
     {
         NamedApiResourceList<ItemAttribute> response = mockNamedApiResourceList();
-        when(pokeApiClient.getResource(ItemAttribute.class)).thenReturn(Mono.just(response));
+        when(pokeApiClient.getResource(eq(ItemAttribute.class), any(PageQuery.class))).thenReturn(Mono.just(response));
 
-        var result = itemApi.getItemAttributes();
+        var result = itemApi.getItemAttributes(10, 0);
 
         assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isSameAs(response);
+        assertThat(result.getBody()).isEqualTo(response.results());
     }
 
     @Test
@@ -98,12 +101,12 @@ class ItemApiTest
     void testGetItemCategories()
     {
         NamedApiResourceList<ItemCategory> response = mockNamedApiResourceList();
-        when(pokeApiClient.getResource(ItemCategory.class)).thenReturn(Mono.just(response));
+        when(pokeApiClient.getResource(eq(ItemCategory.class), any(PageQuery.class))).thenReturn(Mono.just(response));
 
-        var result = itemApi.getItemCategories();
+        var result = itemApi.getItemCategories(10, 0);
 
         assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isSameAs(response);
+        assertThat(result.getBody()).isEqualTo(response.results());
     }
 
     @Test
@@ -124,12 +127,12 @@ class ItemApiTest
     void testGetFlingEffects()
     {
         NamedApiResourceList<ItemFlingEffect> response = mockNamedApiResourceList();
-        when(pokeApiClient.getResource(ItemFlingEffect.class)).thenReturn(Mono.just(response));
+        when(pokeApiClient.getResource(eq(ItemFlingEffect.class), any(PageQuery.class))).thenReturn(Mono.just(response));
 
-        var result = itemApi.getFlingEffects();
+        var result = itemApi.getFlingEffects(10, 0);
 
         assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isSameAs(response);
+        assertThat(result.getBody()).isEqualTo(response.results());
     }
 
     @Test
@@ -150,12 +153,12 @@ class ItemApiTest
     void testGetItemPockets()
     {
         NamedApiResourceList<ItemPocket> response = mockNamedApiResourceList();
-        when(pokeApiClient.getResource(ItemPocket.class)).thenReturn(Mono.just(response));
+        when(pokeApiClient.getResource(eq(ItemPocket.class), any(PageQuery.class))).thenReturn(Mono.just(response));
 
-        var result = itemApi.getItemPockets();
+        var result = itemApi.getItemPockets(10, 0);
 
         assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isSameAs(response);
+        assertThat(result.getBody()).isEqualTo(response.results());
     }
 
     @Test
