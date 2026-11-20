@@ -24,27 +24,6 @@ class GameApi extends BaseApiController
         super(pokemonService, client);
     }
 
-    // Pokedex
-
-    @GetMapping(value = "/pokedex")
-    ResponseEntity<?> getPokedexes(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-                                   @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
-    {
-        LOGGER.info("getPokedexes");
-        NamedApiResourceList<Pokedex> pokedexes = pokeApiClient.getResource(Pokedex.class, new PageQuery(limit, offset)).block();
-        if (null != pokedexes) return ResponseEntity.ok(pokedexes.results());
-        else return ResponseEntity.badRequest().body("Could not access Pokedex endpoint");
-    }
-
-    @GetMapping(value = "/pokedex/{id}")
-    ResponseEntity<?> getPokedex(@PathVariable("id") int id)
-    {
-        LOGGER.info("getPokedex {}", id);
-        Pokedex pokedex = pokeApiClient.getResource(Pokedex.class, String.valueOf(id)).block();
-        if (null != pokedex) return ResponseEntity.ok(pokedex);
-        else return ResponseEntity.badRequest().body("Could not access Pokedex endpoint");
-    }
-
     // Version
 
     @GetMapping(value = "/version")

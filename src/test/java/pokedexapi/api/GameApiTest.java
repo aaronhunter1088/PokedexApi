@@ -43,32 +43,6 @@ class GameApiTest
     }
 
     @Test
-    @DisplayName("getPokedexes returns ok")
-    void testGetPokedexes()
-    {
-        NamedApiResourceList<Pokedex> response = mockNamedApiResourceList();
-        when(pokeApiClient.getResource(eq(Pokedex.class), any(PageQuery.class))).thenReturn(Mono.just(response));
-
-        var result = gameApi.getPokedexes(10, 0);
-
-        assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isSameAs(response);
-    }
-
-    @Test
-    @DisplayName("getPokedex returns ok")
-    void testGetPokedex()
-    {
-        Pokedex response = mock(Pokedex.class);
-        when(pokeApiClient.getResource(Pokedex.class, "1")).thenReturn(Mono.just(response));
-
-        var result = gameApi.getPokedex(1);
-
-        assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isSameAs(response);
-    }
-
-    @Test
     @DisplayName("getVersions returns ok")
     void testGetVersions()
     {
