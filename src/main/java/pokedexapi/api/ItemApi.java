@@ -2,7 +2,6 @@ package pokedexapi.api;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
@@ -16,27 +15,23 @@ import skaro.pokeapi.resource.itemflingeffect.ItemFlingEffect;
 import skaro.pokeapi.resource.itempocket.ItemPocket;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/item")
 class ItemApi extends BaseApiController
 {
-    /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(ItemApi.class);
 
-    @Autowired
     ItemApi(PokemonService pokemonService, PokeApiClient client)
     {
         super(pokemonService, client);
     }
 
     @GetMapping(value = "")
-    @ResponseBody
     ResponseEntity<?> getItems()
     {
         LOGGER.info("getItems");
         try {
             NamedApiResourceList<Item> items = pokeApiClient.getResource(Item.class).block();
-            if (null != items) return ResponseEntity.ok(items);
+            if (null != items) return ResponseEntity.ok(items.results());
             else return ResponseEntity.badRequest().body("Could not access Item endpoint");
         }
         catch (Exception e) {
@@ -59,14 +54,14 @@ class ItemApi extends BaseApiController
     }
 
     // Attributes
+
     @GetMapping(value = "/item-attribute")
-    @ResponseBody
     ResponseEntity<?> getItemAttributes()
     {
         LOGGER.info("getItemAttributes");
         try {
             NamedApiResourceList<ItemAttribute> itemAttributes = pokeApiClient.getResource(ItemAttribute.class).block();
-            if (null != itemAttributes) return ResponseEntity.ok(itemAttributes);
+            if (null != itemAttributes) return ResponseEntity.ok(itemAttributes.results());
             else return ResponseEntity.badRequest().body("Could not access ItemAttribute endpoint");
         }
         catch (Exception e) {
@@ -89,14 +84,14 @@ class ItemApi extends BaseApiController
     }
 
     // Categories
+
     @GetMapping(value = "/item-category")
-    @ResponseBody
     ResponseEntity<?> getItemCategories()
     {
         LOGGER.info("getItemCategories");
         try {
             NamedApiResourceList<ItemCategory> itemCategories = pokeApiClient.getResource(ItemCategory.class).block();
-            if (null != itemCategories) return ResponseEntity.ok(itemCategories);
+            if (null != itemCategories) return ResponseEntity.ok(itemCategories.results());
             else return ResponseEntity.badRequest().body("Could not access ItemCategory endpoint");
         }
         catch (Exception e) {
@@ -119,14 +114,14 @@ class ItemApi extends BaseApiController
     }
 
     // Fling Effects
+
     @GetMapping(value = "/item-fling-effect")
-    @ResponseBody
     ResponseEntity<?> getFlingEffects()
     {
         LOGGER.info("getFlingEffects");
         try {
             NamedApiResourceList<ItemFlingEffect> flingEffects = pokeApiClient.getResource(ItemFlingEffect.class).block();
-            if (null != flingEffects) return ResponseEntity.ok(flingEffects);
+            if (null != flingEffects) return ResponseEntity.ok(flingEffects.results());
             else return ResponseEntity.badRequest().body("Could not access ItemFlingEffect endpoint");
         }
         catch (Exception e) {
@@ -149,14 +144,14 @@ class ItemApi extends BaseApiController
     }
 
     // Pockets
+
     @GetMapping(value = "/item-pocket")
-    @ResponseBody
     ResponseEntity<?> getItemPockets()
     {
         LOGGER.info("getItemPockets");
         try {
             NamedApiResourceList<ItemPocket> itemPocket = pokeApiClient.getResource(ItemPocket.class).block();
-            if (null != itemPocket) return ResponseEntity.ok(itemPocket);
+            if (null != itemPocket) return ResponseEntity.ok(itemPocket.results());
             else return ResponseEntity.badRequest().body("Could not access ItemPocket endpoint");
         }
         catch (Exception e) {

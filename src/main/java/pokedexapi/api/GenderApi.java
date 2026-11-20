@@ -2,68 +2,53 @@ package pokedexapi.api;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
 import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
+import skaro.pokeapi.query.PageQuery;
+import skaro.pokeapi.resource.NamedApiResourceList;
+import skaro.pokeapi.resource.gender.Gender;
 
-import java.net.http.HttpResponse;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/gender")
 public class GenderApi extends BaseApiController
 {
-    /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(GenderApi.class);
 
-    @Autowired
     GenderApi(PokemonService pokemonService, PokeApiClient client)
     {
         super(pokemonService, client);
     }
 
-    // Genders
-    @GetMapping("")
-    @ResponseBody
+    @GetMapping(value = "")
     ResponseEntity<?> getGenders(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-                                 @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getGenders");
-        HttpResponse<String> genders;
+        LOGGER.info("getGenders limit:{} offset:{}", limit, offset);
         try {
-            genders = pokemonService.callUrl(pokeApiBaseUrl + "gender?limit=" + limit + "&offset=" + offset);
+            NamedApiResourceList<Gender> page = pokeApiClient.getResource(Gender.class, new PageQuery(limit, offset)).block();
+            if (null != page) return ResponseEntity.ok(page.results());
+            else return ResponseEntity.badRequest().body("Could not access Gender endpoint");
         }
         catch (Exception e) {
-            LOGGER.error("Error retrieving response because {}", e.getMessage());
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
-        return switch (genders.statusCode()) {
-            case 200 -> ResponseEntity.ok(genders.body());
-            case 400 -> ResponseEntity.badRequest().body("Could not access Gender endpoint");
-            default -> ResponseEntity.internalServerError().body("Could not access Gender endpoint");
-        };
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    @ResponseBody
+    @GetMapping(value = "/{id}")
     ResponseEntity<?> getGender(@PathVariable(value = "id") String id)
     {
         LOGGER.info("getGender {}", id);
-        HttpResponse<String> gender;
         try {
-            gender = pokemonService.callUrl(pokeApiBaseUrl + "gender/" + id);
+            Gender gender = pokeApiClient.getResource(Gender.class, id).block();
+            if (null != gender) return ResponseEntity.ok(gender);
+            else return ResponseEntity.badRequest().body("Could not find Gender with " + id);
         }
         catch (Exception e) {
-            LOGGER.error("Error retrieving response because {}", e.getMessage());
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
-        return switch (gender.statusCode()) {
-            case 200 -> ResponseEntity.ok(gender.body());
-            case 400 -> ResponseEntity.badRequest().body("Could not access Gender endpoint");
-            default -> ResponseEntity.internalServerError().body("Could not access Gender endpoint");
-        };
     }
 }

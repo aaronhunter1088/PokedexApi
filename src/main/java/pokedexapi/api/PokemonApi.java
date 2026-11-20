@@ -34,11 +34,9 @@ import tools.jackson.databind.json.JsonMapper;
 import static pokedexapi.utilities.Constants.*;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/pokemon")
 class PokemonApi extends BaseApiController
 {
-    /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(PokemonApi.class);
 
     PokemonApi(PokemonService pokemonService, PokeApiClient client, PokemonLocationEncounterService pokemonLocationEncounterService)
@@ -47,15 +45,15 @@ class PokemonApi extends BaseApiController
     }
 
     // Pokeathlon Stat
+
     @RequestMapping(value = "/pokeathlon-stat", method = RequestMethod.GET)
-    @ResponseBody
     ResponseEntity<?> getPokeathlonStats(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                          @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getPokeathlonStats");
         try {
             NamedApiResourceList<PokeathlonStat> pokeathlonStats = pokeApiClient.getResource(PokeathlonStat.class, new PageQuery(limit, offset)).block();
-            if (null != pokeathlonStats) return ResponseEntity.ok(pokeathlonStats);
+            if (null != pokeathlonStats) return ResponseEntity.ok(pokeathlonStats.results());
             else return ResponseEntity.badRequest().body("Could not access PokeathlonStat endpoint");
         }
         catch (Exception e) {
@@ -65,7 +63,6 @@ class PokemonApi extends BaseApiController
     }
 
     @RequestMapping(value = "/pokeathlon-stat/{id}", method = RequestMethod.GET)
-    @ResponseBody
     ResponseEntity<?> getPokeathlonStat(@PathVariable(value = "id") String id)
     {
         LOGGER.info("getPokeathlonStat {}", id);
@@ -82,8 +79,7 @@ class PokemonApi extends BaseApiController
     @Operation(summary = "Returns up to 10 Pokemon", responses = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))),
             @ApiResponse(responseCode = "400", description = "Bad request", content = @Content)})
-    @GetMapping("")
-    @ResponseBody
+    @GetMapping(value = "")
     ResponseEntity<?> getAllPokemon(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                     @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
@@ -103,8 +99,7 @@ class PokemonApi extends BaseApiController
     @Operation(summary = "Returns a Pokemon", responses = {
             @ApiResponse(description = "Successful Operation", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PokemonApi.class))),
             @ApiResponse(responseCode = "400", description = "Bad request", content = @Content)})
-    @GetMapping("/{nameOrId}")
-    @ResponseBody
+    @GetMapping(value = "/{nameOrId}")
     ResponseEntity<?> getAPokemon(@PathVariable String nameOrId)
     {
         LOGGER.info("getAPokemon: {}", nameOrId);
@@ -144,15 +139,15 @@ class PokemonApi extends BaseApiController
     }
 
     // Pokemon Color
+
     @GetMapping(value = "/pokemon-color")
-    @ResponseBody
     ResponseEntity<?> getColors(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                 @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getColors limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<PokemonColor> colors = pokeApiClient.getResource(PokemonColor.class, new PageQuery(limit, offset)).block();
-            if (null != colors) return ResponseEntity.ok(colors);
+            if (null != colors) return ResponseEntity.ok(colors.results());
             else return ResponseEntity.badRequest().body("Could not access PokemonColor endpoint");
         }
         catch (Exception e) {
@@ -175,15 +170,15 @@ class PokemonApi extends BaseApiController
     }
 
     // Pokemon Forms
+
     @GetMapping(value = "/pokemon-form")
-    @ResponseBody
     ResponseEntity<?> getForms(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getForms limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<PokemonForm> forms = pokeApiClient.getResource(PokemonForm.class, new PageQuery(limit, offset)).block();
-            if (null != forms) return ResponseEntity.ok(forms);
+            if (null != forms) return ResponseEntity.ok(forms.results());
             else return ResponseEntity.badRequest().body("Could not access PokemonForm endpoint");
         }
         catch (Exception e) {
@@ -193,7 +188,6 @@ class PokemonApi extends BaseApiController
     }
 
     @GetMapping(value = "/pokemon-form/{nameOrId}")
-    @ResponseBody
     ResponseEntity<?> getForm(@PathVariable("nameOrId") String nameOrId)
     {
         try {
@@ -207,15 +201,15 @@ class PokemonApi extends BaseApiController
     }
 
     // Pokemon Habitats
+
     @GetMapping(value = "/pokemon-habitat")
-    @ResponseBody
     ResponseEntity<?> getHabitats(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                   @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getHabitats limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<PokemonHabitat> habitats = pokeApiClient.getResource(PokemonHabitat.class, new PageQuery(limit, offset)).block();
-            if (null != habitats) return ResponseEntity.ok(habitats);
+            if (null != habitats) return ResponseEntity.ok(habitats.results());
             else return ResponseEntity.badRequest().body("Could not access PokemonHabitat endpoint");
         }
         catch (Exception e) {
@@ -225,7 +219,6 @@ class PokemonApi extends BaseApiController
     }
 
     @GetMapping(value = "/pokemon-habitat/{nameOrId}")
-    @ResponseBody
     ResponseEntity<?> getHabitat(@PathVariable String nameOrId)
     {
         try {
@@ -241,14 +234,13 @@ class PokemonApi extends BaseApiController
 
     // Pokemon Shapes
     @GetMapping(value = "/pokemon-shape")
-    @ResponseBody
     ResponseEntity<?> getShapes(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                 @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getShapes limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<PokemonShape> shapes = pokeApiClient.getResource(PokemonShape.class, new PageQuery(limit, offset)).block();
-            if (null != shapes) return ResponseEntity.ok(shapes);
+            if (null != shapes) return ResponseEntity.ok(shapes.results());
             else return ResponseEntity.badRequest().body("Could not access PokemonShape endpoint");
         }
         catch (Exception e) {
@@ -258,7 +250,6 @@ class PokemonApi extends BaseApiController
     }
 
     @GetMapping(value = "/pokemon-shape/{nameOrId}")
-    @ResponseBody
     ResponseEntity<?> getShape(@PathVariable("nameOrId") String nameOrId)
     {
         try {
@@ -272,34 +263,7 @@ class PokemonApi extends BaseApiController
         }
     }
 
-    // Personal Endpoints
-//    @GetMapping(value = "/{nameOrId}/validateNameOrId")
-//    @ResponseBody
-//    ResponseEntity<Boolean> validateNameOrId(@PathVariable String nameOrId)
-//    {
-//        try {
-//            Pokemon pokemon = retrievePokemon(nameOrId);
-//            // TODO: update logic if null to check for specific use cases
-//            if (pokemon == null) {
-//                nameOrId = checkSpecificNames(nameOrId);
-//                pokemon = retrievePokemon(nameOrId);
-//            }
-//            if (null != pokemon) {
-//                LOGGER.info("valid nameOrId: {}", nameOrId);
-//                return ResponseEntity.ok().body(true);
-//            } else {
-//                LOGGER.warn("invalid nameOrId: {}", nameOrId);
-//                return ResponseEntity.notFound().build();
-//            }
-//        }
-//        catch (Exception e) {
-//            LOGGER.warn("There was an error fetching the Pokemon '{}' because {}", nameOrId, e.getMessage());
-//            return ResponseEntity.internalServerError().build();
-//        }
-//    }
-
     @GetMapping(value = "/{nameOrId}/description")
-    @ResponseBody
     ResponseEntity<?> getPokemonDescription(@PathVariable String nameOrId)
     {
         LOGGER.info("getPkmnDescription: {}", nameOrId);
@@ -353,8 +317,8 @@ class PokemonApi extends BaseApiController
     }
 
     // just the names of the Location Areas
+
     @GetMapping(value = "/{pokemonId}/locations")
-    @ResponseBody
     ResponseEntity<?> getPokemonLocations(@PathVariable Integer pokemonId)
     {
         LOGGER.info("getPokemonLocations for: {}", pokemonId);
@@ -389,8 +353,8 @@ class PokemonApi extends BaseApiController
     }
 
     // Pokemon Location Areas: All Location Areas in LocationApi
+
     @GetMapping(value = "/{nameOrId}/encounters")
-    @ResponseBody
     ResponseEntity<?> getPokemonEncounters(@PathVariable String nameOrId)
     {
         LOGGER.info("getEncounters");
@@ -410,7 +374,6 @@ class PokemonApi extends BaseApiController
     }
 
     @GetMapping(value = "/{nameOrId}/evolutionChain")
-    @ResponseBody
     ResponseEntity<?> getEvolutionChain(@PathVariable String nameOrId)
     {
         LOGGER.info("getEvolutionChain for {}", nameOrId);

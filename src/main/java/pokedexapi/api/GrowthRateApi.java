@@ -2,7 +2,6 @@ package pokedexapi.api;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
@@ -12,49 +11,41 @@ import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.growthrate.GrowthRate;
 
-import java.util.Arrays;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/growth-rate")
 public class GrowthRateApi extends BaseApiController
 {
-    /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(GrowthRateApi.class);
 
-    @Autowired
     GrowthRateApi(PokemonService pokemonService, PokeApiClient client)
     {
         super(pokemonService, client);
     }
 
-    // Growth Rate
-    @GetMapping("")
-    @ResponseBody
+    @GetMapping(value = "")
     ResponseEntity<?> getGrowthRates(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-                                     @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getGrowthRates");
+        LOGGER.info("getGrowthRates limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<GrowthRate> growthRates = pokeApiClient.getResource(GrowthRate.class, new PageQuery(limit, offset)).block();
-            if (null != growthRates) return ResponseEntity.ok(growthRates);
+            NamedApiResourceList<GrowthRate> page = pokeApiClient.getResource(GrowthRate.class, new PageQuery(limit, offset)).block();
+            if (null != page) return ResponseEntity.ok(page.results());
             else return ResponseEntity.badRequest().body("Could not access GrowthRate endpoint");
         }
         catch (Exception e) {
-            Arrays.stream(e.getStackTrace()).forEach(LOGGER::error);
-            return ResponseEntity.badRequest().body("Could not fetch all GrowthRate because " + e.getMessage());
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    @ResponseBody
+    @GetMapping(value = "/{id}")
     ResponseEntity<?> getGrowthRate(@PathVariable(value = "id") String id)
     {
         LOGGER.info("getGrowthRate {}", id);
         try {
             GrowthRate growthRate = pokeApiClient.getResource(GrowthRate.class, id).block();
             if (null != growthRate) return ResponseEntity.ok(growthRate);
-            else return ResponseEntity.badRequest().body("Could not access GrowthRate endpoint");
+            else return ResponseEntity.badRequest().body("Could not find GrowthRate with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());

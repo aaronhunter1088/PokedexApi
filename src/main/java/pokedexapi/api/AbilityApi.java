@@ -2,36 +2,34 @@ package pokedexapi.api;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
 import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
+import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.ability.Ability;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/ability")
 public class AbilityApi extends BaseApiController
 {
-    /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(AbilityApi.class);
 
-    @Autowired
     AbilityApi(PokemonService pokemonService, PokeApiClient client)
     {
         super(pokemonService, client);
     }
 
     @GetMapping(value = "")
-    public ResponseEntity<?> getAllAbilities()
+    public ResponseEntity<?> getAllAbilities(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                             @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getAllAbilities");
         try {
-            NamedApiResourceList<Ability> abilities = pokeApiClient.getResource(Ability.class).block();
-            if (null != abilities) return ResponseEntity.ok(abilities);
+            NamedApiResourceList<Ability> abilities = pokeApiClient.getResource(Ability.class, new PageQuery(limit, offset)).block();
+            if (null != abilities) return ResponseEntity.ok(abilities.results());
             else return ResponseEntity.badRequest().body("Could not access Ability endpoint");
         }
         catch (Exception e) {

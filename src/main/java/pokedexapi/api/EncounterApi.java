@@ -2,7 +2,6 @@ package pokedexapi.api;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
@@ -14,28 +13,25 @@ import skaro.pokeapi.resource.encounterconditionvalue.EncounterConditionValue;
 import skaro.pokeapi.resource.encountermethod.EncounterMethod;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/encounter")
 class EncounterApi extends BaseApiController
 {
-    /* Logging instance */
     private static final Logger logger = LogManager.getLogger(EncounterApi.class);
 
-    // Encounter Method
-    @Autowired
     EncounterApi(PokemonService pokemonService, PokeApiClient client)
     {
         super(pokemonService, client);
     }
 
+    // Encounter Methods
+
     @GetMapping(value = "/encounter-method")
-    @ResponseBody
     ResponseEntity<?> getEncounterMethods()
     {
         logger.info("getEncounterMethods");
         try {
             NamedApiResourceList<EncounterMethod> encounters = pokeApiClient.getResource(skaro.pokeapi.resource.encountermethod.EncounterMethod.class).block();
-            if (null != encounters) return ResponseEntity.ok(encounters);
+            if (null != encounters) return ResponseEntity.ok(encounters.results());
             else return ResponseEntity.badRequest().body("Could not access EncounterMethod endpoint");
         }
         catch (Exception e) {
@@ -58,14 +54,14 @@ class EncounterApi extends BaseApiController
     }
 
     // Conditions
+
     @GetMapping(value = "/encounter-condition")
-    @ResponseBody
     ResponseEntity<?> getConditions()
     {
         logger.info("getConditions");
         try {
             NamedApiResourceList<EncounterCondition> conditions = pokeApiClient.getResource(skaro.pokeapi.resource.encountercondition.EncounterCondition.class).block();
-            if (null != conditions) return ResponseEntity.ok(conditions);
+            if (null != conditions) return ResponseEntity.ok(conditions.results());
             else return ResponseEntity.badRequest().body("Could not access EncounterCondition endpoint");
         }
         catch (Exception e) {
@@ -88,14 +84,14 @@ class EncounterApi extends BaseApiController
     }
 
     // Condition Values
+
     @GetMapping(value = "/encounter-condition-value")
-    @ResponseBody
     ResponseEntity<?> getConditionValues()
     {
         logger.info("getConditionValues");
         try {
             NamedApiResourceList<EncounterConditionValue> conditionValues = pokeApiClient.getResource(skaro.pokeapi.resource.encounterconditionvalue.EncounterConditionValue.class).block();
-            if (null != conditionValues) return ResponseEntity.ok(conditionValues);
+            if (null != conditionValues) return ResponseEntity.ok(conditionValues.results());
             else return ResponseEntity.badRequest().body("Could not access EncounterConditionValue endpoint");
         }
         catch (Exception e) {

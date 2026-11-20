@@ -2,7 +2,6 @@ package pokedexapi.api;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
@@ -18,28 +17,25 @@ import skaro.pokeapi.resource.movelearnmethod.MoveLearnMethod;
 import skaro.pokeapi.resource.movetarget.MoveTarget;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/move")
 class MovesApi extends BaseApiController
 {
-    /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(MovesApi.class);
 
-    @Autowired
     MovesApi(PokemonService pokemonService, PokeApiClient client)
     {
         super(pokemonService, client);
     }
 
     // Moves
+
     @GetMapping(value = "")
-    @ResponseBody
     ResponseEntity<?> getMoves()
     {
         LOGGER.info("getMoves");
         try {
             NamedApiResourceList<Move> moves = pokeApiClient.getResource(Move.class).block();
-            if (null != moves) return ResponseEntity.ok(moves);
+            if (null != moves) return ResponseEntity.ok(moves.results());
             else return ResponseEntity.badRequest().body("Could not access Move endpoint");
         }
         catch (Exception e) {
@@ -62,14 +58,14 @@ class MovesApi extends BaseApiController
     }
 
     // Move Ailment
+
     @GetMapping(value = "/move-ailment")
-    @ResponseBody
     ResponseEntity<?> getMoveAilments()
     {
         LOGGER.info("getMoveAilments");
         try {
             NamedApiResourceList<MoveAilment> moveAilments = pokeApiClient.getResource(MoveAilment.class).block();
-            if (null != moveAilments) return ResponseEntity.ok(moveAilments);
+            if (null != moveAilments) return ResponseEntity.ok(moveAilments.results());
             else return ResponseEntity.badRequest().body("Could not access MoveAilment endpoint");
         }
         catch (Exception e) {
@@ -92,14 +88,14 @@ class MovesApi extends BaseApiController
     }
 
     // Battle Styles
+
     @GetMapping(value = "/move-battle-style")
-    @ResponseBody
     ResponseEntity<?> getMoveBattleStyles()
     {
         LOGGER.info("getMoveMoveBattleStyles");
         try {
             NamedApiResourceList<MoveBattleStyle> moveAilments = pokeApiClient.getResource(MoveBattleStyle.class).block();
-            if (null != moveAilments) return ResponseEntity.ok(moveAilments);
+            if (null != moveAilments) return ResponseEntity.ok(moveAilments.results());
             else return ResponseEntity.badRequest().body("Could not access MoveBattleStyle endpoint");
         }
         catch (Exception e) {
@@ -122,14 +118,14 @@ class MovesApi extends BaseApiController
     }
 
     // Categories
+
     @GetMapping(value = "/move-category")
-    @ResponseBody
     ResponseEntity<?> getCategories()
     {
         LOGGER.info("getCategories");
         try {
             NamedApiResourceList<MoveCategory> moveCategories = pokeApiClient.getResource(MoveCategory.class).block();
-            if (null != moveCategories) return ResponseEntity.ok(moveCategories);
+            if (null != moveCategories) return ResponseEntity.ok(moveCategories.results());
             else return ResponseEntity.badRequest().body("Could not access MoveCategory endpoint");
         }
         catch (Exception e) {
@@ -152,14 +148,14 @@ class MovesApi extends BaseApiController
     }
 
     // Damage Classes
+
     @GetMapping(value = "/move-damage-class")
-    @ResponseBody
     ResponseEntity<?> getDamageClasses()
     {
         LOGGER.info("getDamageClasses");
         try {
             NamedApiResourceList<MoveDamageClass> moveDamages = pokeApiClient.getResource(MoveDamageClass.class).block();
-            if (null != moveDamages) return ResponseEntity.ok(moveDamages);
+            if (null != moveDamages) return ResponseEntity.ok(moveDamages.results());
             else return ResponseEntity.badRequest().body("Could not access MoveDamageClass endpoint");
         }
         catch (Exception e) {
@@ -182,14 +178,14 @@ class MovesApi extends BaseApiController
     }
 
     // Learn Moves
+
     @GetMapping(value = "/move-learn-method")
-    @ResponseBody
     ResponseEntity<?> getLearnMoves()
     {
         LOGGER.info("getLearnMoves");
         try {
             NamedApiResourceList<MoveLearnMethod> learnMoves = pokeApiClient.getResource(MoveLearnMethod.class).block();
-            if (null != learnMoves) return ResponseEntity.ok(learnMoves);
+            if (null != learnMoves) return ResponseEntity.ok(learnMoves.results());
             else return ResponseEntity.badRequest().body("Could not access MoveLearnMethod endpoint");
         }
         catch (Exception e) {
@@ -212,14 +208,14 @@ class MovesApi extends BaseApiController
     }
 
     // Targets
+
     @GetMapping(value = "/move-target")
-    @ResponseBody
     ResponseEntity<?> getMoveTargets()
     {
         LOGGER.info("getTargets");
         try {
             NamedApiResourceList<MoveTarget> learnMoves = pokeApiClient.getResource(MoveTarget.class).block();
-            if (null != learnMoves) return ResponseEntity.ok(learnMoves);
+            if (null != learnMoves) return ResponseEntity.ok(learnMoves.results());
             else return ResponseEntity.badRequest().body("Could not access MoveTarget endpoint");
         }
         catch (Exception e) {

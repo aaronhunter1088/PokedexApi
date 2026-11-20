@@ -2,7 +2,6 @@ package pokedexapi.api;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
@@ -15,33 +14,29 @@ import skaro.pokeapi.resource.version.Version;
 import skaro.pokeapi.resource.versiongroup.VersionGroup;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/game")
 class GameApi extends BaseApiController
 {
-    /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(GameApi.class);
 
-    @Autowired
     GameApi(PokemonService pokemonService, PokeApiClient client)
     {
         super(pokemonService, client);
     }
 
     // Pokedex
+
     @GetMapping(value = "/pokedex")
-    @ResponseBody
     ResponseEntity<?> getPokedexes(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                    @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getPokedexes");
         NamedApiResourceList<Pokedex> pokedexes = pokeApiClient.getResource(Pokedex.class, new PageQuery(limit, offset)).block();
-        if (null != pokedexes) return ResponseEntity.ok(pokedexes);
+        if (null != pokedexes) return ResponseEntity.ok(pokedexes.results());
         else return ResponseEntity.badRequest().body("Could not access Pokedex endpoint");
     }
 
     @GetMapping(value = "/pokedex/{id}")
-    @ResponseBody
     ResponseEntity<?> getPokedex(@PathVariable("id") int id)
     {
         LOGGER.info("getPokedex {}", id);
@@ -51,19 +46,18 @@ class GameApi extends BaseApiController
     }
 
     // Version
+
     @GetMapping(value = "/version")
-    @ResponseBody
     ResponseEntity<?> getVersions(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                   @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getVersions");
         NamedApiResourceList<Version> versions = pokeApiClient.getResource(Version.class, new PageQuery(limit, offset)).block();
-        if (null != versions) return ResponseEntity.ok(versions);
+        if (null != versions) return ResponseEntity.ok(versions.results());
         else return ResponseEntity.badRequest().body("Could not access Version endpoint");
     }
 
     @GetMapping(value = "/version/{id}")
-    @ResponseBody
     ResponseEntity<?> getVersion(@PathVariable("id") int id)
     {
         LOGGER.info("getVersion {}", id);
@@ -73,19 +67,18 @@ class GameApi extends BaseApiController
     }
 
     // Version Groups
+
     @GetMapping(value = "/version-group")
-    @ResponseBody
     ResponseEntity<?> getVersionGroups(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                        @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getVersionGroups");
         NamedApiResourceList<VersionGroup> versionGroups = pokeApiClient.getResource(VersionGroup.class, new PageQuery(limit, offset)).block();
-        if (null != versionGroups) return ResponseEntity.ok(versionGroups);
+        if (null != versionGroups) return ResponseEntity.ok(versionGroups.results());
         else return ResponseEntity.badRequest().body("Could not access VersionGroup endpoint");
     }
 
     @GetMapping(value = "/version-group/{id}")
-    @ResponseBody
     ResponseEntity<?> getVersionGroup(@PathVariable("id") int id)
     {
         LOGGER.info("getVersionGroup {}", id);

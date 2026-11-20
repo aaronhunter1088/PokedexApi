@@ -3,7 +3,6 @@ package pokedexapi.api;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.json.JSONParser;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
@@ -19,14 +18,11 @@ import java.net.http.HttpResponse;
 import java.util.Map;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/contest")
 class ContestApi extends BaseApiController
 {
-    /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(ContestApi.class);
 
-    @Autowired
     ContestApi(PokemonService pokemonService, PokeApiClient client)
     {
         super(pokemonService, client);
@@ -34,13 +30,12 @@ class ContestApi extends BaseApiController
 
     // ContestType
     @GetMapping(value = "/contest-type")
-    @ResponseBody
     ResponseEntity<?> getAllContests()
     {
         LOGGER.info("getAllContests");
         try {
             NamedApiResourceList<ContestType> contests = pokeApiClient.getResource(skaro.pokeapi.resource.contesttype.ContestType.class).block();
-            if (null != contests) return ResponseEntity.ok(contests);
+            if (null != contests) return ResponseEntity.ok(contests.results());
             else return ResponseEntity.badRequest().body("Could not access ContestType endpoint");
         }
         catch (Exception e) {
@@ -64,7 +59,6 @@ class ContestApi extends BaseApiController
 
     // ContestEffect
     @GetMapping(value = "/contest-effect")
-    @ResponseBody
     ResponseEntity<?> getAllContestEffect()
     {
         LOGGER.info("getAllContestEffects");
@@ -88,7 +82,6 @@ class ContestApi extends BaseApiController
     }
 
     @GetMapping(value = "/contest-effect/{id}")
-    @ResponseBody
     ResponseEntity<?> getContestEffect(@PathVariable String id)
     {
         LOGGER.info("getContestEffect with {}", id);
@@ -113,7 +106,6 @@ class ContestApi extends BaseApiController
 
     // SuperContestEffects
     @GetMapping(value = "/super-contest-effect")
-    @ResponseBody
     ResponseEntity<?> getAllSuperContestEffect()
     {
         LOGGER.info("getAllSuperContestEffects");
@@ -137,7 +129,6 @@ class ContestApi extends BaseApiController
     }
 
     @GetMapping(value = "/super-contest-effect/{id}")
-    @ResponseBody
     ResponseEntity<?> getSuperContestEffect(@PathVariable String id)
     {
         LOGGER.info("getSuperContestEffect with {}", id);

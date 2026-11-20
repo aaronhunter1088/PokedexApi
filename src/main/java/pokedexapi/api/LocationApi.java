@@ -2,7 +2,6 @@ package pokedexapi.api;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
@@ -15,28 +14,25 @@ import skaro.pokeapi.resource.palparkarea.PalParkArea;
 import skaro.pokeapi.resource.region.Region;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/location")
 class LocationApi extends BaseApiController
 {
-    /* Logging instance */
     private static final Logger logger = LogManager.getLogger(LocationApi.class);
 
-    @Autowired
     LocationApi(PokemonService pokemonService, PokeApiClient client)
     {
         super(pokemonService, client);
     }
 
     // Locations
+
     @GetMapping(value = "")
-    @ResponseBody
     ResponseEntity<?> getLocations()
     {
         logger.info("getLocations");
         try {
             NamedApiResourceList<Location> locations = pokeApiClient.getResource(Location.class).block();
-            if (null != locations) return ResponseEntity.ok(locations);
+            if (null != locations) return ResponseEntity.ok(locations.results());
             else return ResponseEntity.badRequest().body("Could not access Location endpoint");
         }
         catch (Exception e) {
@@ -59,14 +55,14 @@ class LocationApi extends BaseApiController
     }
 
     // Location Areas
+
     @GetMapping(value = "/location-area")
-    @ResponseBody
     ResponseEntity<?> getLocationAreas()
     {
         logger.info("getLocationAreas");
         try {
             NamedApiResourceList<LocationArea> locationAreas = pokeApiClient.getResource(LocationArea.class).block();
-            if (null != locationAreas) return ResponseEntity.ok(locationAreas);
+            if (null != locationAreas) return ResponseEntity.ok(locationAreas.results());
             else return ResponseEntity.badRequest().body("Could not access LocationArea endpoint");
         }
         catch (Exception e) {
@@ -89,14 +85,14 @@ class LocationApi extends BaseApiController
     }
 
     // Pal Park Areas
+
     @GetMapping(value = "/pal-park-area")
-    @ResponseBody
     ResponseEntity<?> getPalParkAreas()
     {
         logger.info("getPalParkAreas");
         try {
             NamedApiResourceList<PalParkArea> palParkAreas = pokeApiClient.getResource(PalParkArea.class).block();
-            if (null != palParkAreas) return ResponseEntity.ok(palParkAreas);
+            if (null != palParkAreas) return ResponseEntity.ok(palParkAreas.results());
             else return ResponseEntity.badRequest().body("Could not access PalParkArea endpoint");
         }
         catch (Exception e) {
@@ -119,14 +115,14 @@ class LocationApi extends BaseApiController
     }
 
     // Regions
+
     @GetMapping(value = "/region")
-    @ResponseBody
     ResponseEntity<?> getRegions()
     {
         logger.info("getRegions");
         try {
             NamedApiResourceList<Region> regions = pokeApiClient.getResource(Region.class).block();
-            if (null != regions) return ResponseEntity.ok(regions);
+            if (null != regions) return ResponseEntity.ok(regions.results());
             else return ResponseEntity.badRequest().body("Could not access Region endpoint");
         }
         catch (Exception e) {

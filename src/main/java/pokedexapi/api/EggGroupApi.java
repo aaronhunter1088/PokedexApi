@@ -2,7 +2,6 @@ package pokedexapi.api;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
@@ -12,49 +11,41 @@ import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.egggroup.EggGroup;
 
-import java.util.Arrays;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/egg-group")
 public class EggGroupApi extends BaseApiController
 {
-    /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(EggGroupApi.class);
 
-    @Autowired
     EggGroupApi(PokemonService pokemonService, PokeApiClient client)
     {
         super(pokemonService, client);
     }
 
-    // Egg Groups
-    @GetMapping("")
-    @ResponseBody
+    @GetMapping(value = "")
     ResponseEntity<?> getEggGroups(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-                                   @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getEggGroups");
+        LOGGER.info("getEggGroups limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<EggGroup> eggGroups = pokeApiClient.getResource(EggGroup.class, new PageQuery(limit, offset)).block();
-            if (null != eggGroups) return ResponseEntity.ok(eggGroups);
+            NamedApiResourceList<EggGroup> page = pokeApiClient.getResource(EggGroup.class, new PageQuery(limit, offset)).block();
+            if (null != page) return ResponseEntity.ok(page.results());
             else return ResponseEntity.badRequest().body("Could not access EggGroup endpoint");
         }
         catch (Exception e) {
-            Arrays.stream(e.getStackTrace()).forEach(LOGGER::error);
-            return ResponseEntity.badRequest().body("Could not fetch all eggGroups because " + e.getMessage());
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    @ResponseBody
+    @GetMapping(value = "/{id}")
     ResponseEntity<?> getEggGroup(@PathVariable(value = "id") String id)
     {
         LOGGER.info("getEggGroup {}", id);
         try {
             EggGroup eggGroup = pokeApiClient.getResource(EggGroup.class, id).block();
             if (null != eggGroup) return ResponseEntity.ok(eggGroup);
-            else return ResponseEntity.badRequest().body("Could not access EggGroup endpoint");
+            else return ResponseEntity.badRequest().body("Could not find EggGroup with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());

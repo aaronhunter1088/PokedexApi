@@ -16,11 +16,9 @@ import skaro.pokeapi.client.PokeApiClient;
 import java.util.*;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/pokedex")
 public class PokedexApi extends BaseApiController
 {
-    /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(PokedexApi.class);
 
     PokedexApi(PokemonService pokemonService, PokeApiClient client, PokemonLocationEncounterService pokemonLocationEncounterService)
@@ -31,8 +29,7 @@ public class PokedexApi extends BaseApiController
     @Operation(summary = "Returns the Pokedex which contains entries of Pokemon", responses = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))),
             @ApiResponse(responseCode = "400", description = "Bad request", content = @Content)})
-    @GetMapping("/pokedex/{pokedex}")
-    @ResponseBody
+    @GetMapping(value = "/pokedex/{pokedex}")
     ResponseEntity<?> getPokedex(@PathVariable String pokedex)
     {
         LOGGER.info("getPokedex {}", pokedex);

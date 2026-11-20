@@ -17,11 +17,9 @@ import java.net.http.HttpResponse;
 import java.util.Arrays;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/pokemon-species")
 public class PokemonSpeciesApi extends BaseApiController
 {
-    /* Logging instance */
     private static final Logger logger = LogManager.getLogger(PokemonSpeciesApi.class);
 
     PokemonSpeciesApi(PokemonService pokemonService, PokeApiClient client)
@@ -29,15 +27,14 @@ public class PokemonSpeciesApi extends BaseApiController
         super(pokemonService, client);
     }
 
-    @GetMapping("")
-    @ResponseBody
+    @GetMapping(value = "")
     ResponseEntity<?> getAllSpeciesData(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                         @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         logger.info("getAllSpeciesData limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<PokemonSpecies> allSpeciesData = pokeApiClient.getResource(PokemonSpecies.class, new PageQuery(limit, offset)).block();
-            if (null != allSpeciesData) return ResponseEntity.ok(allSpeciesData);
+            if (null != allSpeciesData) return ResponseEntity.ok(allSpeciesData.results());
             else return ResponseEntity.badRequest().body("Could not access PokemonSpecies endpoint");
         }
         catch (Exception e) {
@@ -47,7 +44,6 @@ public class PokemonSpeciesApi extends BaseApiController
     }
 
     @RequestMapping(value = "/{nameOrId}", method = RequestMethod.GET)
-    @ResponseBody
     ResponseEntity<?> getPokemonSpeciesData(@PathVariable String nameOrId)
     {
         logger.info("getSpeciesData: {}", nameOrId);

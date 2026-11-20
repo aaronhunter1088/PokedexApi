@@ -10,6 +10,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import pokedexapi.service.PokemonApiService;
 import reactor.core.publisher.Mono;
 import skaro.pokeapi.client.PokeApiClient;
+import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.PokeApiResource;
 import skaro.pokeapi.resource.ability.Ability;
@@ -42,9 +43,9 @@ class AbilityApiTest
     void testGetAllAbilities()
     {
         NamedApiResourceList<Ability> response = mockNamedApiResourceList();
-        when(pokeApiClient.getResource(Ability.class)).thenReturn(Mono.just(response));
+        when(pokeApiClient.getResource(Ability.class, new PageQuery(10, 0))).thenReturn(Mono.just(response));
 
-        var result = abilityApi.getAllAbilities();
+        var result = abilityApi.getAllAbilities(10, 0);
 
         assertThat(result.getStatusCode().value()).isEqualTo(200);
         assertThat(result.getBody()).isSameAs(response);
