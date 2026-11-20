@@ -72,12 +72,10 @@ class ContestApi extends BaseApiController
         JSONParser jsonParser;
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(pokeApiBaseUrl + "/contest-effect/"))
+                    .uri(new URI(pokeApiBaseUrl + "contest-effect/"))
                     .GET()
                     .build();
-            response = HttpClient.newBuilder()
-                    .build()
-                    .send(request, HttpResponse.BodyHandlers.ofString());
+            response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
             LOGGER.debug("response: {}", response.body());
             jsonParser = new JSONParser(response.body());
             Map<String, Object> results = (Map<String, Object>) jsonParser.parse();
@@ -98,12 +96,10 @@ class ContestApi extends BaseApiController
         JSONParser jsonParser;
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(pokeApiBaseUrl + "/contest-effect/" + id))
+                    .uri(new URI(pokeApiBaseUrl + "contest-effect/" + id))
                     .GET()
                     .build();
-            response = HttpClient.newBuilder()
-                    .build()
-                    .send(request, HttpResponse.BodyHandlers.ofString());
+            response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
             LOGGER.info("response: {}", response.body());
             jsonParser = new JSONParser(response.body());
             Map<String, Object> results = (Map<String, Object>) jsonParser.parse();
@@ -125,12 +121,10 @@ class ContestApi extends BaseApiController
         JSONParser jsonParser;
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(pokeApiBaseUrl + "/super-contest-effect/"))
+                    .uri(new URI(pokeApiBaseUrl + "super-contest-effect/"))
                     .GET()
                     .build();
-            response = HttpClient.newBuilder()
-                    .build()
-                    .send(request, HttpResponse.BodyHandlers.ofString());
+            response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
             LOGGER.debug("response: {}", response.body());
             jsonParser = new JSONParser(response.body());
             Map<String, Object> results = (Map<String, Object>) jsonParser.parse();
@@ -151,12 +145,10 @@ class ContestApi extends BaseApiController
         JSONParser jsonParser;
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(pokeApiBaseUrl + "/super-contest-effect/" + id))
+                    .uri(new URI(pokeApiBaseUrl + "super-contest-effect/" + id))
                     .GET()
                     .build();
-            response = HttpClient.newBuilder()
-                    .build()
-                    .send(request, HttpResponse.BodyHandlers.ofString());
+            response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
             LOGGER.info("response: {}", response.body());
             jsonParser = new JSONParser(response.body());
             Map<String, Object> results = (Map<String, Object>) jsonParser.parse();

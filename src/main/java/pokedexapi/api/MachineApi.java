@@ -33,7 +33,7 @@ class MachineApi extends BaseApiController
         logger.info("getMachines");
         HttpResponse<String> response;
         try {
-            response = pokemonService.callUrl(pokeApiBaseUrl + "/machine");
+            response = pokemonService.callUrl(pokeApiBaseUrl + "machine");
         }
         catch (Exception e) {
             logger.error("Error retrieving response because {}", e.getMessage());
@@ -52,7 +52,7 @@ class MachineApi extends BaseApiController
         logger.info("getLocation {}", id);
         HttpResponse<String> response;
         try {
-            response = pokemonService.callUrl(pokeApiBaseUrl + "/machine/" + id);
+            response = pokemonService.callUrl(pokeApiBaseUrl + "machine/" + id);
         }
         catch (Exception e) {
             logger.error("Error retrieving response because {}", e.getMessage());

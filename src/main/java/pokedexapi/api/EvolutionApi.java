@@ -38,12 +38,10 @@ class EvolutionApi extends BaseApiController
         HttpResponse<String> response;
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(pokeApiBaseUrl + "/evolution-chain?offset=" + offset + "&limit=" + limit))
+                    .uri(new URI(pokeApiBaseUrl + "evolution-chain?offset=" + offset + "&limit=" + limit))
                     .GET()
                     .build();
-            response = HttpClient.newBuilder()
-                    .build()
-                    .send(request, HttpResponse.BodyHandlers.ofString());
+            response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
             logger.info("response: {}", response.body());
             return ResponseEntity.ok(response.body());
         }
@@ -61,12 +59,10 @@ class EvolutionApi extends BaseApiController
         HttpResponse<String> response;
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(pokeApiBaseUrl + "/evolution-chain/" + id))
+                    .uri(new URI(pokeApiBaseUrl + "evolution-chain/" + id))
                     .GET()
                     .build();
-            response = HttpClient.newBuilder()
-                    .build()
-                    .send(request, HttpResponse.BodyHandlers.ofString());
+            response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
             logger.info("response: {}", response.body());
             return ResponseEntity.ok(response.body());
         }
@@ -86,12 +82,10 @@ class EvolutionApi extends BaseApiController
         HttpResponse<String> response;
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(pokeApiBaseUrl + "/evolution-trigger?offset=" + offset + "&limit=" + limit))
+                    .uri(new URI(pokeApiBaseUrl + "evolution-trigger?offset=" + offset + "&limit=" + limit))
                     .GET()
                     .build();
-            response = HttpClient.newBuilder()
-                    .build()
-                    .send(request, HttpResponse.BodyHandlers.ofString());
+            response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
             logger.info("response: {}", response.body());
             return ResponseEntity.ok(response.body());
         }
@@ -108,7 +102,7 @@ class EvolutionApi extends BaseApiController
         logger.info("getEvolutionTrigger {}", id);
         HttpResponse<String> response;
         try {
-            response = pokemonService.callUrl(pokeApiBaseUrl + "/evolution-trigger/" + id);
+            response = pokemonService.callUrl(pokeApiBaseUrl + "evolution-trigger/" + id);
         }
         catch (Exception e) {
             logger.error("Error retrieving response because {}", e.getMessage());

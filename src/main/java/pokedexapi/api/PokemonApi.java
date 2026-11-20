@@ -1,7 +1,5 @@
 package pokedexapi.api;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -30,6 +28,8 @@ import skaro.pokeapi.resource.pokemonspecies.PokemonSpecies;
 
 import java.net.http.HttpResponse;
 import java.util.*;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 
 import static pokedexapi.utilities.Constants.*;
 
@@ -309,7 +309,9 @@ class PokemonApi extends BaseApiController
             pokemonDescriptions = pokemonSpecies.map(species -> species
                     .getFlavorTextEntries().stream().filter(entry -> entry.getLanguage().name().equals("en"))
                     .toList()).orElse(null);
-            assert pokemonDescriptions != null;
+            if (pokemonDescriptions == null || pokemonDescriptions.isEmpty()) {
+                return ResponseEntity.badRequest().body(nameOrId + " text was not found!");
+            }
             int randomEntry = new Random().nextInt(pokemonDescriptions.size());
             String description = pokemonDescriptions.get(randomEntry).getFlavorText().replace("\n", " ");
             LOGGER.info("description: {}", description);
@@ -369,7 +371,7 @@ class PokemonApi extends BaseApiController
 
         List<Map<String, Object>> encounters;
         try {
-            encounters = new ObjectMapper()
+            encounters = JsonMapper.builder().build()
                     .readValue(body, new TypeReference<List<Map<String, Object>>>() {});
         } catch (Exception e) {
             LOGGER.error("Failed to parse encounters JSON: {}", e.getMessage());

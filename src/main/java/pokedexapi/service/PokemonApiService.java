@@ -47,7 +47,8 @@ public class PokemonApiService implements PokemonService
     @Value("${skaro.pokeapi.baseUri}")
     protected String pokeApiBaseUrl;
     protected PokemonLocationEncounterService pokemonLocationEncounterService;
-    private int lastSuccessfulPokemonIdForSpeciesCall = 0;
+    private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
+    private static final long RETRY_DELAY_MS = 2_000L;
 
     @Autowired
     public PokemonApiService(PokeApiClient client, JsonMapper jsonMapper)
@@ -94,7 +95,7 @@ public class PokemonApiService implements PokemonService
 
             if (attempt < 3) {
                 try {
-                    Thread.sleep(30_000L);
+                    Thread.sleep(RETRY_DELAY_MS * attempt);
                 } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();
                     break;
@@ -144,14 +145,13 @@ public class PokemonApiService implements PokemonService
         try {
             PokemonSpecies speciesData = pokeApiClient.getResource(PokemonSpecies.class, id).block();
             if (speciesData != null) {
-                lastSuccessfulPokemonIdForSpeciesCall = Integer.parseInt(id);
                 return speciesData;
             }
-            return pokeApiClient.getResource(PokemonSpecies.class, String.valueOf(lastSuccessfulPokemonIdForSpeciesCall)).block();
+            return null;
         }
         catch (Exception e) {
             LOGGER.error("PokemonSpecies not found for id {}. Exception: {}", id, e.getMessage());
-            return pokeApiClient.getResource(PokemonSpecies.class, String.valueOf(lastSuccessfulPokemonIdForSpeciesCall)).block();
+            return null;
         }
     }
 
@@ -204,9 +204,7 @@ public class PokemonApiService implements PokemonService
                     .uri(new URI(url))
                     .GET()
                     .build();
-            response = HttpClient.newBuilder()
-                    .build()
-                    .send(request,  HttpResponse.BodyHandlers.ofString());
+            response = HTTP_CLIENT.send(request,  HttpResponse.BodyHandlers.ofString());
             LOGGER.info("response: {}", response);
             //jsonParser = new JSONParser(response.body());
             List<LocationEncounterArea> listOfLeas = jsonMapper.readValue(response.body(), new TypeReference<>(){});
@@ -269,9 +267,7 @@ public class PokemonApiService implements PokemonService
                     .uri(new URI(chainUrl))
                     .GET()
                     .build();
-            response = HttpClient.newBuilder()
-                    .build()
-                    .send(request,  HttpResponse.BodyHandlers.ofString());
+            response = HTTP_CLIENT.send(request,  HttpResponse.BodyHandlers.ofString());
             LOGGER.info("response: {}", response);
             jsonParser = new JSONParser(response.body());
             return (Map<String, Object>) jsonParser.parse();
@@ -816,9 +812,7 @@ public class PokemonApiService implements PokemonService
                     .uri(new URI(url))
                     .GET()
                     .build();
-            response = HttpClient.newBuilder()
-                    .build()
-                    .send(request, HttpResponse.BodyHandlers.ofString());
+            response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
             logResponse(response);
             LOGGER.info("callUrl: {} status: {}", url, response.statusCode());
         }
@@ -844,7 +838,7 @@ public class PokemonApiService implements PokemonService
         catch (Exception e) {
             LOGGER.error("Failed to call the endpoint: {}", e.getMessage());
         }
-        assert response != null;
+        if (response == null) return new ArrayList<>();
         return switch (response.statusCode()) {
             case 200 -> {
                 List<NamedApiResource<Type>> types;
@@ -852,7 +846,7 @@ public class PokemonApiService implements PokemonService
                     NamedApiResourceList<Type> respond = jsonMapper.readValue(response.body(), new TypeReference<NamedApiResourceList<Type>>()
                     {
                     });
-                    types = respond.results();
+                    types = new ArrayList<>(respond.results());
                     while (respond.next() != null) {
                         response = callUrl(respond.next());
                         respond = jsonMapper.readValue(response.body(), new TypeReference<NamedApiResourceList<Type>>()

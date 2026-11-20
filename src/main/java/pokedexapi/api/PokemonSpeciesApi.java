@@ -62,7 +62,7 @@ public class PokemonSpeciesApi extends BaseApiController
             if (speciesData != null) return ResponseEntity.ok(speciesData);
             else {
                 Pokemon pokemonResource = retrievePokemon(nameOrId);
-                assert pokemonResource != null;
+                if (pokemonResource == null) return ResponseEntity.badRequest().body("Could not find PokemonSpecies with: " + nameOrId);
                 NamedApiResource<PokemonSpecies> speciesResource = pokemonResource.species();
                 if (null == speciesResource) {
                     return ResponseEntity.noContent().build();

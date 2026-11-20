@@ -12,6 +12,7 @@ import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.resource.pokemon.Pokemon;
 
+import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ public class BaseApiController
     private static final Logger LOGGER = LogManager.getLogger(BaseApiController.class);
     @Value("${skaro.pokeapi.baseUri}")
     protected String pokeApiBaseUrl;
+    protected static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
     protected final PokemonService pokemonService;
     protected final PokeApiClient pokeApiClient;
     protected final PokemonLocationEncounterService pokemonLocationEncounterService;
