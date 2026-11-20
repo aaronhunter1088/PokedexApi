@@ -303,7 +303,6 @@ public class PokemonApiService implements PokemonService
      *
      * @return map
      */
-    @Deprecated(forRemoval = true)
     public Map<Integer, List<List<Integer>>> getEvolutionsMap()
     {
         return new TreeMap<>()
