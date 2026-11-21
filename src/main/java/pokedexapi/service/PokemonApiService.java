@@ -203,16 +203,11 @@ public class PokemonApiService implements PokemonService
                 areas.add(area);
             }
         } catch (URISyntaxException use) {
-            use.printStackTrace();
-            LOGGER.error("The url is malformed... {}", use.getMessage());
+            LOGGER.error("The url is malformed: {}", url, use);
         } catch (IOException | InterruptedException ioe) {
-            ioe.printStackTrace();
-            LOGGER.error("There was an error sending the request");
+            if (ioe instanceof InterruptedException) Thread.currentThread().interrupt();
+            LOGGER.error("There was an error sending the request to {}", url, ioe);
         }
-//        catch (ParseException pe) {
-//            pe.printStackTrace();
-//            LOGGER.error("There was an error parsing the response: {}", pe.getMessage());
-//        }
         if (!areas.isEmpty()) {
             areas = areas.stream().sorted().toList();
         }
