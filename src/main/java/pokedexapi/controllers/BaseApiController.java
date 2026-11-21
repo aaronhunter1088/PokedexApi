@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import pokedexapi.service.PokemonLocationEncounterService;
 import pokedexapi.service.PokemonService;
 import reactor.core.publisher.Mono;
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-@CrossOrigin(origins = "*")
 @Controller
 public class BaseApiController
 {
