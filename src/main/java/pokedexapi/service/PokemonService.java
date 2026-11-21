@@ -31,5 +31,5 @@ public interface PokemonService
 
     List<String> getPokemonNamesThatEvolveFromTrading() throws Exception;
 
-    Map<Integer, List<List<Integer>>> getEvolutionsMap();
+    //Map<Integer, List<List<Integer>>> getEvolutionsMap();
 }
