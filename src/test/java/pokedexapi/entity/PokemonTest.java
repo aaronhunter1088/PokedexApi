@@ -9,7 +9,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import pokedexapi.controllers.BaseApiTest;
 import skaro.pokeapi.resource.pokemon.Pokemon;
-import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
 import java.util.Collections;

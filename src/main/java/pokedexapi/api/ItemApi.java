@@ -1,11 +1,13 @@
 package pokedexapi.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
-import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
@@ -26,6 +28,10 @@ class ItemApi extends BaseApiController
         super(client);
     }
 
+    @Operation(summary = "Get all items", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "")
     ResponseEntity<?> getAllItems(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                   @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -41,6 +47,10 @@ class ItemApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get item", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/{id}")
     ResponseEntity<?> getItem(@PathVariable(value = "id") String id)
     {
@@ -57,6 +67,10 @@ class ItemApi extends BaseApiController
 
     // Attributes
 
+    @Operation(summary = "Get all item attributes", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/item-attribute")
     ResponseEntity<?> getAllItemAttributes(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -72,6 +86,10 @@ class ItemApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get item attribute", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/item-attribute/{id}")
     ResponseEntity<?> getItemAttribute(@PathVariable(value = "id") String id)
     {
@@ -88,6 +106,10 @@ class ItemApi extends BaseApiController
 
     // Categories
 
+    @Operation(summary = "Get all item categories", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/item-category")
     ResponseEntity<?> getAllItemCategories(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -103,6 +125,10 @@ class ItemApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get item category", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/item-category/{id}")
     ResponseEntity<?> getItemCategory(@PathVariable(value = "id") String id)
     {
@@ -119,6 +145,10 @@ class ItemApi extends BaseApiController
 
     // Fling Effects
 
+    @Operation(summary = "Get all fling effects", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/item-fling-effect")
     ResponseEntity<?> getAllFlingEffects(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                          @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -134,6 +164,10 @@ class ItemApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get fling effect", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/item-fling-effect/{id}")
     ResponseEntity<?> getFlingEffect(@PathVariable(value = "id") String id)
     {
@@ -150,6 +184,10 @@ class ItemApi extends BaseApiController
 
     // Pockets
 
+    @Operation(summary = "Get all item pockets", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/item-pocket")
     ResponseEntity<?> getAllItemPockets(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                         @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -165,6 +203,10 @@ class ItemApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get item pocket", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/item-pocket/{id}")
     ResponseEntity<?> getItemPocket(@PathVariable(value = "id") String id)
     {

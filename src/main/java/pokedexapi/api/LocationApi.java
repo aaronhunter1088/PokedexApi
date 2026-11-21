@@ -1,5 +1,8 @@
 package pokedexapi.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +34,10 @@ class LocationApi extends BaseApiController
 
     // Locations
 
+    @Operation(summary = "Get all locations", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "")
     ResponseEntity<?> getAllLocations(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                       @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -46,6 +53,10 @@ class LocationApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get location", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/{id}")
     ResponseEntity<?> getLocation(@PathVariable(value = "id") String id)
     {
@@ -62,6 +73,10 @@ class LocationApi extends BaseApiController
 
     // Location Areas
 
+    @Operation(summary = "Get all location areas", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/location-area")
     ResponseEntity<?> getAllLocationAreas(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                           @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -77,6 +92,10 @@ class LocationApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get location area", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/location-area/{id}")
     ResponseEntity<?> getLocationArea(@PathVariable(value = "id") String id)
     {
@@ -91,6 +110,10 @@ class LocationApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get location area encounters", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/location-area/{id}/encounters")
     ResponseEntity<?> getLocationAreaEncounters(@PathVariable(value = "id") String id)
     {
@@ -107,6 +130,10 @@ class LocationApi extends BaseApiController
 
     // Pal Park Areas
 
+    @Operation(summary = "Get all pal park areas", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/pal-park-area")
     ResponseEntity<?> getAllPalParkAreas(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                          @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -122,6 +149,10 @@ class LocationApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get pal park area", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/pal-park-area/{id}")
     ResponseEntity<?> getPalParkArea(@PathVariable(value = "id") String id)
     {
@@ -138,6 +169,10 @@ class LocationApi extends BaseApiController
 
     // Regions
 
+    @Operation(summary = "Get all regions", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/region")
     ResponseEntity<?> getAllRegions(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                     @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -153,6 +188,10 @@ class LocationApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get region", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/region/{id}")
     ResponseEntity<?> getRegion(@PathVariable(value = "id") String id)
     {

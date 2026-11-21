@@ -1,5 +1,8 @@
 package pokedexapi.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +27,10 @@ class VersionApi extends BaseApiController
 
     // Version
 
+    @Operation(summary = "Get all versions", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "")
     ResponseEntity<?> getAllVersions(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                      @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -39,6 +46,10 @@ class VersionApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get version", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/{id}")
     ResponseEntity<?> getVersion(@PathVariable("id") String id)
     {
@@ -55,6 +66,10 @@ class VersionApi extends BaseApiController
 
     // Version Groups
 
+    @Operation(summary = "Get all version groups", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/version-group")
     ResponseEntity<?> getAllVersionGroups(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                           @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -70,6 +85,10 @@ class VersionApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get version group", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/version-group/{id}")
     ResponseEntity<?> getVersionGroup(@PathVariable("id") String id)
     {

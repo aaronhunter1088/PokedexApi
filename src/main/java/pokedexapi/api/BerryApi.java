@@ -1,11 +1,13 @@
 package pokedexapi.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
-import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
@@ -24,6 +26,10 @@ class BerryApi extends BaseApiController
         super(client);
     }
 
+    @Operation(summary = "Get all berries", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "")
     ResponseEntity<?> getAllBerries(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                     @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -39,6 +45,10 @@ class BerryApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get berry", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/{id}")
     ResponseEntity<?> getBerry(@PathVariable String id)
     {
@@ -53,6 +63,10 @@ class BerryApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get berry firmness", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/berry-firmness")
     ResponseEntity<?> getBerryFirmness(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                        @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -68,6 +82,10 @@ class BerryApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get berry firmness", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/berry-firmness/{id}")
     ResponseEntity<?> getBerryFirmness(@PathVariable String id)
     {
@@ -82,6 +100,10 @@ class BerryApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get berry flavors", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/berry-flavor")
     ResponseEntity<?> getBerryFlavors(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                       @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -97,6 +119,10 @@ class BerryApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get berry flavor", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/berry-flavor/{id}")
     ResponseEntity<?> getBerryFlavor(@PathVariable String id)
     {

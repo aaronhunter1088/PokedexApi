@@ -1,11 +1,13 @@
 package pokedexapi.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
-import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
@@ -26,6 +28,10 @@ class ContestApi extends BaseApiController
 
     // ContestType
 
+    @Operation(summary = "Get all contest types", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/contest-type")
     ResponseEntity<?> getAllContestTypes(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                          @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -41,6 +47,10 @@ class ContestApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get contest type", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/contest-type/{id}")
     ResponseEntity<?> getContestType(@PathVariable String id)
     {
@@ -57,6 +67,10 @@ class ContestApi extends BaseApiController
 
     // ContestEffect
 
+    @Operation(summary = "Get all contest effect", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/contest-effect")
     ResponseEntity<?> getAllContestEffect(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                           @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -72,6 +86,10 @@ class ContestApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get contest effect", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/contest-effect/{id}")
     ResponseEntity<?> getContestEffect(@PathVariable String id)
     {
@@ -88,6 +106,10 @@ class ContestApi extends BaseApiController
 
     // SuperContestEffects
 
+    @Operation(summary = "Get all super contest effect", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/super-contest-effect")
     ResponseEntity<?> getAllSuperContestEffect(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                                @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -103,6 +125,10 @@ class ContestApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get super contest effect", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/super-contest-effect/{id}")
     ResponseEntity<?> getSuperContestEffect(@PathVariable String id)
     {

@@ -1,11 +1,13 @@
 package pokedexapi.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
-import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
@@ -30,6 +32,10 @@ class MovesApi extends BaseApiController
 
     // Moves
 
+    @Operation(summary = "Get all moves", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "")
     ResponseEntity<?> getAllMoves(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                   @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -45,6 +51,10 @@ class MovesApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get move", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/{id}")
     ResponseEntity<?> getMove(@PathVariable(value = "id") String id)
     {
@@ -61,6 +71,10 @@ class MovesApi extends BaseApiController
 
     // Move Ailment
 
+    @Operation(summary = "Get all move ailments", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/move-ailment")
     ResponseEntity<?> getAllMoveAilments(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                          @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -76,6 +90,10 @@ class MovesApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get move ailment", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/move-ailment/{id}")
     ResponseEntity<?> getMoveAilment(@PathVariable(value = "id") String id)
     {
@@ -92,6 +110,10 @@ class MovesApi extends BaseApiController
 
     // Battle Styles
 
+    @Operation(summary = "Get all move battle styles", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/move-battle-style")
     ResponseEntity<?> getAllMoveBattleStyles(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                              @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -107,6 +129,10 @@ class MovesApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get move battle style", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/move-battle-style/{id}")
     ResponseEntity<?> getMoveBattleStyle(@PathVariable(value = "id") String id)
     {
@@ -123,6 +149,10 @@ class MovesApi extends BaseApiController
 
     // Categories
 
+    @Operation(summary = "Get all move categories", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/move-category")
     ResponseEntity<?> getAllMoveCategories(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -138,6 +168,10 @@ class MovesApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get move category", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/move-category/{id}")
     ResponseEntity<?> getMoveCategory(@PathVariable(value = "id") String id)
     {
@@ -154,6 +188,10 @@ class MovesApi extends BaseApiController
 
     // Damage Classes
 
+    @Operation(summary = "Get all move damage classes", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/move-damage-class")
     ResponseEntity<?> getAllMoveDamageClasses(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                               @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -169,6 +207,10 @@ class MovesApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get move damage class", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/move-damage-class/{id}")
     ResponseEntity<?> getMoveDamageClass(@PathVariable(value = "id") String id)
     {
@@ -185,6 +227,10 @@ class MovesApi extends BaseApiController
 
     // Learn Moves
 
+    @Operation(summary = "Get all move learn methods", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/move-learn-method")
     ResponseEntity<?> getAllMoveLearnMethods(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                              @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -200,6 +246,10 @@ class MovesApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get move learn method", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/move-learn-method/{id}")
     ResponseEntity<?> getMoveLearnMethod(@PathVariable(value = "id") String id)
     {
@@ -216,6 +266,10 @@ class MovesApi extends BaseApiController
 
     // Targets
 
+    @Operation(summary = "Get all move targets", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/move-target")
     ResponseEntity<?> getAllMoveTargets(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                         @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -231,6 +285,10 @@ class MovesApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get move target", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/move-target/{id}")
     ResponseEntity<?> getMoveTarget(@PathVariable(value = "id") String id)
     {

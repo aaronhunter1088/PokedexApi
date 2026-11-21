@@ -20,6 +20,7 @@
         <finalName>${project.artifactId}-${project.version}</finalName>
         <outputDirectory>${basedir}/dist/${project.version}</outputDirectory>
         <main.class>pokedexapi.PokedexApiApplication</main.class>
+        <pokeapi-reactor.version>2.0.2</pokeapi-reactor.version>
         <!-- Used to test new versions --><!--
         <spring.boot.version>4.1.0</spring.boot.version> -->
         <springdoc.openapi.swagger-ui-url>http://localhost:4201/springboot/swagger-ui/index.html</springdoc.openapi.swagger-ui-url>

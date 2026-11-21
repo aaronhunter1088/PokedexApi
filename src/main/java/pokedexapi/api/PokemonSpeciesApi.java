@@ -1,5 +1,8 @@
 package pokedexapi.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +28,10 @@ public class PokemonSpeciesApi extends BaseApiController
         super(client);
     }
 
+    @Operation(summary = "Get all species data", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "")
     ResponseEntity<?> getAllSpeciesData(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                         @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -41,7 +48,11 @@ public class PokemonSpeciesApi extends BaseApiController
         }
     }
 
-    @RequestMapping(value = "/{nameOrId}", method = RequestMethod.GET)
+    @Operation(summary = "Get pokemon species data", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
+    @GetMapping(value = "/{nameOrId}")
     public ResponseEntity<?> getPokemonSpeciesData(@PathVariable String nameOrId)
     {
         logger.info("getSpeciesData: {}", nameOrId);

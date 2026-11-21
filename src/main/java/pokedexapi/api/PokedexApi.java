@@ -26,6 +26,10 @@ public class PokedexApi extends BaseApiController
         super(pokemonService, client, pokemonLocationEncounterService);
     }
 
+    @Operation(summary = "Get all pokedexes", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "")
     ResponseEntity<?> getAllPokedexes(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                       @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -43,7 +47,8 @@ public class PokedexApi extends BaseApiController
 
     @Operation(summary = "Returns a Pokedex by name or id", responses = {
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content)})
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "{nameOrId}/name")
     ResponseEntity<?> getPokedex(@PathVariable("nameOrId") String nameOrId)
     {
@@ -58,7 +63,10 @@ public class PokedexApi extends BaseApiController
         }
     }
 
-    @Operation(summary = "Returns the number of Pokemon entries in a Pokedex")
+    @Operation(summary = "Returns the number of Pokemon entries in a Pokedex", responses = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/{nameOrId}/total")
     ResponseEntity<?> getPokedexTotal(@PathVariable(value = "nameOrId", required = false) String nameOrId)
     {

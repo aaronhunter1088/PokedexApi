@@ -22,11 +22,11 @@ import skaro.pokeapi.resource.pokemonform.PokemonForm;
 import skaro.pokeapi.resource.pokemonhabitat.PokemonHabitat;
 import skaro.pokeapi.resource.pokemonshape.PokemonShape;
 import skaro.pokeapi.resource.pokemonspecies.PokemonSpecies;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.time.Duration;
 import java.util.*;
-import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.json.JsonMapper;
 
 @RestController
 @RequestMapping("/pokemon")
@@ -43,7 +43,8 @@ public class PokemonApi extends BaseApiController
 
     @Operation(summary = "Returns up to 10 Pokemon", responses = {
             @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))),
-            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content)})
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "")
     public ResponseEntity<?> getAllPokemon(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -64,7 +65,8 @@ public class PokemonApi extends BaseApiController
 
     @Operation(summary = "Returns a Pokemon", responses = {
             @ApiResponse(description = "Successful Operation", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Pokemon.class))),
-            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content)})
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/{nameOrId}")
     public ResponseEntity<?> getAPokemon(@PathVariable String nameOrId)
     {
@@ -90,7 +92,11 @@ public class PokemonApi extends BaseApiController
 
     // Pokeathlon Stat
 
-    @RequestMapping(value = "/pokeathlon-stat", method = RequestMethod.GET)
+    @Operation(summary = "Get all pokeathlon stats", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
+    @GetMapping(value = "/pokeathlon-stat")
     ResponseEntity<?> getAllPokeathlonStats(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                             @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
@@ -106,7 +112,11 @@ public class PokemonApi extends BaseApiController
         }
     }
 
-    @RequestMapping(value = "/pokeathlon-stat/{id}", method = RequestMethod.GET)
+    @Operation(summary = "Get pokeathlon stat", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
+    @GetMapping(value = "/pokeathlon-stat/{id}")
     ResponseEntity<?> getPokeathlonStat(@PathVariable(value = "id") String id)
     {
         LOGGER.info("getPokeathlonStat {}", id);
@@ -122,6 +132,10 @@ public class PokemonApi extends BaseApiController
 
     // Pokemon Color
 
+    @Operation(summary = "Get all colors", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/pokemon-color")
     ResponseEntity<?> getAllColors(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                    @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -138,6 +152,10 @@ public class PokemonApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get color", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/pokemon-color/{nameOrId}")
     ResponseEntity<?> getColor(@PathVariable("nameOrId") String nameOrId)
     {
@@ -153,6 +171,10 @@ public class PokemonApi extends BaseApiController
 
     // Pokemon Forms
 
+    @Operation(summary = "Get all forms", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/pokemon-form")
     ResponseEntity<?> getAllForms(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                   @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -169,6 +191,10 @@ public class PokemonApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get form", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/pokemon-form/{nameOrId}")
     ResponseEntity<?> getForm(@PathVariable("nameOrId") String nameOrId)
     {
@@ -184,6 +210,10 @@ public class PokemonApi extends BaseApiController
 
     // Pokemon Habitats
 
+    @Operation(summary = "Get all habitats", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/pokemon-habitat")
     ResponseEntity<?> getAllHabitats(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                      @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -200,6 +230,10 @@ public class PokemonApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get habitat", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/pokemon-habitat/{nameOrId}")
     ResponseEntity<?> getHabitat(@PathVariable String nameOrId)
     {
@@ -215,6 +249,10 @@ public class PokemonApi extends BaseApiController
     }
 
     // Pokemon Shapes
+    @Operation(summary = "Get all shapes", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/pokemon-shape")
     ResponseEntity<?> getAllShapes(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                    @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
@@ -231,6 +269,10 @@ public class PokemonApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get shape", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/pokemon-shape/{nameOrId}")
     ResponseEntity<?> getShape(@PathVariable("nameOrId") String nameOrId)
     {
@@ -245,6 +287,10 @@ public class PokemonApi extends BaseApiController
         }
     }
 
+    @Operation(summary = "Get a pokemon description", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/{nameOrId}/description")
     ResponseEntity<?> getAPokemonDescription(@PathVariable String nameOrId)
     {
@@ -270,6 +316,10 @@ public class PokemonApi extends BaseApiController
 
     // just the names of the Location Areas
 
+    @Operation(summary = "Get pokemon locations", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/{pokemonId}/locations")
     ResponseEntity<?> getPokemonLocations(@PathVariable Integer pokemonId)
     {

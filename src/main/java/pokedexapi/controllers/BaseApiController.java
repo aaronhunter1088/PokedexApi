@@ -13,12 +13,9 @@ import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.resource.pokemon.Pokemon;
 
 import java.net.http.HttpClient;
-import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
-import static pokedexapi.utilities.Constants.GIF_IMAGE_URL;
 
 @CrossOrigin(origins = "*")
 @Controller
