@@ -15,7 +15,6 @@ import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.pokemon.Pokemon;
 import skaro.pokeapi.resource.pokemonspecies.PokemonSpecies;
 
-import java.util.Arrays;
 
 @RestController
 @RequestMapping("/pokemon-species")
@@ -77,7 +76,7 @@ public class PokemonSpeciesApi extends BaseApiController
             }
         }
         catch (Exception e) {
-            Arrays.stream(e.getStackTrace()).forEach(logger::error);
+            logger.error("Failed to get species data for {}", nameOrId, e);
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
