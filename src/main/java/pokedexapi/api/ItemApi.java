@@ -33,7 +33,7 @@ class ItemApi extends BaseApiController
         LOGGER.info("getAllItems limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<Item> items = pokeApiClient.getResource(Item.class, new PageQuery(limit, offset * limit)).block();
-            if (null != items) return ResponseEntity.ok(items);
+            if (items != null) return ResponseEntity.ok(items);
             return ResponseEntity.badRequest().body("Could not access Item endpoint");
         }
         catch (Exception e) {
@@ -47,7 +47,7 @@ class ItemApi extends BaseApiController
         LOGGER.info("getItem {}", id);
         try {
             Item item = pokeApiClient.getResource(Item.class, id).block();
-            if (null != item) return ResponseEntity.ok(item);
+            if (item != null) return ResponseEntity.ok(item);
             return ResponseEntity.badRequest().body("Could not find an item with " + id);
         }
         catch (Exception e) {
@@ -64,7 +64,7 @@ class ItemApi extends BaseApiController
         LOGGER.info("getAllItemAttributes limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<ItemAttribute> itemAttributes = pokeApiClient.getResource(ItemAttribute.class, new PageQuery(limit, offset * limit)).block();
-            if (null != itemAttributes) return ResponseEntity.ok(itemAttributes);
+            if (itemAttributes != null) return ResponseEntity.ok(itemAttributes);
             return ResponseEntity.badRequest().body("Could not access ItemAttribute endpoint");
         }
         catch (Exception e) {
@@ -78,7 +78,7 @@ class ItemApi extends BaseApiController
         LOGGER.info("getItemAttribute {}", id);
         try {
             ItemAttribute itemAttribute = pokeApiClient.getResource(ItemAttribute.class, id).block();
-            if (null != itemAttribute) return ResponseEntity.ok(itemAttribute);
+            if (itemAttribute != null) return ResponseEntity.ok(itemAttribute);
             return ResponseEntity.badRequest().body("Could not find an itemAttribute with " + id);
         }
         catch (Exception e) {
@@ -95,7 +95,7 @@ class ItemApi extends BaseApiController
         LOGGER.info("getAllItemCategories limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<ItemCategory> itemCategories = pokeApiClient.getResource(ItemCategory.class, new PageQuery(limit, offset * limit)).block();
-            if (null != itemCategories) return ResponseEntity.ok(itemCategories);
+            if (itemCategories != null) return ResponseEntity.ok(itemCategories);
             return ResponseEntity.badRequest().body("Could not access ItemCategory endpoint");
         }
         catch (Exception e) {
@@ -109,7 +109,7 @@ class ItemApi extends BaseApiController
         LOGGER.info("getItemCategory {}", id);
         try {
             ItemCategory itemCategory = pokeApiClient.getResource(ItemCategory.class, id).block();
-            if (null != itemCategory) return ResponseEntity.ok(itemCategory);
+            if (itemCategory != null) return ResponseEntity.ok(itemCategory);
             return ResponseEntity.badRequest().body("Could not find an itemCategory with " + id);
         }
         catch (Exception e) {
@@ -126,7 +126,7 @@ class ItemApi extends BaseApiController
         LOGGER.info("getAllFlingEffects limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<ItemFlingEffect> flingEffects = pokeApiClient.getResource(ItemFlingEffect.class, new PageQuery(limit, offset * limit)).block();
-            if (null != flingEffects) return ResponseEntity.ok(flingEffects);
+            if (flingEffects != null) return ResponseEntity.ok(flingEffects);
             return ResponseEntity.badRequest().body("Could not access ItemFlingEffect endpoint");
         }
         catch (Exception e) {
@@ -140,7 +140,7 @@ class ItemApi extends BaseApiController
         LOGGER.info("getFlingEffect {}", id);
         try {
             ItemFlingEffect flingEffect = pokeApiClient.getResource(ItemFlingEffect.class, id).block();
-            if (null != flingEffect) return ResponseEntity.ok(flingEffect);
+            if (flingEffect != null) return ResponseEntity.ok(flingEffect);
             return ResponseEntity.badRequest().body("Could not find a flingEffect with " + id);
         }
         catch (Exception e) {
@@ -157,7 +157,7 @@ class ItemApi extends BaseApiController
         LOGGER.info("getAllItemPockets limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<ItemPocket> itemPockets = pokeApiClient.getResource(ItemPocket.class, new PageQuery(limit, offset * limit)).block();
-            if (null != itemPockets) return ResponseEntity.ok(itemPockets);
+            if (itemPockets != null) return ResponseEntity.ok(itemPockets);
             return ResponseEntity.badRequest().body("Could not access ItemPocket endpoint");
         }
         catch (Exception e) {
@@ -171,7 +171,7 @@ class ItemApi extends BaseApiController
         LOGGER.info("getItemPocket {}", id);
         try {
             ItemPocket itemPocket = pokeApiClient.getResource(ItemPocket.class, id).block();
-            if (null != itemPocket) return ResponseEntity.ok(itemPocket);
+            if (itemPocket != null) return ResponseEntity.ok(itemPocket);
             return ResponseEntity.badRequest().body("Could not find a itemPocket with " + id);
         }
         catch (Exception e) {

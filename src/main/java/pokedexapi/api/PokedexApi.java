@@ -33,7 +33,7 @@ public class PokedexApi extends BaseApiController
         LOGGER.info("getAllPokedexes limit={} offset={}", limit, offset);
         try {
             NamedApiResourceList<Pokedex> pokedexes = pokeApiClient.getResource(Pokedex.class, new PageQuery(limit, offset * limit)).block();
-            if (null != pokedexes) return ResponseEntity.ok(pokedexes);
+            if (pokedexes != null) return ResponseEntity.ok(pokedexes);
             return ResponseEntity.badRequest().body("Could not access Pokedex endpoint");
         }
         catch (Exception e) {
@@ -50,7 +50,7 @@ public class PokedexApi extends BaseApiController
         LOGGER.info("getPokedex {}", nameOrId);
         try {
             Pokedex pokedex = pokeApiClient.getResource(Pokedex.class, nameOrId).block();
-            if (null != pokedex) return ResponseEntity.ok(pokedex);
+            if (pokedex != null) return ResponseEntity.ok(pokedex);
             return ResponseEntity.badRequest().body("Could not find a Pokedex with " + nameOrId);
         }
         catch (Exception e) {
@@ -64,8 +64,9 @@ public class PokedexApi extends BaseApiController
     {
         LOGGER.info("getPokedexTotal for Pokedex {}", nameOrId);
         try {
-            int total = pokemonApiService.getTotalPokemon(nameOrId);
-            return ResponseEntity.ok(total);
+            Pokedex pokedex = pokeApiClient.getResource(Pokedex.class, nameOrId).block();
+            if (pokedex != null) return ResponseEntity.ok(pokedex.getPokemonEntries().size());
+            return ResponseEntity.badRequest().body("Could not find a Pokedex with " + nameOrId);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());

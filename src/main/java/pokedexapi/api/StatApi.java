@@ -28,8 +28,8 @@ public class StatApi extends BaseApiController
     {
         LOGGER.info("getAllStats limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<Stat> page = pokeApiClient.getResource(Stat.class, new PageQuery(limit, offset * limit)).block();
-            if (null != page) return ResponseEntity.ok(page);
+            NamedApiResourceList<Stat> stats = pokeApiClient.getResource(Stat.class, new PageQuery(limit, offset * limit)).block();
+            if (stats != null) return ResponseEntity.ok(stats);
             return ResponseEntity.badRequest().body("Could not access Stats endpoint");
         }
         catch (Exception e) {
@@ -43,7 +43,7 @@ public class StatApi extends BaseApiController
         LOGGER.info("getStat {}", nameOrId);
         try {
             Stat stat = pokeApiClient.getResource(Stat.class, nameOrId).block();
-            if (null != stat) return ResponseEntity.ok(stat);
+            if (stat != null) return ResponseEntity.ok(stat);;
             return ResponseEntity.badRequest().body("Could not find Stat with " + nameOrId);
         }
         catch (Exception e) {

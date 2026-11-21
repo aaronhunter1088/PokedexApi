@@ -29,7 +29,7 @@ public class GenderApi extends BaseApiController
         LOGGER.info("getAllGenders limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<Gender> genders = pokeApiClient.getResource(Gender.class, new PageQuery(limit, offset * limit)).block();
-            if (null != genders) return ResponseEntity.ok(genders);
+            if (genders != null) return ResponseEntity.ok(genders);
             return ResponseEntity.badRequest().body("Could not access Gender endpoint");
         }
         catch (Exception e) {
@@ -43,7 +43,7 @@ public class GenderApi extends BaseApiController
         LOGGER.info("getGender {}", id);
         try {
             Gender gender = pokeApiClient.getResource(Gender.class, id).block();
-            if (null != gender) return ResponseEntity.ok(gender);
+            if (gender != null) return ResponseEntity.ok(gender);
             return ResponseEntity.badRequest().body("Could not find Gender with " + id);
         }
         catch (Exception e) {

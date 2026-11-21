@@ -223,13 +223,13 @@ class PokedexApiTest extends BaseApiTest
         private MockMvc mockMvc;
 
         @Test
-        @DisplayName("getPokedexTotal with no value defaults to pokedex 1 and returns 1025")
-        void testGetPokedexTotalDefault() throws Exception
+        @DisplayName("getPokedexTotal for pokedex 1 returns 1025")
+        void testGetPokedexTotalNational() throws Exception
         {
             when(pokeApiClient.getResource(Pokedex.class, "1"))
                     .thenReturn(Mono.just(pokedex_1_national));
 
-            MvcResult mvcResult = this.mockMvc.perform(get(POKEDEX_API + "/" + " " + "/total"))
+            MvcResult mvcResult = this.mockMvc.perform(get(POKEDEX_API + "/1/total"))
                     .andExpect(status().isOk())
                     .andReturn();
 
@@ -261,6 +261,19 @@ class PokedexApiTest extends BaseApiTest
     {
         @Autowired
         private MockMvc mockMvc;
+
+        @Test
+        @DisplayName("getPokedexTotal returns bad request when the pokedex is not found")
+        void testGetPokedexTotalReturnsNoPokedex() throws Exception
+        {
+            when(pokeApiClient.getResource(Pokedex.class, "0"))
+                    .thenReturn(Mono.empty());
+
+            this.mockMvc.perform(get(POKEDEX_API + "/0/total"))
+                    .andExpect(status().isBadRequest());
+
+            verify(pokeApiClient).getResource(Pokedex.class, "0");
+        }
 
         @Test
         @DisplayName("getPokedexTotal throws an exception")

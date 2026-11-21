@@ -38,7 +38,7 @@ class LocationApi extends BaseApiController
         logger.info("getAllLocations limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<Location> locations = pokeApiClient.getResource(Location.class, new PageQuery(limit, offset * limit)).block();
-            if (null != locations) return ResponseEntity.ok(locations);
+            if (locations != null) return ResponseEntity.ok(locations);
             return ResponseEntity.badRequest().body("Could not access Location endpoint");
         }
         catch (Exception e) {
@@ -52,7 +52,7 @@ class LocationApi extends BaseApiController
         logger.info("getLocation {}", id);
         try {
             Location location = pokeApiClient.getResource(Location.class, id).block();
-            if (null != location) return ResponseEntity.ok(location);
+            if (location != null) return ResponseEntity.ok(location);
             return ResponseEntity.badRequest().body("Could not find a Location with " + id);
         }
         catch (Exception e) {
@@ -69,7 +69,7 @@ class LocationApi extends BaseApiController
         logger.info("getAllLocationAreas limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<LocationArea> locationAreas = pokeApiClient.getResource(LocationArea.class, new PageQuery(limit, offset * limit)).block();
-            if (null != locationAreas) return ResponseEntity.ok(locationAreas);
+            if (locationAreas != null) return ResponseEntity.ok(locationAreas);
             return ResponseEntity.badRequest().body("Could not access LocationArea endpoint");
         }
         catch (Exception e) {
@@ -83,7 +83,7 @@ class LocationApi extends BaseApiController
         logger.info("getLocationArea {}", id);
         try {
             LocationArea locationArea = pokeApiClient.getResource(LocationArea.class, id).block();
-            if (null != locationArea) return ResponseEntity.ok(locationArea);
+            if (locationArea != null) return ResponseEntity.ok(locationArea);
             return ResponseEntity.badRequest().body("Could not find a LocationArea with " + id);
         }
         catch (Exception e) {
@@ -97,9 +97,7 @@ class LocationApi extends BaseApiController
         logger.info("getLocationAreaEncounters {}", id);
         try {
             Pokemon pokemon = retrievePokemon(id);
-            if (pokemon != null) {
-                return ResponseEntity.ok(pokemonLocationEncounterService.getPokemonLocationEncounters(pokemon.id()).getBody());
-            }
+            if (pokemon != null) return ResponseEntity.ok(pokemonLocationEncounterService.getPokemonLocationEncounters(pokemon.id()).getBody());
             return ResponseEntity.badRequest().body("Could not find a LocationArea with " + id);
         }
         catch (Exception e) {
@@ -116,7 +114,7 @@ class LocationApi extends BaseApiController
         logger.info("getAllPalParkAreas limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<PalParkArea> palParkAreas = pokeApiClient.getResource(PalParkArea.class, new PageQuery(limit, offset * limit)).block();
-            if (null != palParkAreas) return ResponseEntity.ok(palParkAreas);
+            if (palParkAreas != null) return ResponseEntity.ok(palParkAreas);
             return ResponseEntity.badRequest().body("Could not access PalParkArea endpoint");
         }
         catch (Exception e) {
@@ -130,7 +128,7 @@ class LocationApi extends BaseApiController
         logger.info("getPalParkArea {}", id);
         try {
             PalParkArea palParkArea = pokeApiClient.getResource(PalParkArea.class, id).block();
-            if (null != palParkArea) return ResponseEntity.ok(palParkArea);
+            if (palParkArea != null) return ResponseEntity.ok(palParkArea);
             return ResponseEntity.badRequest().body("Could not find a PalParkArea with " + id);
         }
         catch (Exception e) {
@@ -147,7 +145,7 @@ class LocationApi extends BaseApiController
         logger.info("getAllRegions limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<Region> regions = pokeApiClient.getResource(Region.class, new PageQuery(limit, offset * limit)).block();
-            if (null != regions) return ResponseEntity.ok(regions);
+            if (regions != null) return ResponseEntity.ok(regions);
             return ResponseEntity.badRequest().body("Could not access Region endpoint");
         }
         catch (Exception e) {
@@ -161,7 +159,7 @@ class LocationApi extends BaseApiController
         logger.info("getRegion {}", id);
         try {
             Region region = pokeApiClient.getResource(Region.class, id).block();
-            if (null != region) return ResponseEntity.ok(region);
+            if (region != null) return ResponseEntity.ok(region);
             return ResponseEntity.badRequest().body("Could not find a Region with " + id);
         }
         catch (Exception e) {

@@ -36,7 +36,7 @@ class EvolutionApi extends BaseApiController
         logger.info("getEvolutionChains limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<EvolutionChain> evolutionChains = pokeApiClient.getResource(EvolutionChain.class, new PageQuery(limit, offset * limit)).block();
-            if (null != evolutionChains) return ResponseEntity.ok(evolutionChains);
+            if (evolutionChains != null) return ResponseEntity.ok(evolutionChains);
             return ResponseEntity.badRequest().body("Could not access EvolutionChain endpoint");
         }
         catch (Exception e) {
@@ -50,7 +50,7 @@ class EvolutionApi extends BaseApiController
         logger.info("getEvolutionChain {}", id);
         try {
             EvolutionChain evolutionChain = pokeApiClient.getResource(EvolutionChain.class, id).block();
-            if (null != evolutionChain) return ResponseEntity.ok(evolutionChain);
+            if (evolutionChain != null) return ResponseEntity.ok(evolutionChain);
             return ResponseEntity.badRequest().body("Could not find an EvolutionChain with " + id);
         }
         catch (Exception e) {
@@ -67,7 +67,7 @@ class EvolutionApi extends BaseApiController
         logger.info("getEvolutionTriggers");
         try {
             NamedApiResourceList<EvolutionTrigger> evolutionTriggers = pokeApiClient.getResource(EvolutionTrigger.class, new PageQuery(limit, offset * limit)).block();
-            if (null != evolutionTriggers) return ResponseEntity.ok(evolutionTriggers);
+            if (evolutionTriggers != null) return ResponseEntity.ok(evolutionTriggers);
             return ResponseEntity.badRequest().body("Could not access EvolutionTrigger endpoint");
         }
         catch (Exception e) {
@@ -81,7 +81,7 @@ class EvolutionApi extends BaseApiController
         logger.info("getEvolutionTrigger {}", id);
         try {
             EvolutionTrigger evolutionTrigger = pokeApiClient.getResource(EvolutionTrigger.class, id).block();
-            if (null != evolutionTrigger) return ResponseEntity.ok(evolutionTrigger);
+            if (evolutionTrigger != null) return ResponseEntity.ok(evolutionTrigger);
             return ResponseEntity.badRequest().body("Could not find an EvolutionTrigger with " + id);
         }
         catch (Exception e) {

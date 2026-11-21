@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
-import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
@@ -26,13 +25,13 @@ class VersionApi extends BaseApiController
     // Version
 
     @GetMapping(value = "")
-    ResponseEntity<?> getVersions(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-                                  @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    ResponseEntity<?> getAllVersions(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                     @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getVersions limit:{} offset:{}", limit, offset);
+        LOGGER.info("getAllVersions limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<Version> versions = pokeApiClient.getResource(Version.class, new PageQuery(limit, offset * limit)).block();
-            if (null != versions) return ResponseEntity.ok(versions);
+            if (versions != null) return ResponseEntity.ok(versions);
             return ResponseEntity.badRequest().body("Could not access Version endpoint");
         }
         catch (Exception e) {
@@ -46,7 +45,7 @@ class VersionApi extends BaseApiController
         LOGGER.info("getVersion {}", id);
         try {
             Version version = pokeApiClient.getResource(Version.class, id).block();
-            if (null != version) return ResponseEntity.ok(version);
+            if (version != null) return ResponseEntity.ok(version);
             return ResponseEntity.badRequest().body("Could not find a Version with " + id);
         }
         catch (Exception e) {
@@ -57,13 +56,13 @@ class VersionApi extends BaseApiController
     // Version Groups
 
     @GetMapping(value = "/version-group")
-    ResponseEntity<?> getVersionGroups(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-                                       @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    ResponseEntity<?> getAllVersionGroups(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                          @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getVersionGroups limit:{} offset:{}", limit, offset);
+        LOGGER.info("getAllVersionGroups limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<VersionGroup> versionGroups = pokeApiClient.getResource(VersionGroup.class, new PageQuery(limit, offset * limit)).block();
-            if (null != versionGroups) return ResponseEntity.ok(versionGroups);
+            if (versionGroups != null) return ResponseEntity.ok(versionGroups);
             return ResponseEntity.badRequest().body("Could not access VersionGroup endpoint");
         }
         catch (Exception e) {
@@ -77,7 +76,7 @@ class VersionApi extends BaseApiController
         LOGGER.info("getVersionGroup {}", id);
         try {
             VersionGroup versionGroup = pokeApiClient.getResource(VersionGroup.class, id).block();
-            if (null != versionGroup) return ResponseEntity.ok(versionGroup);
+            if (versionGroup != null) return ResponseEntity.ok(versionGroup);
             return ResponseEntity.badRequest().body("Could not find a VersionGroup with " + id);
         }
         catch (Exception e) {

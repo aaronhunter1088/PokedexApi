@@ -30,7 +30,7 @@ class MachineApi extends BaseApiController
         logger.info("getAllMachines limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<Machine> machines = pokeApiClient.getResource(Machine.class, new PageQuery(limit, offset * limit)).block();
-            if (null != machines) return ResponseEntity.ok(machines);
+            if (machines != null) return ResponseEntity.ok(machines);
             return ResponseEntity.badRequest().body("Could not access Machine endpoint");
         }
         catch (Exception e) {
@@ -44,7 +44,7 @@ class MachineApi extends BaseApiController
         logger.info("getMachine {}", id);
         try {
             Machine machine = pokeApiClient.getResource(Machine.class, id).block();
-            if (null != machine) return ResponseEntity.ok(machine);
+            if (machine != null) return ResponseEntity.ok(machine);
             return ResponseEntity.badRequest().body("Could not find Machine with " + id);
         }
         catch (Exception e) {

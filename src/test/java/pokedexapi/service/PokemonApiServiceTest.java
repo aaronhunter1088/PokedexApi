@@ -211,46 +211,6 @@ class PokemonApiServiceTest
     }
 
     @Nested
-    @DisplayName("getTotalPokemon")
-    class GetTotalPokemon
-    {
-        @Test
-        @DisplayName("pokedex 2 has 151 pokemon")
-        void testPokedex2()
-        {
-            Mono<PokeApiResource> just = Mono.just(pokedex2);
-            when(pokeApiClient.getResource(any(), anyString())).thenReturn(just);
-
-            assertEquals(151, service.getTotalPokemon("2"));
-
-            verify(pokeApiClient, times(1)).getResource(Pokedex.class, "2");
-        }
-
-        @Test
-        @DisplayName("defaults to pokedex 1 when id is null or blank")
-        void testDefaultsToPokedex1()
-        {
-            Mono<PokeApiResource> just = Mono.just(pokedex2);
-            when(pokeApiClient.getResource(any(), anyString())).thenReturn(just);
-
-            service.getTotalPokemon(null);
-            service.getTotalPokemon("");
-            service.getTotalPokemon("  ");
-
-            verify(pokeApiClient, times(3)).getResource(Pokedex.class, "1");
-        }
-
-        @Test
-        @DisplayName("returns -1 when the pokedex is not found")
-        void testNotFound()
-        {
-            when(pokeApiClient.getResource(any(), anyString())).thenReturn(Mono.empty());
-
-            assertEquals(-1, service.getTotalPokemon("0"));
-        }
-    }
-
-    @Nested
     @DisplayName("callUrl")
     class CallUrl
     {

@@ -28,8 +28,8 @@ public class GenerationApi extends BaseApiController
     {
         LOGGER.info("getAllGenerations limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<Generation> page = pokeApiClient.getResource(Generation.class, new PageQuery(limit, offset * limit)).block();
-            if (null != page) return ResponseEntity.ok(page);
+            NamedApiResourceList<Generation> generations = pokeApiClient.getResource(Generation.class, new PageQuery(limit, offset * limit)).block();
+            if (generations != null) return ResponseEntity.ok(generations);
             return ResponseEntity.badRequest().body("Could not access Generation endpoint");
         }
         catch (Exception e) {
@@ -43,7 +43,7 @@ public class GenerationApi extends BaseApiController
         LOGGER.info("getGeneration {}", id);
         try {
             Generation generation = pokeApiClient.getResource(Generation.class, id).block();
-            if (null != generation) return ResponseEntity.ok(generation);
+            if (generation != null) return ResponseEntity.ok(generation);
             return ResponseEntity.badRequest().body("Could not find Generation with " + id);
         }
         catch (Exception e) {

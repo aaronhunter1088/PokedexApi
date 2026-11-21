@@ -29,7 +29,7 @@ public class AbilityApi extends BaseApiController
         LOGGER.info("getAllAbilities limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<Ability> abilities = pokeApiClient.getResource(Ability.class, new PageQuery(limit, offset * limit)).block();
-            if (null != abilities) return ResponseEntity.ok(abilities);
+            if (abilities != null) return ResponseEntity.ok(abilities);
             return ResponseEntity.badRequest().body("Could not access Ability endpoint");
         }
         catch (Exception e) {

@@ -289,21 +289,21 @@ public class PokemonApiService implements PokemonService
         }
     }
 
-    /**
-     * Get the total number of Pokemon in a
-     * Pokedex or -1 if not found
-     * <a href="https://pokeapi.co/api/v2/pokedex/{pokedexId}">Test</a>
-     *
-     * @param nameOrId the id to get the total Pokemon from
-     * @return the total number of Pokemon in the Pokedex or -1
-     */
-    @Override
-    public Integer getTotalPokemon(String nameOrId)
-    {
-        Pokedex pokedex = pokeApiClient.getResource(Pokedex.class, null == nameOrId || nameOrId.isBlank() ? "1" : nameOrId).block();
-        if (pokedex != null) return pokedex.getPokemonEntries().size();
-        else return -1;
-    }
+//    /**
+//     * Get the total number of Pokemon in a
+//     * Pokedex or -1 if not found
+//     * <a href="https://pokeapi.co/api/v2/pokedex/{pokedexId}">Test</a>
+//     *
+//     * @param nameOrId the id to get the total Pokemon from
+//     * @return the total number of Pokemon in the Pokedex or -1
+//     */
+//    @Override
+//    public Integer getTotalPokemon(String nameOrId)
+//    {
+//        Pokedex pokedex = pokeApiClient.getResource(Pokedex.class, null == nameOrId || nameOrId.isBlank() ? "1" : nameOrId).block();
+//        if (pokedex != null) return pokedex.getPokemonEntries().size();
+//        else return -1;
+//    }
 
     /**
      * Raw map of every Pokemon and their evolutions

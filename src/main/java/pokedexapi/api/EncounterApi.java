@@ -33,7 +33,7 @@ class EncounterApi extends BaseApiController
         logger.info("getEncounterMethods limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<EncounterMethod> encounterMethods = pokeApiClient.getResource(EncounterMethod.class, new PageQuery(limit, offset * limit)).block();
-            if (null != encounterMethods) return ResponseEntity.ok(encounterMethods);
+            if (encounterMethods != null) return ResponseEntity.ok(encounterMethods);
             return ResponseEntity.badRequest().body("Could not access EncounterMethods endpoint");
         }
         catch (Exception e) {
@@ -47,7 +47,7 @@ class EncounterApi extends BaseApiController
         logger.info("getEncounterMethod {}", id);
         try {
             EncounterMethod encounterMethod = pokeApiClient.getResource(EncounterMethod.class, id).block();
-            if (null != encounterMethod) return ResponseEntity.ok(encounterMethod);
+            if (encounterMethod != null) return ResponseEntity.ok(encounterMethod);
             return ResponseEntity.badRequest().body("Could not find an EncounterMethod with " + id);
         }
         catch (Exception e) {
@@ -64,7 +64,7 @@ class EncounterApi extends BaseApiController
         logger.info("getEncounterConditions limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<EncounterCondition> encounterConditions = pokeApiClient.getResource(EncounterCondition.class, new PageQuery(limit, offset * limit)).block();
-            if (null != encounterConditions) return ResponseEntity.ok(encounterConditions);
+            if (encounterConditions != null) return ResponseEntity.ok(encounterConditions);
             return ResponseEntity.badRequest().body("Could not access EncounterConditions endpoint");
         }
         catch (Exception e) {
@@ -78,7 +78,7 @@ class EncounterApi extends BaseApiController
         logger.info("getEncounterCondition {}", id);
         try {
             EncounterCondition encounterCondition = pokeApiClient.getResource(EncounterCondition.class, id).block();
-            if (null != encounterCondition) return ResponseEntity.ok(encounterCondition);
+            if (encounterCondition != null) return ResponseEntity.ok(encounterCondition);
             return ResponseEntity.badRequest().body("Could not find an EncounterCondition with " + id);
         }
         catch (Exception e) {
@@ -95,7 +95,7 @@ class EncounterApi extends BaseApiController
         logger.info("getEncounterConditionValues limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<EncounterConditionValue> encounterConditionValues = pokeApiClient.getResource(EncounterConditionValue.class, new PageQuery(limit, offset * limit)).block();
-            if (null != encounterConditionValues) return ResponseEntity.ok(encounterConditionValues);
+            if (encounterConditionValues != null) return ResponseEntity.ok(encounterConditionValues);
             return ResponseEntity.badRequest().body("Could not access EncounterConditionValues endpoint");
         }
         catch (Exception e) {
@@ -109,7 +109,7 @@ class EncounterApi extends BaseApiController
         logger.info("getEncounterConditionValue {}", id);
         try {
             EncounterConditionValue encounterConditionValue = pokeApiClient.getResource(EncounterConditionValue.class, id).block();
-            if (null != encounterConditionValue) return ResponseEntity.ok(encounterConditionValue);
+            if (encounterConditionValue != null) return ResponseEntity.ok(encounterConditionValue);
             return ResponseEntity.badRequest().body("Could not find an EncounterConditionValue with " + id);
         }
         catch (Exception e) {

@@ -29,7 +29,7 @@ public class EggGroupApi extends BaseApiController
         LOGGER.info("getEggGroups limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<EggGroup> eggGroups = pokeApiClient.getResource(EggGroup.class, new PageQuery(limit, offset * limit)).block();
-            if (null != eggGroups) return ResponseEntity.ok(eggGroups);
+            if (eggGroups != null) return ResponseEntity.ok(eggGroups);
             return ResponseEntity.badRequest().body("Could not access EggGroup endpoint");
         }
         catch (Exception e) {
@@ -43,7 +43,7 @@ public class EggGroupApi extends BaseApiController
         LOGGER.info("getEggGroup {}", id);
         try {
             EggGroup eggGroup = pokeApiClient.getResource(EggGroup.class, id).block();
-            if (null != eggGroup) return ResponseEntity.ok(eggGroup);
+            if (eggGroup != null) return ResponseEntity.ok(eggGroup);
             return ResponseEntity.badRequest().body("Could not find EggGroup with " + id);
         }
         catch (Exception e) {

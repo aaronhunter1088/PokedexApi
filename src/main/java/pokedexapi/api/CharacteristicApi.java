@@ -29,7 +29,7 @@ public class CharacteristicApi extends BaseApiController
         LOGGER.info("getCharacteristics limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<Characteristic> characteristics = pokeApiClient.getResource(Characteristic.class, new PageQuery(limit, offset * limit)).block();
-            if (null != characteristics) return ResponseEntity.ok(characteristics);
+            if (characteristics != null) return ResponseEntity.ok(characteristics);
             return ResponseEntity.badRequest().body("Could not access Characteristic endpoint");
         }
         catch (Exception e) {
@@ -43,7 +43,7 @@ public class CharacteristicApi extends BaseApiController
         LOGGER.info("getCharacteristic {}", id);
         try {
             Characteristic characteristic = pokeApiClient.getResource(Characteristic.class, id).block();
-            if (null != characteristic) return ResponseEntity.ok(characteristic);
+            if (characteristic != null) return ResponseEntity.ok(characteristic);
             return ResponseEntity.badRequest().body("Could not find Characteristic with " + id);
         }
         catch (Exception e) {

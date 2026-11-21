@@ -16,14 +16,16 @@ import pokedexapi.controllers.BaseApiTest;
 import reactor.core.publisher.Mono;
 import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
+import skaro.pokeapi.resource.pokemon.Pokemon;
 import skaro.pokeapi.resource.pokemonspecies.PokemonSpecies;
 import tools.jackson.core.type.TypeReference;
 
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -37,6 +39,7 @@ class PokemonSpeciesApiTest extends BaseApiTest
     private static NamedApiResourceList<PokemonSpecies> getAllSpeciesDataResponse;
     private static NamedApiResourceList<PokemonSpecies> getNext10SpeciesDataResponse;
     private static PokemonSpecies pokemonSpecies1;
+    private static Pokemon pikachu;
 
     @BeforeAll
     static void setup() throws IOException
@@ -52,6 +55,10 @@ class PokemonSpeciesApiTest extends BaseApiTest
         pokemonSpecies1 = jsonMapper.readValue(
                 new ClassPathResource("pokemonSpeciesApi/pokemon_species_1.json").getFile(),
                 PokemonSpecies.class
+        );
+        pikachu = jsonMapper.readValue(
+                new ClassPathResource("pokemonApi/pikachu.json").getFile(),
+                Pokemon.class
         );
     }
 
@@ -159,6 +166,63 @@ class PokemonSpeciesApiTest extends BaseApiTest
             assertThat(expected).isEqualTo(actual);
 
             verify(pokeApiClient).getResource(PokemonSpecies.class, "1");
+            verify(pokeApiClient, never()).getResource(eq(Pokemon.class), anyString());
+        }
+
+        @Test
+        @DisplayName("getPokemonSpeciesData returns species by name")
+        void testGetPokemonSpeciesDataByName() throws Exception
+        {
+            when(pokeApiClient.getResource(PokemonSpecies.class, "bulbasaur"))
+                    .thenReturn(Mono.just(pokemonSpecies1));
+
+            MvcResult mvcResult = this.mockMvc.perform(get(POKEMON_SPECIES_API + "/bulbasaur"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            assertThat(mvcResult.getResponse().getContentAsString())
+                    .isEqualTo(jsonMapper.writeValueAsString(pokemonSpecies1));
+
+            verify(pokeApiClient).getResource(PokemonSpecies.class, "bulbasaur");
+        }
+
+        @Test
+        @DisplayName("getPokemonSpeciesData falls back to the pokemon's species when the species is not found")
+        void testGetPokemonSpeciesDataFallsBackWhenEmpty() throws Exception
+        {
+            when(pokeApiClient.getResource(PokemonSpecies.class, "25")).thenReturn(Mono.empty());
+            when(pokeApiClient.getResource(Pokemon.class, "25")).thenReturn(Mono.just(pikachu));
+            when(pokeApiClient.getResource(PokemonSpecies.class, pikachu.species().name()))
+                    .thenReturn(Mono.just(pokemonSpecies1));
+
+            MvcResult mvcResult = this.mockMvc.perform(get(POKEMON_SPECIES_API + "/25"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            assertThat(mvcResult.getResponse().getContentAsString())
+                    .isEqualTo(jsonMapper.writeValueAsString(pokemonSpecies1));
+
+            verify(pokeApiClient).getResource(PokemonSpecies.class, "25");
+            verify(pokeApiClient).getResource(Pokemon.class, "25");
+            verify(pokeApiClient).getResource(PokemonSpecies.class, pikachu.species().name());
+        }
+
+        @Test
+        @DisplayName("getPokemonSpeciesData falls back to the pokemon's species when the species lookup throws")
+        void testGetPokemonSpeciesDataFallsBackWhenSpeciesLookupThrows() throws Exception
+        {
+            when(pokeApiClient.getResource(PokemonSpecies.class, "25"))
+                    .thenThrow(new RuntimeException("Test Exception"));
+            when(pokeApiClient.getResource(Pokemon.class, "25")).thenReturn(Mono.just(pikachu));
+            when(pokeApiClient.getResource(PokemonSpecies.class, pikachu.species().name()))
+                    .thenReturn(Mono.just(pokemonSpecies1));
+
+            this.mockMvc.perform(get(POKEMON_SPECIES_API + "/25"))
+                    .andExpect(status().isOk());
+
+            verify(pokeApiClient).getResource(PokemonSpecies.class, "25");
+            verify(pokeApiClient).getResource(Pokemon.class, "25");
+            verify(pokeApiClient).getResource(PokemonSpecies.class, pikachu.species().name());
         }
     }
 
@@ -173,26 +237,60 @@ class PokemonSpeciesApiTest extends BaseApiTest
         @DisplayName("getPokemonSpeciesData returns no species or pokemon")
         void testGetPokemonSpeciesDataReturnsNothing() throws Exception
         {
-            when(pokeApiClient.getResource(PokemonSpecies.class, "0"))
-                    .thenReturn(Mono.empty());
+            when(pokeApiClient.getResource(PokemonSpecies.class, "0")).thenReturn(Mono.empty());
+            when(pokeApiClient.getResource(Pokemon.class, "0")).thenReturn(Mono.empty());
 
             this.mockMvc.perform(get(POKEMON_SPECIES_API + "/0"))
                     .andExpect(status().isBadRequest());
 
             verify(pokeApiClient).getResource(PokemonSpecies.class, "0");
+            verify(pokeApiClient).getResource(Pokemon.class, "0");
         }
 
         @Test
-        @DisplayName("getPokemonSpeciesData fails to retrieve the species")
+        @DisplayName("getPokemonSpeciesData fails to retrieve the species and the pokemon")
         void testGetPokemonSpeciesDataThrowsException() throws Exception
         {
             when(pokeApiClient.getResource(PokemonSpecies.class, "0"))
+                    .thenThrow(new RuntimeException("Test Exception"));
+            when(pokeApiClient.getResource(Pokemon.class, "0"))
                     .thenThrow(new RuntimeException("Test Exception"));
 
             this.mockMvc.perform(get(POKEMON_SPECIES_API + "/0"))
                     .andExpect(status().isBadRequest());
 
             verify(pokeApiClient).getResource(PokemonSpecies.class, "0");
+            verify(pokeApiClient).getResource(Pokemon.class, "0");
+        }
+
+        @Test
+        @DisplayName("getPokemonSpeciesData returns bad request when the pokemon has no species")
+        void testGetPokemonSpeciesDataPokemonWithoutSpecies() throws Exception
+        {
+            Pokemon noSpecies = mock(Pokemon.class);
+            when(noSpecies.species()).thenReturn(null);
+            when(pokeApiClient.getResource(PokemonSpecies.class, "25")).thenReturn(Mono.empty());
+            when(pokeApiClient.getResource(Pokemon.class, "25")).thenReturn(Mono.just(noSpecies));
+
+            this.mockMvc.perform(get(POKEMON_SPECIES_API + "/25"))
+                    .andExpect(status().isBadRequest());
+
+            verify(pokeApiClient, times(1)).getResource(PokemonSpecies.class, "25");
+        }
+
+        @Test
+        @DisplayName("getPokemonSpeciesData returns a server error when the fallback species lookup throws")
+        void testGetPokemonSpeciesDataFallbackThrows() throws Exception
+        {
+            when(pokeApiClient.getResource(PokemonSpecies.class, "25")).thenReturn(Mono.empty());
+            when(pokeApiClient.getResource(Pokemon.class, "25")).thenReturn(Mono.just(pikachu));
+            when(pokeApiClient.getResource(PokemonSpecies.class, pikachu.species().name()))
+                    .thenThrow(new RuntimeException("Test Exception"));
+
+            this.mockMvc.perform(get(POKEMON_SPECIES_API + "/25"))
+                    .andExpect(status().isInternalServerError());
+
+            verify(pokeApiClient).getResource(PokemonSpecies.class, pikachu.species().name());
         }
     }
 }

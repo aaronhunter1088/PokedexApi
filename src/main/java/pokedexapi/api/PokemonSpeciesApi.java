@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
-import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResource;
@@ -13,7 +12,6 @@ import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.pokemon.Pokemon;
 import skaro.pokeapi.resource.pokemonspecies.PokemonSpecies;
 
-import java.net.http.HttpResponse;
 import java.util.Arrays;
 
 @RestController
@@ -21,7 +19,6 @@ import java.util.Arrays;
 public class PokemonSpeciesApi extends BaseApiController
 {
     private static final Logger logger = LogManager.getLogger(PokemonSpeciesApi.class);
-    private String lastSuccessfulSpeciesId = "0";
 
     PokemonSpeciesApi(PokeApiClient client)
     {
@@ -34,8 +31,8 @@ public class PokemonSpeciesApi extends BaseApiController
     {
         logger.info("getAllSpeciesData limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<PokemonSpecies> allSpeciesData = pokeApiClient.getResource(PokemonSpecies.class, new PageQuery(limit, offset * limit)).block();
-            if (null != allSpeciesData) return ResponseEntity.ok(allSpeciesData);
+            NamedApiResourceList<PokemonSpecies> speciesData = pokeApiClient.getResource(PokemonSpecies.class, new PageQuery(limit, offset * limit)).block();
+            if (speciesData != null) return ResponseEntity.ok(speciesData);
             return ResponseEntity.badRequest().body("Could not access PokemonSpecies endpoint");
         }
         catch (Exception e) {
@@ -51,10 +48,8 @@ public class PokemonSpeciesApi extends BaseApiController
         try {
             PokemonSpecies speciesData;
             try {
-                //speciesData = pokemonApiService.getPokemonSpeciesData(nameOrId);
                 speciesData = pokeApiClient.getResource(PokemonSpecies.class, nameOrId).block();
                 if (speciesData != null) {
-                    lastSuccessfulSpeciesId = String.valueOf(nameOrId);
                     return ResponseEntity.ok(speciesData);
                 }
             }
@@ -65,7 +60,7 @@ public class PokemonSpeciesApi extends BaseApiController
             if (pokemon == null) return ResponseEntity.badRequest().body("Could not find PokemonSpecies with: " + nameOrId);
             NamedApiResource<PokemonSpecies> speciesUrl = pokemon.species();
             if (speciesUrl != null) {
-                return ResponseEntity.ok(pokeApiClient.getResource(PokemonSpecies.class, lastSuccessfulSpeciesId).block());
+                return ResponseEntity.ok(pokeApiClient.getResource(PokemonSpecies.class, speciesUrl.name()).block());
             } else {
                 return ResponseEntity.badRequest().body("Could not find PokemonSpecies with: " + nameOrId);
             }

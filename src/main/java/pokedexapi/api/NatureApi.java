@@ -29,9 +29,9 @@ public class NatureApi extends BaseApiController
     {
         LOGGER.info("getAllNatures limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<Nature> page = pokeApiClient.getResource(Nature.class, new PageQuery(limit, offset * limit)).block();
-            if (null != page) return ResponseEntity.ok(page);
-            else return ResponseEntity.badRequest().body("Could not access Nature endpoint");
+            NamedApiResourceList<Nature> natures = pokeApiClient.getResource(Nature.class, new PageQuery(limit, offset * limit)).block();
+            if (natures != null) return ResponseEntity.ok(natures);
+            return ResponseEntity.badRequest().body("Could not access Nature endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -44,8 +44,8 @@ public class NatureApi extends BaseApiController
         LOGGER.info("getNature {}", id);
         try {
             Nature nature = pokeApiClient.getResource(Nature.class, id).block();
-            if (null != nature) return ResponseEntity.ok(nature);
-            else return ResponseEntity.badRequest().body("Could not find Nature with " + id);
+            if (nature != null) return ResponseEntity.ok(nature);
+            return ResponseEntity.badRequest().body("Could not find Nature with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());

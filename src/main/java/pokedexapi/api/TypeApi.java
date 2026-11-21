@@ -29,7 +29,7 @@ public class TypeApi extends BaseApiController
         LOGGER.info("getAllTypes limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<Type> types = pokeApiClient.getResource(Type.class, new PageQuery(limit, offset * limit)).block();
-            if (null != types) return ResponseEntity.ok(types);
+            if (types != null) return ResponseEntity.ok(types);
             return ResponseEntity.badRequest().body("Could not access Type endpoint");
         }
         catch (Exception e) {
@@ -43,7 +43,7 @@ public class TypeApi extends BaseApiController
         LOGGER.info("getType {}", nameOrId);
         try {
             Type type = pokeApiClient.getResource(Type.class, nameOrId).block();
-            if (null != type) return ResponseEntity.ok(type);
+            if (type != null) return ResponseEntity.ok(type);
             return ResponseEntity.badRequest().body("Could not find Type with " + nameOrId);
         }
         catch (Exception e) {

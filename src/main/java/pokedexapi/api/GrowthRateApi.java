@@ -30,7 +30,7 @@ public class GrowthRateApi extends BaseApiController
         LOGGER.info("getAllGrowthRates limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<GrowthRate> growthRates = pokeApiClient.getResource(GrowthRate.class, new PageQuery(limit, offset * limit)).block();
-            if (null != growthRates) return ResponseEntity.ok(growthRates);
+            if (growthRates != null) return ResponseEntity.ok(growthRates);;
             return ResponseEntity.badRequest().body("Could not access GrowthRate endpoint");
         }
         catch (Exception e) {
@@ -44,7 +44,7 @@ public class GrowthRateApi extends BaseApiController
         LOGGER.info("getGrowthRate {}", id);
         try {
             GrowthRate growthRate = pokeApiClient.getResource(GrowthRate.class, id).block();
-            if (null != growthRate) return ResponseEntity.ok(growthRate);
+            if (growthRate != null) return ResponseEntity.ok(growthRate);
             return ResponseEntity.badRequest().body("Could not find GrowthRate with " + id);
         }
         catch (Exception e) {

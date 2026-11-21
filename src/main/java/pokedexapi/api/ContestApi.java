@@ -33,7 +33,7 @@ class ContestApi extends BaseApiController
         LOGGER.info("getAllContestTypes limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<ContestType> contestTypes = pokeApiClient.getResource(ContestType.class, new PageQuery(limit, offset * limit)).block();
-            if (null != contestTypes) return ResponseEntity.ok(contestTypes);
+            if (contestTypes != null) return ResponseEntity.ok(contestTypes);
             return ResponseEntity.badRequest().body("Could not access ContestType endpoint");
         }
         catch (Exception e) {
@@ -47,7 +47,7 @@ class ContestApi extends BaseApiController
         LOGGER.info("getContestType {}", id);
         try {
             ContestType contestType = pokeApiClient.getResource(ContestType.class, id).block();
-            if (null != contestType) return ResponseEntity.ok(contestType);
+            if (contestType != null) return ResponseEntity.ok(contestType);
             return ResponseEntity.badRequest().body("Could not find a ContestType with " + id);
         }
         catch (Exception e) {
@@ -64,7 +64,7 @@ class ContestApi extends BaseApiController
         LOGGER.info("getAllContestEffects limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<ContestEffect> contestEffects = pokeApiClient.getResource(ContestEffect.class, new PageQuery(limit, offset * limit)).block();
-            if (null != contestEffects) return ResponseEntity.ok(contestEffects);
+            if (contestEffects != null) return ResponseEntity.ok(contestEffects);
             return ResponseEntity.badRequest().body("Could not access ContestEffect endpoint");
         }
         catch (Exception e) {
@@ -78,7 +78,7 @@ class ContestApi extends BaseApiController
         LOGGER.info("getContestEffect with {}", id);
         try {
             ContestEffect contestEffect = pokeApiClient.getResource(ContestEffect.class, id).block();
-            if (null != contestEffect) return ResponseEntity.ok(contestEffect);
+            if (contestEffect != null) return ResponseEntity.ok(contestEffect);
             return ResponseEntity.badRequest().body("Could not find ContestEffect with " + id);
         }
         catch (Exception e) {
@@ -95,7 +95,7 @@ class ContestApi extends BaseApiController
         LOGGER.info("getAllSuperContestEffects limit:{} offset:{}", limit, offset);
         try {
             NamedApiResourceList<SuperContestEffect> superContestEffects = pokeApiClient.getResource(SuperContestEffect.class, new PageQuery(limit, offset * limit)).block();
-            if (null != superContestEffects) return ResponseEntity.ok(superContestEffects);
+            if (superContestEffects != null) return ResponseEntity.ok(superContestEffects);
             return ResponseEntity.badRequest().body("Could not access SuperContestEffect endpoint");
         }
         catch (Exception e) {
@@ -109,7 +109,7 @@ class ContestApi extends BaseApiController
         LOGGER.info("getSuperContestEffect with {}", id);
         try {
             SuperContestEffect superContestEffect = pokeApiClient.getResource(SuperContestEffect.class, id).block();
-            if (null != superContestEffect) return ResponseEntity.ok(superContestEffect);
+            if (superContestEffect != null) return ResponseEntity.ok(superContestEffect);
             return ResponseEntity.badRequest().body("Could not find SuperContestEffect with " + id);
         }
         catch (Exception e) {
