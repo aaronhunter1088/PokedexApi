@@ -38,6 +38,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -1093,6 +1094,53 @@ class PokemonApiTest extends BaseApiTest
                     .andExpect(status().isBadRequest());
 
             verify(pokeApiClient).getResource(PokemonSpecies.class, "bulbasaur");
+        }
+    }
+
+    @Nested
+    @DisplayName("GET /pokemon/{id}/encounters")
+    class GetPokemonLocationEncounters
+    {
+        @Autowired
+        private MockMvc mockMvc;
+
+        @Test
+        @DisplayName("returns the raw encounters body")
+        void testGetEncounters() throws Exception
+        {
+            final String body = "[{\"location_area\":{\"name\":\"forest\"}}]";
+            when(pokemonLocationEncounterService.getPokemonLocationEncounters(25))
+                    .thenReturn(ResponseEntity.ok(body));
+
+            this.mockMvc.perform(get(POKEMON_API + "/25/encounters"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().json(body));
+
+            verify(pokemonLocationEncounterService).getPokemonLocationEncounters(25);
+        }
+
+        @Test
+        @DisplayName("returns 404 for a non OK status or blank body")
+        void testGetEncountersNotFound() throws Exception
+        {
+            when(pokemonLocationEncounterService.getPokemonLocationEncounters(25))
+                    .thenReturn(ResponseEntity.status(404).build());
+            this.mockMvc.perform(get(POKEMON_API + "/25/encounters")).andExpect(status().isNotFound());
+
+            when(pokemonLocationEncounterService.getPokemonLocationEncounters(26))
+                    .thenReturn(ResponseEntity.ok(" "));
+            this.mockMvc.perform(get(POKEMON_API + "/26/encounters")).andExpect(status().isNotFound());
+        }
+
+        @Test
+        @DisplayName("returns 500 when the service throws")
+        void testGetEncountersThrows() throws Exception
+        {
+            when(pokemonLocationEncounterService.getPokemonLocationEncounters(25))
+                    .thenThrow(new RuntimeException("boom"));
+
+            this.mockMvc.perform(get(POKEMON_API + "/25/encounters"))
+                    .andExpect(status().isInternalServerError());
         }
     }
 

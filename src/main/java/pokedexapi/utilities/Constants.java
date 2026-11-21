@@ -2,16 +2,8 @@ package pokedexapi.utilities;
 
 public class Constants
 {
-    // Retired. But left for reference. Use MY_POKEAPI_BASE_URL instead.
+    // Retired. But left for reference.
     public static final String POKEAPI_BASE_URL = "https://pokeapi.co/api/v2";
-    public static final String MY_POKEAPI_BASE_URL = "https://mypokedex.us";
-
-    // Endpoints
-    public static final String POKEMON_SPECIES_ENDPOINT = MY_POKEAPI_BASE_URL + "/pokemon-species/%s";
-    public static String POKEMON_SPECIES_URL(String idOrName)
-    {
-        return String.format(POKEMON_SPECIES_ENDPOINT, idOrName);
-    }
 
     public static final String DEFAULT_URL_TEMPLATE = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/%s.png";
     public static final String OFFICIAL_URL_TEMPLATE = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/%s.png";

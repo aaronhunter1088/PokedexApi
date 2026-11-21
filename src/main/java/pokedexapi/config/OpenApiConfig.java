@@ -2,6 +2,7 @@ package pokedexapi.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,10 @@ public class OpenApiConfig {
     @Value("${spring.application.version:unknown}")
     private String appVersion;
 
+    // Blank means springdoc derives the server from the incoming request.
+    @Value("${pokedexapi.openapi.server-url:}")
+    private String serverUrl;
+
     /**
      * Customises the top-level OpenAPI info block.
      *
@@ -24,11 +29,16 @@ public class OpenApiConfig {
      */
     @Bean
     public OpenAPI pokedexOpenAPI() {
-        return new OpenAPI()
+        final OpenAPI openApi = new OpenAPI()
                 .info(new Info()
                         .title("Pokédex API")
                         .version(appVersion)
                         .description("REST API for Pokémon data, powered by PokéAPI"));
+        if (!serverUrl.isBlank())
+        {
+            openApi.addServersItem(new Server().url(serverUrl));
+        }
+        return openApi;
     }
 }
 

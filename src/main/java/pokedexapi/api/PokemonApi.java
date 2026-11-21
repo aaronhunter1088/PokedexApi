@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
@@ -311,6 +312,28 @@ public class PokemonApi extends BaseApiController
         }
         catch (Exception e) {
             return ResponseEntity.badRequest().body(nameOrId + " text was not found!");
+        }
+    }
+
+    @Operation(summary = "Get pokemon location encounters", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "Encounters not found", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
+    @GetMapping(value = "/{pokemonId}/encounters")
+    ResponseEntity<?> getPokemonLocationEncounters(@PathVariable Integer pokemonId)
+    {
+        LOGGER.info("getPokemonLocationEncounters for: {}", pokemonId);
+        try {
+            final ResponseEntity<String> encounters = pokemonLocationEncounterService.getPokemonLocationEncounters(pokemonId);
+            if (encounters.getStatusCode() != HttpStatus.OK || encounters.getBody() == null || encounters.getBody().isBlank())
+            {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(encounters.getBody());
+        }
+        catch (Exception e) {
+            LOGGER.error("Failed to retrieve location encounters for pokemonId {}: {}", pokemonId, e.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
     }
 

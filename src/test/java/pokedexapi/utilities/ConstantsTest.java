@@ -8,14 +8,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ConstantsTest
 {
     @Test
-    @DisplayName("POKEMON_SPECIES_URL formats using endpoint template")
-    void testPokemonSpeciesUrl()
-    {
-        assertThat(Constants.POKEMON_SPECIES_URL("pikachu"))
-                .isEqualTo("https://mypokedex.us/pokemon-species/pikachu");
-    }
-
-    @Test
     @DisplayName("DEFAULT_IMAGE_URL formats pokemon id")
     void testDefaultImageUrl()
     {
