@@ -111,18 +111,25 @@ class PokemonApiServiceTest
         }
 
         @Test
-        @DisplayName("retries after a failure and returns the next result")
-        @SuppressWarnings("unchecked")
-        void testGetAllPokemonsRetries()
+        @DisplayName("returns null without retrying when PokemonApi throws")
+        void testGetAllPokemonsThrows()
         {
-            NamedApiResourceList<Pokemon> page = mock(NamedApiResourceList.class);
-            when(pokemonApi.getAllPokemon(10, 0))
-                    .thenThrow(new RuntimeException("Test Exception"))
-                    .thenAnswer(_ -> ResponseEntity.ok(page));
+            when(pokemonApi.getAllPokemon(10, 0)).thenThrow(new RuntimeException("Test Exception"));
 
-            assertSame(page, service.getAllPokemons(10, 0));
+            assertNull(service.getAllPokemons(10, 0));
 
-            verify(pokemonApi, times(2)).getAllPokemon(10, 0);
+            verify(pokemonApi, times(1)).getAllPokemon(10, 0);
+        }
+
+        @Test
+        @DisplayName("returns null without retrying when PokemonApi returns an error status")
+        void testGetAllPokemonsErrorStatus()
+        {
+            doReturn(ResponseEntity.internalServerError().body("error")).when(pokemonApi).getAllPokemon(10, 0);
+
+            assertNull(service.getAllPokemons(10, 0));
+
+            verify(pokemonApi, times(1)).getAllPokemon(10, 0);
         }
     }
 

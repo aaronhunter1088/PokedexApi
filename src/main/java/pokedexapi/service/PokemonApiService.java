@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import pokedexapi.api.PokemonApi;
@@ -49,7 +50,6 @@ public class PokemonApiService implements PokemonService
     protected PokemonApi pokemonApi;
     protected PokemonSpeciesApi pokemonSpeciesApi;
     private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
-    private static final long RETRY_DELAY_MS = 2_000L;
 
     @Autowired
     public PokemonApiService(PokeApiClient client, JsonMapper jsonMapper,
@@ -83,34 +83,18 @@ public class PokemonApiService implements PokemonService
         LOGGER.info("Configured PokeAPI base URI: {}", pokeApiBaseUrl);
         LOGGER.info("getListOfPokemon");
         LOGGER.debug("Cache miss for pokemon page key all:{}:{}; fetching from PokeAPI", _limit, offset);
-        for (int attempt = 1; attempt <= 3; attempt++) {
-            try {
-                NamedApiResourceList<Pokemon> result =
-                        (NamedApiResourceList<Pokemon>) pokemonApi.getAllPokemon(_limit, offset).getBody();
-                        //pokeApiClient.getResource(Pokemon.class, new PageQuery(_limit, offset))
-                        //        .timeout(Duration.ofSeconds(15))
-                        //        .block();
-
-                LOGGER.info("getAllPokemons result: null={}, results count={}",
-                        result == null,
-                        result == null || result.results() == null
-                                ? null
-                                : result.results().size());
+        try {
+            final ResponseEntity<?> response = pokemonApi.getAllPokemon(_limit, offset);
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() instanceof NamedApiResourceList<?> body) {
+                @SuppressWarnings("unchecked")
+                final NamedApiResourceList<Pokemon> result = (NamedApiResourceList<Pokemon>) body;
+                LOGGER.info("getAllPokemons results count={}", result.results() == null ? null : result.results().size());
                 return result;
-            } catch (Exception e) {
-                LOGGER.warn("Pokemon page fetch failed attempt {} / 3: {}", attempt, e.getMessage());
             }
-
-            if (attempt < 3) {
-                try {
-                    Thread.sleep(RETRY_DELAY_MS * attempt);
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
-                    break;
-                }
-            }
+            LOGGER.warn("Pokemon page fetch returned status {}", response.getStatusCode());
+        } catch (Exception e) {
+            LOGGER.warn("Pokemon page fetch failed: {}", e.getMessage());
         }
-
         return null;
     }
 
@@ -153,10 +137,7 @@ public class PokemonApiService implements PokemonService
         LOGGER.info("getPokemonSpeciesData: {}", id);
         try {
             PokemonSpecies speciesData = (PokemonSpecies) pokemonSpeciesApi.getPokemonSpeciesData(id).getBody();
-            if (speciesData != null) {
-                return speciesData;
-            }
-            return null;
+            return speciesData;
         }
         catch (Exception e) {
             LOGGER.error("PokemonSpecies not found for id {}. Exception: {}", id, e.getMessage());
