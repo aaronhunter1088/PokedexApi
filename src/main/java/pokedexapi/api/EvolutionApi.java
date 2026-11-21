@@ -16,11 +16,11 @@ import skaro.pokeapi.resource.evolutiontrigger.EvolutionTrigger;
 
 @RestController
 @RequestMapping("/evolution")
-class EvolutionApi extends BaseApiController
+public class EvolutionApi extends BaseApiController
 {
     private static final Logger logger = LogManager.getLogger(EvolutionApi.class);
 
-    EvolutionApi(PokeApiClient client)
+    public EvolutionApi(PokeApiClient client)
     {
         super(client);
     }
@@ -42,6 +42,7 @@ class EvolutionApi extends BaseApiController
             return ResponseEntity.badRequest().body("Could not access EvolutionChain endpoint");
         }
         catch (Exception e) {
+            logger.error("Failed to get evolution chains", e);
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -51,7 +52,7 @@ class EvolutionApi extends BaseApiController
             @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/evolution-chain/{id}")
-    ResponseEntity<?> getEvolutionChain(@PathVariable("id") String id)
+    public ResponseEntity<?> getEvolutionChain(@PathVariable("id") String id)
     {
         logger.info("getEvolutionChain {}", id);
         try {
@@ -60,6 +61,7 @@ class EvolutionApi extends BaseApiController
             return ResponseEntity.badRequest().body("Could not find an EvolutionChain with " + id);
         }
         catch (Exception e) {
+            logger.error("Failed to get evolution chain {}", id, e);
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -81,6 +83,7 @@ class EvolutionApi extends BaseApiController
             return ResponseEntity.badRequest().body("Could not access EvolutionTrigger endpoint");
         }
         catch (Exception e) {
+            logger.error("Failed to get evolution triggers", e);
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
@@ -99,6 +102,7 @@ class EvolutionApi extends BaseApiController
             return ResponseEntity.badRequest().body("Could not find an EvolutionTrigger with " + id);
         }
         catch (Exception e) {
+            logger.error("Failed to get evolution trigger {}", id, e);
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }

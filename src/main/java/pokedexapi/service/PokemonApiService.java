@@ -11,6 +11,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import pokedexapi.api.EvolutionApi;
 import pokedexapi.api.PokemonApi;
 import pokedexapi.api.PokemonSpeciesApi;
 import skaro.pokeapi.client.PokeApiClient;
@@ -49,19 +50,22 @@ public class PokemonApiService implements PokemonService
     protected PokemonLocationEncounterService pokemonLocationEncounterService;
     protected PokemonApi pokemonApi;
     protected PokemonSpeciesApi pokemonSpeciesApi;
+    protected EvolutionApi evolutionApi;
     private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
 
     @Autowired
     public PokemonApiService(PokeApiClient client, JsonMapper jsonMapper,
                              PokemonLocationEncounterService pokemonLocationEncounterService,
                              PokemonApi pokemonApi,
-                             PokemonSpeciesApi pokemonSpeciesApi)
+                             PokemonSpeciesApi pokemonSpeciesApi,
+                             EvolutionApi evolutionApi)
     {
         this.pokeApiClient = client;
         this.jsonMapper = jsonMapper;
         this.pokemonLocationEncounterService = pokemonLocationEncounterService;
         this.pokemonApi = pokemonApi;
         this.pokemonSpeciesApi = pokemonSpeciesApi;
+        this.evolutionApi = evolutionApi;
     }
 
     /**
@@ -240,24 +244,18 @@ public class PokemonApiService implements PokemonService
         }
     }
 
-    // TODO: Combine with above
     @Override
     public Map<String, Object> getPokemonChainData(String pokemonChainId)
     {
-        String chainUrl = "https://pokeapi.co/api/v2/evolution-chain/"+pokemonChainId+'/';
-        HttpResponse<String> response;
-        JSONParser jsonParser;
         try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(chainUrl))
-                    .GET()
-                    .build();
-            response = HTTP_CLIENT.send(request,  HttpResponse.BodyHandlers.ofString());
-            LOGGER.info("response: {}", response);
-            jsonParser = new JSONParser(response.body());
-            return (Map<String, Object>) jsonParser.parse();
+            final ResponseEntity<?> response = evolutionApi.getEvolutionChain(pokemonChainId);
+            if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+                LOGGER.error("Could not get evolution chain {}: {}", pokemonChainId, response.getBody());
+                return Collections.emptyMap();
+            }
+            return jsonMapper.convertValue(response.getBody(), new TypeReference<Map<String, Object>>() {});
         } catch (Exception e) {
-            LOGGER.error("Internal Server Error: {}", e.getMessage());
+            LOGGER.error("Failed to get evolution chain {}", pokemonChainId, e);
             return Collections.emptyMap();
         }
     }

@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.*;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.ResponseEntity;
+import pokedexapi.api.EvolutionApi;
 import pokedexapi.api.PokemonApi;
 import pokedexapi.api.PokemonSpeciesApi;
 import skaro.pokeapi.client.PokeApiClient;
@@ -18,6 +19,7 @@ import java.net.InetSocketAddress;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -39,6 +41,7 @@ class PokemonApiServiceTest
     private PokeApiClient pokeApiClient;
     private PokemonApi pokemonApi;
     private PokemonSpeciesApi pokemonSpeciesApi;
+    private EvolutionApi evolutionApi;
     private PokemonApiService service;
 
     @BeforeAll
@@ -88,9 +91,50 @@ class PokemonApiServiceTest
         pokeApiClient = mock(PokeApiClient.class);
         pokemonApi = mock(PokemonApi.class);
         pokemonSpeciesApi = mock(PokemonSpeciesApi.class);
+        evolutionApi = mock(EvolutionApi.class);
         service = new PokemonApiService(pokeApiClient, jsonMapper, mock(PokemonLocationEncounterService.class),
-                pokemonApi, pokemonSpeciesApi);
+                pokemonApi, pokemonSpeciesApi, evolutionApi);
         service.pokeApiBaseUrl = baseUrl + "/";
+    }
+
+    @Nested
+    @DisplayName("getPokemonChainData")
+    class GetPokemonChainData
+    {
+        @Test
+        @DisplayName("returns the chain from EvolutionApi as a map")
+        void testGetPokemonChainData()
+        {
+            doReturn(ResponseEntity.ok(Map.of("id", 1, "chain", Map.of()))).when(evolutionApi).getEvolutionChain("1");
+
+            final Map<String, Object> chain = service.getPokemonChainData("1");
+
+            assertEquals(1, chain.get("id"));
+            assertTrue(chain.containsKey("chain"));
+            verify(evolutionApi, times(1)).getEvolutionChain("1");
+        }
+
+        @Test
+        @DisplayName("returns an empty map when EvolutionApi returns an error status")
+        void testGetPokemonChainDataErrorStatus()
+        {
+            doReturn(ResponseEntity.badRequest().body("not found")).when(evolutionApi).getEvolutionChain("0");
+
+            assertTrue(service.getPokemonChainData("0").isEmpty());
+
+            verify(evolutionApi, times(1)).getEvolutionChain("0");
+        }
+
+        @Test
+        @DisplayName("returns an empty map when EvolutionApi throws")
+        void testGetPokemonChainDataThrows()
+        {
+            when(evolutionApi.getEvolutionChain("1")).thenThrow(new RuntimeException("Test Exception"));
+
+            assertTrue(service.getPokemonChainData("1").isEmpty());
+
+            verify(evolutionApi, times(1)).getEvolutionChain("1");
+        }
     }
 
     @Nested
