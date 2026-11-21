@@ -234,6 +234,21 @@ class PokemonSpeciesApiTest extends BaseApiTest
         private MockMvc mockMvc;
 
         @Test
+        @DisplayName("getPokemonSpeciesData returns 400 when the fallback species lookup is empty")
+        void testGetPokemonSpeciesDataFallbackEmpty() throws Exception
+        {
+            when(pokeApiClient.getResource(PokemonSpecies.class, "25")).thenReturn(Mono.empty());
+            when(pokeApiClient.getResource(Pokemon.class, "25")).thenReturn(Mono.just(pikachu));
+            when(pokeApiClient.getResource(PokemonSpecies.class, pikachu.species().name()))
+                    .thenReturn(Mono.empty());
+
+            this.mockMvc.perform(get(POKEMON_SPECIES_API + "/25"))
+                    .andExpect(status().isBadRequest());
+
+            verify(pokeApiClient).getResource(PokemonSpecies.class, pikachu.species().name());
+        }
+
+        @Test
         @DisplayName("getPokemonSpeciesData returns no species or pokemon")
         void testGetPokemonSpeciesDataReturnsNothing() throws Exception
         {

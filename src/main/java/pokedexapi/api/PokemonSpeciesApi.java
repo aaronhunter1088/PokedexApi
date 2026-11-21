@@ -70,10 +70,10 @@ public class PokemonSpeciesApi extends BaseApiController
             if (pokemon == null) return ResponseEntity.badRequest().body("Could not find PokemonSpecies with: " + nameOrId);
             NamedApiResource<PokemonSpecies> speciesUrl = pokemon.species();
             if (speciesUrl != null) {
-                return ResponseEntity.ok(pokeApiClient.getResource(PokemonSpecies.class, speciesUrl.name()).block());
-            } else {
-                return ResponseEntity.badRequest().body("Could not find PokemonSpecies with: " + nameOrId);
+                final PokemonSpecies fallbackSpecies = pokeApiClient.getResource(PokemonSpecies.class, speciesUrl.name()).block();
+                if (fallbackSpecies != null) return ResponseEntity.ok(fallbackSpecies);
             }
+            return ResponseEntity.badRequest().body("Could not find PokemonSpecies with: " + nameOrId);
         }
         catch (Exception e) {
             logger.error("Failed to get species data for {}", nameOrId, e);
