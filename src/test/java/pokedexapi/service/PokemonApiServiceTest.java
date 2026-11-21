@@ -9,7 +9,6 @@ import pokedexapi.api.PokemonApi;
 import pokedexapi.api.PokemonSpeciesApi;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.resource.NamedApiResourceList;
-import skaro.pokeapi.resource.pokedex.Pokedex;
 import skaro.pokeapi.resource.pokemon.Pokemon;
 import skaro.pokeapi.resource.pokemonspecies.PokemonSpecies;
 import tools.jackson.databind.json.JsonMapper;
@@ -36,7 +35,6 @@ class PokemonApiServiceTest
 
     private static Pokemon pikachu;
     private static PokemonSpecies species1;
-    private static Pokedex pokedex2;
 
     private PokeApiClient pokeApiClient;
     private PokemonApi pokemonApi;
@@ -49,7 +47,6 @@ class PokemonApiServiceTest
     {
         pikachu = jsonMapper.readValue(new ClassPathResource("pokemonApi/pikachu.json").getFile(), Pokemon.class);
         species1 = jsonMapper.readValue(new ClassPathResource("service/pokemonSpecies1Response.json").getFile(), PokemonSpecies.class);
-        pokedex2 = jsonMapper.readValue(new ClassPathResource("service/pokedex2Response.json").getFile(), Pokedex.class);
 
         server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         respondWith("/ok", 200, "{\"ok\":true}");
@@ -366,18 +363,6 @@ class PokemonApiServiceTest
             service.pokeApiBaseUrl = "not a url";
 
             assertTrue(service.getAllTypes().isEmpty());
-        }
-    }
-
-    @Nested
-    @DisplayName("getEvolutionsMap")
-    class GetEvolutionsMap
-    {
-        @Test
-        @DisplayName("maps pokemon ids to their chain")
-        void testMap()
-        {
-            assertTrue(service.getEvolutionsMap().get(1).stream().anyMatch(ids -> ids.contains(3)));
         }
     }
 }

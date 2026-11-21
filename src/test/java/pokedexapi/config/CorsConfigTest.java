@@ -35,4 +35,19 @@ class CorsConfigTest
         assertThat(configuration.getAllowedMethods()).containsExactly("GET");
         assertThat(configuration.getAllowedHeaders()).containsExactly("*");
     }
+
+    @Test
+    @DisplayName("addCorsMappings allows local network origins only")
+    void testLocalNetworkOriginPatterns()
+    {
+        ExposedCorsRegistry registry = new ExposedCorsRegistry();
+
+        new CorsConfig().addCorsMappings(registry);
+
+        CorsConfiguration configuration = registry.configurations().get("/**");
+        assertThat(configuration.checkOrigin("http://192.168.1.152:4203")).isNotNull();
+        assertThat(configuration.checkOrigin("http://10.0.0.5:4200")).isNotNull();
+        assertThat(configuration.checkOrigin("http://evil.com:4203")).isNull();
+        assertThat(configuration.checkOrigin("http://172.20.0.1:4203")).isNull();
+    }
 }

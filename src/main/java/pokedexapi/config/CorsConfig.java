@@ -27,6 +27,8 @@ public class CorsConfig implements WebMvcConfigurer
                         "http://localhost:4201", // springboot app
                         "http://localhost:4203", // combo app
                         "https://mypokedex.us") // production: landing page, springboot and combined apps
+                // local network origins, so a phone can reach the apps served from this machine
+                .allowedOriginPatterns("http://192.168.*.*:[*]", "http://10.*.*.*:[*]")
                 .allowedMethods("GET") //.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*");
     }

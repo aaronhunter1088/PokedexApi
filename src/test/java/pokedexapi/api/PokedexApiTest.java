@@ -179,6 +179,40 @@ class PokedexApiTest extends BaseApiTest
 
             verify(pokeApiClient).getResource(Pokedex.class, "1");
         }
+
+        @Test
+        @DisplayName("getPokedex returns the 2nd pokedex (kanto) by id")
+        void testGetPokedexKantoById() throws Exception
+        {
+            when(pokeApiClient.getResource(Pokedex.class, "2"))
+                    .thenReturn(Mono.just(pokedex_2_kanto));
+
+            MvcResult mvcResult = this.mockMvc.perform(get(POKEDEX_API + "/2/name"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            assertThat(mvcResult.getResponse().getContentAsString())
+                    .isEqualTo(jsonMapper.writeValueAsString(pokedex_2_kanto));
+
+            verify(pokeApiClient).getResource(Pokedex.class, "2");
+        }
+
+        @Test
+        @DisplayName("getPokedex returns the kanto pokedex by name")
+        void testGetPokedexKantoByName() throws Exception
+        {
+            when(pokeApiClient.getResource(Pokedex.class, "kanto"))
+                    .thenReturn(Mono.just(pokedex_2_kanto));
+
+            MvcResult mvcResult = this.mockMvc.perform(get(POKEDEX_API + "/kanto/name"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            assertThat(mvcResult.getResponse().getContentAsString())
+                    .isEqualTo(jsonMapper.writeValueAsString(pokedex_2_kanto));
+
+            verify(pokeApiClient).getResource(Pokedex.class, "kanto");
+        }
     }
 
     @Nested
@@ -212,6 +246,32 @@ class PokedexApiTest extends BaseApiTest
                     .andExpect(status().isInternalServerError());
 
             verify(pokeApiClient).getResource(Pokedex.class, "1");
+        }
+
+        @Test
+        @DisplayName("getPokedex returns bad request when pokedex 2 is not found")
+        void testGetPokedexKantoReturnsNoResult() throws Exception
+        {
+            when(pokeApiClient.getResource(Pokedex.class, "2"))
+                    .thenReturn(Mono.empty());
+
+            this.mockMvc.perform(get(POKEDEX_API + "/2/name"))
+                    .andExpect(status().isBadRequest());
+
+            verify(pokeApiClient).getResource(Pokedex.class, "2");
+        }
+
+        @Test
+        @DisplayName("getPokedex for pokedex 2 throws an exception")
+        void testGetPokedexKantoThrowsException() throws Exception
+        {
+            when(pokeApiClient.getResource(Pokedex.class, "2"))
+                    .thenThrow(new RuntimeException("Test Exception"));
+
+            this.mockMvc.perform(get(POKEDEX_API + "/2/name"))
+                    .andExpect(status().isInternalServerError());
+
+            verify(pokeApiClient).getResource(Pokedex.class, "2");
         }
     }
 
