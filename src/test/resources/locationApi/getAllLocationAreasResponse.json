@@ -1,0 +1,47 @@
+{
+  "count": 1541,
+  "next": "https://pokeapi.co/api/v2/location-area?offset=10&limit=10",
+  "previous": null,
+  "results": [
+    {
+      "name": "canalave-city-area",
+      "url": "https://pokeapi.co/api/v2/location-area/1/"
+    },
+    {
+      "name": "eterna-city-area",
+      "url": "https://pokeapi.co/api/v2/location-area/2/"
+    },
+    {
+      "name": "pastoria-city-area",
+      "url": "https://pokeapi.co/api/v2/location-area/3/"
+    },
+    {
+      "name": "sunyshore-city-area",
+      "url": "https://pokeapi.co/api/v2/location-area/4/"
+    },
+    {
+      "name": "sinnoh-pokemon-league-area",
+      "url": "https://pokeapi.co/api/v2/location-area/5/"
+    },
+    {
+      "name": "oreburgh-mine-1f",
+      "url": "https://pokeapi.co/api/v2/location-area/6/"
+    },
+    {
+      "name": "oreburgh-mine-b1f",
+      "url": "https://pokeapi.co/api/v2/location-area/7/"
+    },
+    {
+      "name": "valley-windworks-area",
+      "url": "https://pokeapi.co/api/v2/location-area/8/"
+    },
+    {
+      "name": "eterna-forest-area",
+      "url": "https://pokeapi.co/api/v2/location-area/9/"
+    },
+    {
+      "name": "fuego-ironworks-area",
+      "url": "https://pokeapi.co/api/v2/location-area/10/"
+    }
+  ]
+}

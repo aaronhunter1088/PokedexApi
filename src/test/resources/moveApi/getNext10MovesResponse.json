@@ -1,0 +1,47 @@
+{
+  "count": 938,
+  "next": "https://pokeapi.co/api/v2/move?offset=20&limit=10",
+  "previous": "https://pokeapi.co/api/v2/move?offset=0&limit=10",
+  "results": [
+    {
+      "name": "vice-grip",
+      "url": "https://pokeapi.co/api/v2/move/11/"
+    },
+    {
+      "name": "guillotine",
+      "url": "https://pokeapi.co/api/v2/move/12/"
+    },
+    {
+      "name": "razor-wind",
+      "url": "https://pokeapi.co/api/v2/move/13/"
+    },
+    {
+      "name": "swords-dance",
+      "url": "https://pokeapi.co/api/v2/move/14/"
+    },
+    {
+      "name": "cut",
+      "url": "https://pokeapi.co/api/v2/move/15/"
+    },
+    {
+      "name": "gust",
+      "url": "https://pokeapi.co/api/v2/move/16/"
+    },
+    {
+      "name": "wing-attack",
+      "url": "https://pokeapi.co/api/v2/move/17/"
+    },
+    {
+      "name": "whirlwind",
+      "url": "https://pokeapi.co/api/v2/move/18/"
+    },
+    {
+      "name": "fly",
+      "url": "https://pokeapi.co/api/v2/move/19/"
+    },
+    {
+      "name": "bind",
+      "url": "https://pokeapi.co/api/v2/move/20/"
+    }
+  ]
+}

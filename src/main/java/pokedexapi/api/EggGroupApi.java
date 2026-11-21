@@ -11,27 +11,26 @@ import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.egggroup.EggGroup;
 
-
 @RestController
 @RequestMapping("/egg-group")
 public class EggGroupApi extends BaseApiController
 {
     private static final Logger LOGGER = LogManager.getLogger(EggGroupApi.class);
 
-    EggGroupApi(PokemonService pokemonService, PokeApiClient client)
+    EggGroupApi(PokeApiClient client)
     {
-        super(pokemonService, client);
+        super(client);
     }
 
     @GetMapping(value = "")
     ResponseEntity<?> getEggGroups(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+                                   @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getEggGroups limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<EggGroup> page = pokeApiClient.getResource(EggGroup.class, new PageQuery(limit, offset)).block();
-            if (null != page) return ResponseEntity.ok(page.results());
-            else return ResponseEntity.badRequest().body("Could not access EggGroup endpoint");
+            NamedApiResourceList<EggGroup> eggGroups = pokeApiClient.getResource(EggGroup.class, new PageQuery(limit, offset * limit)).block();
+            if (null != eggGroups) return ResponseEntity.ok(eggGroups);
+            return ResponseEntity.badRequest().body("Could not access EggGroup endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -45,7 +44,7 @@ public class EggGroupApi extends BaseApiController
         try {
             EggGroup eggGroup = pokeApiClient.getResource(EggGroup.class, id).block();
             if (null != eggGroup) return ResponseEntity.ok(eggGroup);
-            else return ResponseEntity.badRequest().body("Could not find EggGroup with " + id);
+            return ResponseEntity.badRequest().body("Could not find EggGroup with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());

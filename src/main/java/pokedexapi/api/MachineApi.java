@@ -18,20 +18,20 @@ class MachineApi extends BaseApiController
 {
     private static final Logger logger = LogManager.getLogger(MachineApi.class);
 
-    MachineApi(PokemonService pokemonService, PokeApiClient client)
+    MachineApi(PokeApiClient client)
     {
-        super(pokemonService, client);
+        super(client);
     }
 
     @GetMapping(value = "")
-    ResponseEntity<?> getMachines(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    ResponseEntity<?> getAllMachines(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                     @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        logger.info("getMachines");
+        logger.info("getAllMachines limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<Machine> page = pokeApiClient.getResource(Machine.class, new PageQuery(limit, offset)).block();
-            if (null != page) return ResponseEntity.ok(page.results());
-            else return ResponseEntity.badRequest().body("Could not access Machine endpoint");
+            NamedApiResourceList<Machine> machines = pokeApiClient.getResource(Machine.class, new PageQuery(limit, offset * limit)).block();
+            if (null != machines) return ResponseEntity.ok(machines);
+            return ResponseEntity.badRequest().body("Could not access Machine endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -45,7 +45,7 @@ class MachineApi extends BaseApiController
         try {
             Machine machine = pokeApiClient.getResource(Machine.class, id).block();
             if (null != machine) return ResponseEntity.ok(machine);
-            else return ResponseEntity.badRequest().body("Could not find Machine with " + id);
+            return ResponseEntity.badRequest().body("Could not find Machine with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());

@@ -1,0 +1,47 @@
+{
+  "count": 53,
+  "next": "https://pokeapi.co/api/v2/version?offset=20&limit=10",
+  "previous": "https://pokeapi.co/api/v2/version?offset=0&limit=10",
+  "results": [
+    {
+      "name": "leafgreen",
+      "url": "https://pokeapi.co/api/v2/version/11/"
+    },
+    {
+      "name": "diamond",
+      "url": "https://pokeapi.co/api/v2/version/12/"
+    },
+    {
+      "name": "pearl",
+      "url": "https://pokeapi.co/api/v2/version/13/"
+    },
+    {
+      "name": "platinum",
+      "url": "https://pokeapi.co/api/v2/version/14/"
+    },
+    {
+      "name": "heartgold",
+      "url": "https://pokeapi.co/api/v2/version/15/"
+    },
+    {
+      "name": "soulsilver",
+      "url": "https://pokeapi.co/api/v2/version/16/"
+    },
+    {
+      "name": "black",
+      "url": "https://pokeapi.co/api/v2/version/17/"
+    },
+    {
+      "name": "white",
+      "url": "https://pokeapi.co/api/v2/version/18/"
+    },
+    {
+      "name": "colosseum",
+      "url": "https://pokeapi.co/api/v2/version/19/"
+    },
+    {
+      "name": "xd",
+      "url": "https://pokeapi.co/api/v2/version/20/"
+    }
+  ]
+}

@@ -7,9 +7,12 @@ import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
 import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
+import skaro.pokeapi.query.PageQuery;
+import skaro.pokeapi.resource.NamedApiResourceList;
+import skaro.pokeapi.resource.evolutionchain.EvolutionChain;
+import skaro.pokeapi.resource.evolutiontrigger.EvolutionTrigger;
 
 import java.net.URI;
-import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
@@ -19,9 +22,9 @@ class EvolutionApi extends BaseApiController
 {
     private static final Logger logger = LogManager.getLogger(EvolutionApi.class);
 
-    EvolutionApi(PokemonService pokemonService, PokeApiClient client)
+    EvolutionApi(PokeApiClient client)
     {
-        super(pokemonService, client);
+        super(client);
     }
 
     // Evolution Chains
@@ -30,40 +33,28 @@ class EvolutionApi extends BaseApiController
     ResponseEntity<?> getEvolutionChains(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                          @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        logger.info("getEvolutionChains");
-        HttpResponse<String> response;
+        logger.info("getEvolutionChains limit:{} offset:{}", limit, offset);
         try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(pokeApiBaseUrl + "evolution-chain?offset=" + offset + "&limit=" + limit))
-                    .GET()
-                    .build();
-            response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-            logger.info("response: {}", response.body());
-            return ResponseEntity.ok(response.body());
+            NamedApiResourceList<EvolutionChain> evolutionChains = pokeApiClient.getResource(EvolutionChain.class, new PageQuery(limit, offset * limit)).block();
+            if (null != evolutionChains) return ResponseEntity.ok(evolutionChains);
+            return ResponseEntity.badRequest().body("Could not access EvolutionChain endpoint");
         }
         catch (Exception e) {
-            logger.error("Error retrieving response because {}", e.getMessage());
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
     @GetMapping(value = "/evolution-chain/{id}")
-    ResponseEntity<?> getEvolutionChain(@PathVariable("id") int id)
+    ResponseEntity<?> getEvolutionChain(@PathVariable("id") String id)
     {
         logger.info("getEvolutionChain {}", id);
-        HttpResponse<String> response;
         try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(pokeApiBaseUrl + "evolution-chain/" + id))
-                    .GET()
-                    .build();
-            response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-            logger.info("response: {}", response.body());
-            return ResponseEntity.ok(response.body());
+            EvolutionChain evolutionChain = pokeApiClient.getResource(EvolutionChain.class, id).block();
+            if (null != evolutionChain) return ResponseEntity.ok(evolutionChain);
+            return ResponseEntity.badRequest().body("Could not find an EvolutionChain with " + id);
         }
         catch (Exception e) {
-            logger.error("Error retrieving response because {}", e.getMessage());
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
@@ -74,39 +65,28 @@ class EvolutionApi extends BaseApiController
                                            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         logger.info("getEvolutionTriggers");
-        HttpResponse<String> response;
         try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(pokeApiBaseUrl + "evolution-trigger?offset=" + offset + "&limit=" + limit))
-                    .GET()
-                    .build();
-            response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-            logger.info("response: {}", response.body());
-            return ResponseEntity.ok(response.body());
+            NamedApiResourceList<EvolutionTrigger> evolutionTriggers = pokeApiClient.getResource(EvolutionTrigger.class, new PageQuery(limit, offset * limit)).block();
+            if (null != evolutionTriggers) return ResponseEntity.ok(evolutionTriggers);
+            return ResponseEntity.badRequest().body("Could not access EvolutionTrigger endpoint");
         }
         catch (Exception e) {
-            logger.error("Error retrieving response because {}", e.getMessage());
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
     @GetMapping(value = "/evolution-trigger/{id}")
-    ResponseEntity<?> getEvolutionTrigger(@PathVariable("id") int id)
+    ResponseEntity<?> getEvolutionTrigger(@PathVariable("id") String id)
     {
         logger.info("getEvolutionTrigger {}", id);
-        HttpResponse<String> response;
         try {
-            response = pokemonService.callUrl(pokeApiBaseUrl + "evolution-trigger/" + id);
+            EvolutionTrigger evolutionTrigger = pokeApiClient.getResource(EvolutionTrigger.class, id).block();
+            if (null != evolutionTrigger) return ResponseEntity.ok(evolutionTrigger);
+            return ResponseEntity.badRequest().body("Could not find an EvolutionTrigger with " + id);
         }
         catch (Exception e) {
-            logger.error("Error retrieving response because {}", e.getMessage());
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
-        return switch (response.statusCode()) {
-            case 200 -> ResponseEntity.ok(response.body());
-            case 400 -> ResponseEntity.badRequest().build();
-            default -> ResponseEntity.internalServerError().build();
-        };
     }
 
 }

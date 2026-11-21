@@ -11,27 +11,26 @@ import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.characteristic.Characteristic;
 
-
 @RestController
 @RequestMapping("/characteristic")
 public class CharacteristicApi extends BaseApiController
 {
     private static final Logger LOGGER = LogManager.getLogger(CharacteristicApi.class);
 
-    CharacteristicApi(PokemonService pokemonService, PokeApiClient client)
+    CharacteristicApi(PokeApiClient client)
     {
-        super(pokemonService, client);
+        super(client);
     }
 
     @GetMapping(value = "")
     ResponseEntity<?> getCharacteristics(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+                                         @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getCharacteristics limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<Characteristic> page = pokeApiClient.getResource(Characteristic.class, new PageQuery(limit, offset)).block();
-            if (null != page) return ResponseEntity.ok(page.results());
-            else return ResponseEntity.badRequest().body("Could not access Characteristic endpoint");
+            NamedApiResourceList<Characteristic> characteristics = pokeApiClient.getResource(Characteristic.class, new PageQuery(limit, offset * limit)).block();
+            if (null != characteristics) return ResponseEntity.ok(characteristics);
+            return ResponseEntity.badRequest().body("Could not access Characteristic endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -45,7 +44,7 @@ public class CharacteristicApi extends BaseApiController
         try {
             Characteristic characteristic = pokeApiClient.getResource(Characteristic.class, id).block();
             if (null != characteristic) return ResponseEntity.ok(characteristic);
-            else return ResponseEntity.badRequest().body("Could not find Characteristic with " + id);
+            return ResponseEntity.badRequest().body("Could not find Characteristic with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());

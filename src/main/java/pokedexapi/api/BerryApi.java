@@ -19,20 +19,20 @@ class BerryApi extends BaseApiController
 {
     private static final Logger LOGGER = LogManager.getLogger(BerryApi.class);
 
-    BerryApi(PokemonService pokemonService, PokeApiClient client)
+    BerryApi(PokeApiClient client)
     {
-        super(pokemonService, client);
+        super(client);
     }
 
     @GetMapping(value = "")
     ResponseEntity<?> getAllBerries(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                     @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getAllBerries");
+        LOGGER.info("getAllBerries limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<Berry> berries = pokeApiClient.getResource(Berry.class, new PageQuery(limit, offset)).block();
-            if (null != berries) return ResponseEntity.ok(berries.results());
-            else return ResponseEntity.badRequest().body("Could not access Berry endpoint");
+            NamedApiResourceList<Berry> berries = pokeApiClient.getResource(Berry.class, new PageQuery(limit, offset * limit)).block();
+            if (null != berries) return ResponseEntity.ok(berries);
+            return ResponseEntity.badRequest().body("Could not access Berry endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -46,7 +46,7 @@ class BerryApi extends BaseApiController
         try {
             Berry berry = pokeApiClient.getResource(Berry.class, id).block();
             if (null != berry) return ResponseEntity.ok(berry);
-            else return ResponseEntity.badRequest().body("Could not find a berry with " + id);
+            return ResponseEntity.badRequest().body("Could not find a berry with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -57,11 +57,11 @@ class BerryApi extends BaseApiController
     ResponseEntity<?> getBerryFirmness(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                        @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getBerryFirmness");
+        LOGGER.info("getBerryFirmness limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<BerryFirmness> berryFirmnesses = pokeApiClient.getResource(BerryFirmness.class, new PageQuery(limit, offset)).block();
-            if (null != berryFirmnesses) return ResponseEntity.ok(berryFirmnesses.results());
-            else return ResponseEntity.badRequest().body("Could not access berry-firmness endpoint");
+            NamedApiResourceList<BerryFirmness> berryFirmnesses = pokeApiClient.getResource(BerryFirmness.class, new PageQuery(limit, offset * limit)).block();
+            if (null != berryFirmnesses) return ResponseEntity.ok(berryFirmnesses);
+            return ResponseEntity.badRequest().body("Could not access Berry-Firmness endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -75,7 +75,7 @@ class BerryApi extends BaseApiController
         try {
             BerryFirmness berryFirmness = pokeApiClient.getResource(BerryFirmness.class, id).block();
             if (null != berryFirmness) return ResponseEntity.ok(berryFirmness);
-            else return ResponseEntity.badRequest().body("Could not find berry-firmness with " + id);
+            return ResponseEntity.badRequest().body("Could not find Berry-Firmness with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -86,11 +86,11 @@ class BerryApi extends BaseApiController
     ResponseEntity<?> getBerryFlavors(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                       @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getBerryFlavors");
+        LOGGER.info("getBerryFlavors limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<BerryFlavor> berryFlavors = pokeApiClient.getResource(BerryFlavor.class, new PageQuery(limit, offset)).block();
-            if (null != berryFlavors) return ResponseEntity.ok(berryFlavors.results());
-            else return ResponseEntity.badRequest().body("Could not access berry-flavor endpoint");
+            NamedApiResourceList<BerryFlavor> berryFlavors = pokeApiClient.getResource(BerryFlavor.class, new PageQuery(limit, offset * limit)).block();
+            if (null != berryFlavors) return ResponseEntity.ok(berryFlavors);
+            return ResponseEntity.badRequest().body("Could not access Berry-Flavor endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -104,7 +104,7 @@ class BerryApi extends BaseApiController
         try {
             BerryFlavor berryFlavor = pokeApiClient.getResource(BerryFlavor.class, id).block();
             if (null != berryFlavor) return ResponseEntity.ok(berryFlavor);
-            return ResponseEntity.badRequest().body("Could not find berry-flavor with " + id);
+            return ResponseEntity.badRequest().body("Could not find Berry-Flavor with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());

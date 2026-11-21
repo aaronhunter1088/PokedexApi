@@ -1,7 +1,8 @@
 package pokedexapi.api;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,69 +11,50 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import pokedexapi.controllers.BaseApiTest;
 import reactor.core.publisher.Mono;
 import skaro.pokeapi.query.PageQuery;
-import skaro.pokeapi.resource.NamedApiResource;
 import skaro.pokeapi.resource.NamedApiResourceList;
-import skaro.pokeapi.resource.PokeApiResource;
 import skaro.pokeapi.resource.berry.Berry;
 import skaro.pokeapi.resource.berryfirmness.BerryFirmness;
 import skaro.pokeapi.resource.berryflavor.BerryFlavor;
 import tools.jackson.core.type.TypeReference;
 
 import java.io.IOException;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * This class contains unit tests for the {@link BerryApi} controller.
- * It uses Spring Boot's testing support to load the application context
- * and configure MockMvc for testing the web layer.
- * <p>
- * Annotations:
- * ActiveProfiles("test"): Activates the 'test' profile for the tests.
- * ExtendWith(SpringExtension.class): Integrates the Spring TestContext Framework with JUnit 5.
- * SpringBootTest: Loads the full application context for integration tests.
- * AutoConfigureMockMvc: Configures MockMvc for testing the web layer.
- */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class BerryApiTests extends BaseApiTest
+class BerryApiTests extends BaseApiTest
 {
-
     private static final String BERRY_API = "/berry";
-    NamedApiResourceList<Berry> getAllBerriesResponse;
-    NamedApiResourceList<Berry> getNext10BerriesResponse;
-    Berry berry_1;
-    NamedApiResourceList<BerryFirmness> getAllBerryFirmnessResponse;
-    BerryFirmness berryFirmness_1;
-    NamedApiResourceList<BerryFlavor> getAllBerryFlavorsResponse;
-    BerryFlavor berryFlavor_1;
-    @Autowired
-    private MockMvc mockMvc;
+    private static NamedApiResourceList<Berry> getAllBerriesResponse;
+    private static NamedApiResourceList<Berry> getNext10BerriesResponse;
+    private static NamedApiResourceList<BerryFirmness> getAllBerryFirmnessResponse;
+    private static NamedApiResourceList<BerryFlavor> getAllBerryFlavorsResponse;
+    private static Berry berry_1;
+    private static BerryFirmness berryFirmness_1;
+    private static BerryFlavor berryFlavor_1;
 
-    @BeforeEach
-    void setUpEach() throws IOException
+    @BeforeAll
+    static void setup() throws IOException
     {
         getAllBerriesResponse = jsonMapper.readValue(
                 new ClassPathResource("berryApi/getAllBerriesResponse.json").getFile(),
-                new TypeReference<NamedApiResourceList<Berry>>()
-                {
-                }
+                new TypeReference<>()
+                {}
         );
         getNext10BerriesResponse = jsonMapper.readValue(
                 new ClassPathResource("berryApi/getNext10BerriesResponse.json").getFile(),
-                new TypeReference<NamedApiResourceList<Berry>>()
-                {
-                }
+                new TypeReference<>()
+                {}
         );
         berry_1 = jsonMapper.readValue(
                 new ClassPathResource("berryApi/berry_1.json").getFile(),
@@ -80,9 +62,8 @@ public class BerryApiTests extends BaseApiTest
         );
         getAllBerryFirmnessResponse = jsonMapper.readValue(
                 new ClassPathResource("berryApi/getAllBerryFirmnessResponse.json").getFile(),
-                new TypeReference<NamedApiResourceList<BerryFirmness>>()
-                {
-                }
+                new TypeReference<>()
+                {}
         );
         berryFirmness_1 = jsonMapper.readValue(
                 new ClassPathResource("berryApi/berryFirmness_1.json").getFile(),
@@ -90,9 +71,8 @@ public class BerryApiTests extends BaseApiTest
         );
         getAllBerryFlavorsResponse = jsonMapper.readValue(
                 new ClassPathResource("berryApi/getAllBerryFlavorResponse.json").getFile(),
-                new TypeReference<NamedApiResourceList<BerryFlavor>>()
-                {
-                }
+                new TypeReference<>()
+                {}
         );
         berryFlavor_1 = jsonMapper.readValue(
                 new ClassPathResource("berryApi/berryFlavor_1.json").getFile(),
@@ -100,275 +80,462 @@ public class BerryApiTests extends BaseApiTest
         );
     }
 
-    @Test
-    @DisplayName("Test getAllBerries returns no berries")
-    void testGetAllBerriesReturnsNullResponse() throws Exception
+    @Nested
+    @DisplayName("Get All Berries Positive Cases")
+    class GetAllBerriesPositive
     {
-        when(pokeApiClient.getResource(any(), any(PageQuery.class))).thenReturn(Mono.empty());
-        this.mockMvc.perform(get(BERRY_API)).andExpect(status().isBadRequest());
+        @Autowired
+        private MockMvc mockMvc;
+
+        @Test
+        @DisplayName("Berries returns the first page")
+        void testGetAllBerries() throws Exception
+        {
+            when(pokeApiClient.getResource(Berry.class, new PageQuery(10, 0)))
+                    .thenReturn(Mono.just(getAllBerriesResponse));
+
+            MvcResult mvcResult = this.mockMvc.perform(get(BERRY_API))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            String actual = mvcResult.getResponse().getContentAsString();
+            String expected = jsonMapper.writeValueAsString(getAllBerriesResponse);
+
+            assertThat(expected).isEqualTo(actual);
+
+            verify(pokeApiClient).getResource(Berry.class, new PageQuery(10, 0));
+        }
+
+        @Test
+        @DisplayName("Berries returns the second page (offset is a page index)")
+        void testGetAllBerriesSecondPage() throws Exception
+        {
+            when(pokeApiClient.getResource(Berry.class, new PageQuery(10, 10)))
+                    .thenReturn(Mono.just(getNext10BerriesResponse));
+
+            MvcResult mvcResult = this.mockMvc.perform(get(BERRY_API + "?limit=10&offset=1"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            String actual = mvcResult.getResponse().getContentAsString();
+            String expected = jsonMapper.writeValueAsString(getNext10BerriesResponse);
+
+            assertThat(expected).isEqualTo(actual);
+            verify(pokeApiClient).getResource(Berry.class, new PageQuery(10, 10));
+        }
     }
 
-    @Test
-    @DisplayName("Test getAllBerries returns the first 10 results")
-    void testGetAllBerries() throws Exception
+    @Nested
+    @DisplayName("Get All Berries Negative Cases")
+    class GetAllBerriesNegative
     {
-        Mono<?> mono = getMonoFromListResponse(getAllBerriesResponse, new NamedApiResource<Berry>());
-        when(pokeApiClient.getResource(any(), any(PageQuery.class))).thenReturn((Mono<NamedApiResourceList<PokeApiResource>>) mono);
-        this.mockMvc.perform(get(BERRY_API)).andExpect(status()
-                        .isOk())
-                .andExpect(result -> {
-                    final var contentAsString = result.getResponse().getContentAsString();
-                    List<NamedApiResource<Berry>> berries = jsonMapper.readValue(contentAsString, new TypeReference<>()
-                    {
-                    });
-                    assertThat(berries).size().isEqualTo(getAllBerriesResponse.results().size());
-                });
+        @Autowired
+        private MockMvc mockMvc;
+
+        @Test
+        @DisplayName("Berries returns no results")
+        void testGetAllBerriesReturnsNoResults() throws Exception
+        {
+            when(pokeApiClient.getResource(Berry.class, new PageQuery(10, 0)))
+                    .thenReturn(Mono.empty());
+
+            this.mockMvc.perform(get(BERRY_API))
+                    .andExpect(status().isBadRequest());
+
+            verify(pokeApiClient).getResource(Berry.class, new PageQuery(10, 0));
+        }
+
+        @Test
+        @DisplayName("Berries returns null")
+        void testGetAllBerriesReturnsNull() throws Exception
+        {
+            when(pokeApiClient.getResource(Berry.class, new PageQuery(10, 0)))
+                    .thenReturn(null);
+
+            this.mockMvc.perform(get(BERRY_API))
+                    .andExpect(status().isInternalServerError());
+
+            verify(pokeApiClient).getResource(Berry.class, new PageQuery(10, 0));
+        }
+
+        @Test
+        @DisplayName("Berries throws an exception")
+        void testGetAllBerriesThrowsException() throws Exception
+        {
+            when(pokeApiClient.getResource(Berry.class, new PageQuery(10, 0)))
+                    .thenThrow(new RuntimeException("Test Exception"));
+
+            this.mockMvc.perform(get(BERRY_API))
+                    .andExpect(status().isInternalServerError());
+
+            verify(pokeApiClient).getResource(Berry.class, new PageQuery(10, 0));
+        }
     }
 
-    @Test
-    @DisplayName("Test getAllBerries returns the second next 10 results")
-    void testNextTenBerries() throws Exception
+    @Nested
+    @DisplayName("Get Berry Positive Cases")
+    class GetBerryPositive
     {
-        Mono<?> mono = getMonoFromListResponse(getNext10BerriesResponse, new NamedApiResource<Berry>());
-        when(pokeApiClient.getResource(any(), any(PageQuery.class))).thenReturn((Mono<NamedApiResourceList<PokeApiResource>>) mono);
-        this.mockMvc.perform(get(BERRY_API)).andExpect(status()
-                        .isOk())
-                .andExpect(result -> {
-                    final var contentAsString = result.getResponse().getContentAsString();
-                    List<NamedApiResource<Berry>> berries = jsonMapper.readValue(contentAsString, new TypeReference<>()
-                    {
-                    });
-                    assertThat(berries).size().isEqualTo(getNext10BerriesResponse.results().size());
-                });
+        @Autowired
+        private MockMvc mockMvc;
+
+        @Test
+        @DisplayName("Berry 1 returns the expected berry")
+        void testGetBerry() throws Exception
+        {
+            when(pokeApiClient.getResource(Berry.class, "1"))
+                    .thenReturn(Mono.just(berry_1));
+
+            MvcResult mvcResult = this.mockMvc.perform(get(BERRY_API + "/1"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            String actual = mvcResult.getResponse().getContentAsString();
+            String expected = jsonMapper.writeValueAsString(berry_1);
+
+            assertThat(expected).isEqualTo(actual);
+
+            verify(pokeApiClient).getResource(Berry.class, "1");
+        }
     }
 
-    @Test
-    @DisplayName("Test getAllBerries returns an exception")
-    void testGetAllBerriesThrowsAnException() throws Exception
+    @Nested
+    @DisplayName("Get Berry Negative Cases")
+    class GetBerryNegative
     {
-        when(pokeApiClient.getResource(any())).thenThrow(new RuntimeException("From testGetAllBerriesThrowsAnException"));
-        this.mockMvc.perform(get(BERRY_API)).andExpect(status().isInternalServerError());
+        @Autowired
+        private MockMvc mockMvc;
+
+        @Test
+        @DisplayName("Berry 1 returns no result")
+        void testGetBerryReturnsNoResult() throws Exception
+        {
+            when(pokeApiClient.getResource(Berry.class, "1"))
+                    .thenReturn(Mono.empty());
+
+            this.mockMvc.perform(get(BERRY_API + "/1"))
+                    .andExpect(status().isBadRequest());
+
+            verify(pokeApiClient).getResource(Berry.class, "1");
+        }
+
+        @Test
+        @DisplayName("Berry 1 throws an exception")
+        void testGetBerryThrowsException() throws Exception
+        {
+            when(pokeApiClient.getResource(Berry.class, "1"))
+                    .thenThrow(new RuntimeException("Test Exception"));
+
+            this.mockMvc.perform(get(BERRY_API + "/1"))
+                    .andExpect(status().isInternalServerError());
+
+            verify(pokeApiClient).getResource(Berry.class, "1");
+        }
     }
 
-    //
-
-    @Test
-    @DisplayName("Test getBerry returns no berry")
-    void testGetBerryReturnsNullResponse() throws Exception
+    @Nested
+    @DisplayName("Get All Berry Firmness Positive Cases")
+    class GetAllBerryFirmnessPositive
     {
-        when(pokeApiClient.getResource(any(), anyString())).thenReturn(Mono.empty());
-        this.mockMvc.perform(get(BERRY_API + '/' + berry_1.getId()))
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> {
-                    final var contentAsString = result.getResponse().getContentAsString();
-                    assertThat(contentAsString).isEqualTo("Could not find a berry with " + berry_1.getId());
-                });
+        @Autowired
+        private MockMvc mockMvc;
+
+        @Test
+        @DisplayName("Berry Firmness returns the first page")
+        void testGetAllBerryFirmness() throws Exception
+        {
+            when(pokeApiClient.getResource(BerryFirmness.class, new PageQuery(10, 0)))
+                    .thenReturn(Mono.just(getAllBerryFirmnessResponse));
+
+            MvcResult mvcResult = this.mockMvc.perform(get(BERRY_API + "/berry-firmness"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            String actual = mvcResult.getResponse().getContentAsString();
+            String expected = jsonMapper.writeValueAsString(getAllBerryFirmnessResponse);
+
+            assertThat(expected).isEqualTo(actual);
+
+            verify(pokeApiClient).getResource(BerryFirmness.class, new PageQuery(10, 0));
+        }
+
+        @Test
+        @DisplayName("Berry Firmness returns the second page (offset is a page index)")
+        void testGetAllBerryFirmnessSecondPage() throws Exception
+        {
+            when(pokeApiClient.getResource(BerryFirmness.class, new PageQuery(10, 10)))
+                    .thenReturn(Mono.just(getAllBerryFirmnessResponse));
+
+            MvcResult mvcResult = this.mockMvc.perform(get(BERRY_API + "/berry-firmness" + "?limit=10&offset=1"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            String actual = mvcResult.getResponse().getContentAsString();
+            String expected = jsonMapper.writeValueAsString(getAllBerryFirmnessResponse);
+
+            assertThat(expected).isEqualTo(actual);
+            verify(pokeApiClient).getResource(BerryFirmness.class, new PageQuery(10, 10));
+        }
     }
 
-    @Test
-    @DisplayName("Test getBerry returns expected berry")
-    void testGetBerryReturnsExpectedBerry() throws Exception
+    @Nested
+    @DisplayName("Get All Berry Firmness Negative Cases")
+    class GetAllBerryFirmnessNegative
     {
-        Mono<PokeApiResource> mono = Mono.just(berry_1);
-        when(pokeApiClient.getResource(any(), anyString())).thenReturn(mono);
-        this.mockMvc.perform(get(BERRY_API + '/' + berry_1.getId()))
-                .andExpect(status().isOk())
-                .andExpect(result -> {
-                    final var contentAsString = result.getResponse().getContentAsString();
-                    Berry response = jsonMapper.readValue(contentAsString, Berry.class);
-                    assertThat(response.getName()).isEqualTo(berry_1.getName());
-                    assertThat(response.getId()).isEqualTo(berry_1.getId());
-                });
+        @Autowired
+        private MockMvc mockMvc;
+
+        @Test
+        @DisplayName("Berry Firmness returns no results")
+        void testGetAllBerryFirmnessReturnsNoResults() throws Exception
+        {
+            when(pokeApiClient.getResource(BerryFirmness.class, new PageQuery(10, 0)))
+                    .thenReturn(Mono.empty());
+
+            this.mockMvc.perform(get(BERRY_API + "/berry-firmness"))
+                    .andExpect(status().isBadRequest());
+
+            verify(pokeApiClient).getResource(BerryFirmness.class, new PageQuery(10, 0));
+        }
+
+        @Test
+        @DisplayName("Berry Firmness returns null")
+        void testGetAllBerryFirmnessReturnsNull() throws Exception
+        {
+            when(pokeApiClient.getResource(BerryFirmness.class, new PageQuery(10, 0)))
+                    .thenReturn(null);
+
+            this.mockMvc.perform(get(BERRY_API + "/berry-firmness"))
+                    .andExpect(status().isInternalServerError());
+
+            verify(pokeApiClient).getResource(BerryFirmness.class, new PageQuery(10, 0));
+        }
+
+        @Test
+        @DisplayName("Berry Firmness throws an exception")
+        void testGetAllBerryFirmnessThrowsException() throws Exception
+        {
+            when(pokeApiClient.getResource(BerryFirmness.class, new PageQuery(10, 0)))
+                    .thenThrow(new RuntimeException("Test Exception"));
+
+            this.mockMvc.perform(get(BERRY_API + "/berry-firmness"))
+                    .andExpect(status().isInternalServerError());
+
+            verify(pokeApiClient).getResource(BerryFirmness.class, new PageQuery(10, 0));
+        }
     }
 
-    @Test
-    @DisplayName("Test getBerry returns an exception")
-    void testGetBerryThrowsAnException() throws Exception
+    @Nested
+    @DisplayName("Get Berry Firmne Positive Cases")
+    class GetBerryFirmnessPositive
     {
-        when(pokeApiClient.getResource(any(), anyString())).thenThrow(new RuntimeException("From testGetBerryThrowsAnException"));
-        this.mockMvc.perform(get(BERRY_API + '/' + berry_1.getId()))
-                .andExpect(status().isInternalServerError())
-                .andExpect(result -> {
-                    final var contentAsString = result.getResponse().getContentAsString();
-                    assertThat(contentAsString).isEqualTo("From testGetBerryThrowsAnException");
-                });
+        @Autowired
+        private MockMvc mockMvc;
+
+        @Test
+        @DisplayName("Berry Firmne 1 returns the expected berry firmne")
+        void testGetBerryFirmness() throws Exception
+        {
+            when(pokeApiClient.getResource(BerryFirmness.class, "1"))
+                    .thenReturn(Mono.just(berryFirmness_1));
+
+            MvcResult mvcResult = this.mockMvc.perform(get(BERRY_API + "/berry-firmness/1"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            String actual = mvcResult.getResponse().getContentAsString();
+            String expected = jsonMapper.writeValueAsString(berryFirmness_1);
+
+            assertThat(expected).isEqualTo(actual);
+
+            verify(pokeApiClient).getResource(BerryFirmness.class, "1");
+        }
     }
 
-    //
-
-    @Test
-    @DisplayName("Test getBerryFirmness returns no berry firmnesses")
-    void testGetAllBerryFirmnessReturnsNullResponse() throws Exception
+    @Nested
+    @DisplayName("Get Berry Firmne Negative Cases")
+    class GetBerryFirmnessNegative
     {
-        when(pokeApiClient.getResource(any(), any(PageQuery.class))).thenReturn(Mono.empty());
-        this.mockMvc.perform(get(BERRY_API + "/berry-firmness"))
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> {
-                    final var contentAsString = result.getResponse().getContentAsString();
-                    assertThat(contentAsString).isEqualTo("Could not access berry-firmness endpoint");
-                });
+        @Autowired
+        private MockMvc mockMvc;
+
+        @Test
+        @DisplayName("Berry Firmne 1 returns no result")
+        void testGetBerryFirmnessReturnsNoResult() throws Exception
+        {
+            when(pokeApiClient.getResource(BerryFirmness.class, "1"))
+                    .thenReturn(Mono.empty());
+
+            this.mockMvc.perform(get(BERRY_API + "/berry-firmness/1"))
+                    .andExpect(status().isBadRequest());
+
+            verify(pokeApiClient).getResource(BerryFirmness.class, "1");
+        }
+
+        @Test
+        @DisplayName("Berry Firmne 1 throws an exception")
+        void testGetBerryFirmnessThrowsException() throws Exception
+        {
+            when(pokeApiClient.getResource(BerryFirmness.class, "1"))
+                    .thenThrow(new RuntimeException("Test Exception"));
+
+            this.mockMvc.perform(get(BERRY_API + "/berry-firmness/1"))
+                    .andExpect(status().isInternalServerError());
+
+            verify(pokeApiClient).getResource(BerryFirmness.class, "1");
+        }
     }
 
-    @Test
-    @DisplayName("Test getBerryFirmness returns the expected results")
-    void testGetBerryFirmness() throws Exception
+    @Nested
+    @DisplayName("Get All Berry Flavors Positive Cases")
+    class GetAllBerryFlavorsPositive
     {
-        Mono<?> mono = getMonoFromListResponse(getAllBerryFirmnessResponse, new NamedApiResource<BerryFirmness>());
-        when(pokeApiClient.getResource(any(), any(PageQuery.class))).thenReturn((Mono<NamedApiResourceList<PokeApiResource>>) mono);
-        this.mockMvc.perform(get(BERRY_API + "/berry-firmness"))
-                //.andExpect(status().is(200))
-                .andExpect(result -> {
-                    final var contentAsString = result.getResponse().getContentAsString();
-                    List<NamedApiResource<Berry>> berries = jsonMapper.readValue(contentAsString, new TypeReference<>()
-                    {
-                    });
-                    assertThat(berries).size().isEqualTo(getAllBerryFirmnessResponse.results().size());
-                });
+        @Autowired
+        private MockMvc mockMvc;
+
+        @Test
+        @DisplayName("Berry Flavors returns the first page")
+        void testGetAllBerryFlavors() throws Exception
+        {
+            when(pokeApiClient.getResource(BerryFlavor.class, new PageQuery(10, 0)))
+                    .thenReturn(Mono.just(getAllBerryFlavorsResponse));
+
+            MvcResult mvcResult = this.mockMvc.perform(get(BERRY_API + "/berry-flavor"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            String actual = mvcResult.getResponse().getContentAsString();
+            String expected = jsonMapper.writeValueAsString(getAllBerryFlavorsResponse);
+
+            assertThat(expected).isEqualTo(actual);
+
+            verify(pokeApiClient).getResource(BerryFlavor.class, new PageQuery(10, 0));
+        }
+
+        @Test
+        @DisplayName("Berry Flavors returns the second page (offset is a page index)")
+        void testGetAllBerryFlavorsSecondPage() throws Exception
+        {
+            when(pokeApiClient.getResource(BerryFlavor.class, new PageQuery(10, 10)))
+                    .thenReturn(Mono.just(getAllBerryFlavorsResponse));
+
+            MvcResult mvcResult = this.mockMvc.perform(get(BERRY_API + "/berry-flavor" + "?limit=10&offset=1"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            String actual = mvcResult.getResponse().getContentAsString();
+            String expected = jsonMapper.writeValueAsString(getAllBerryFlavorsResponse);
+
+            assertThat(expected).isEqualTo(actual);
+            verify(pokeApiClient).getResource(BerryFlavor.class, new PageQuery(10, 10));
+        }
     }
 
-    @Test
-    @DisplayName("Test getBerryFirmness returns an exception")
-    void testGetBerryFirmnessThrowsAnException() throws Exception
+    @Nested
+    @DisplayName("Get All Berry Flavors Negative Cases")
+    class GetAllBerryFlavorsNegative
     {
-        when(pokeApiClient.getResource(any(), any(PageQuery.class))).thenThrow(new RuntimeException("From testGetBerryFirmnessThrowsAnException"));
-        this.mockMvc.perform(get(BERRY_API + "/berry-firmness"))
-                .andExpect(status().isInternalServerError())
-                .andExpect(result -> {
-                    final var contentAsString = result.getResponse().getContentAsString();
-                    assertThat(contentAsString).isEqualTo("From testGetBerryFirmnessThrowsAnException");
-                });
+        @Autowired
+        private MockMvc mockMvc;
+
+        @Test
+        @DisplayName("Berry Flavors returns no results")
+        void testGetAllBerryFlavorsReturnsNoResults() throws Exception
+        {
+            when(pokeApiClient.getResource(BerryFlavor.class, new PageQuery(10, 0)))
+                    .thenReturn(Mono.empty());
+
+            this.mockMvc.perform(get(BERRY_API + "/berry-flavor"))
+                    .andExpect(status().isBadRequest());
+
+            verify(pokeApiClient).getResource(BerryFlavor.class, new PageQuery(10, 0));
+        }
+
+        @Test
+        @DisplayName("Berry Flavors returns null")
+        void testGetAllBerryFlavorsReturnsNull() throws Exception
+        {
+            when(pokeApiClient.getResource(BerryFlavor.class, new PageQuery(10, 0)))
+                    .thenReturn(null);
+
+            this.mockMvc.perform(get(BERRY_API + "/berry-flavor"))
+                    .andExpect(status().isInternalServerError());
+
+            verify(pokeApiClient).getResource(BerryFlavor.class, new PageQuery(10, 0));
+        }
+
+        @Test
+        @DisplayName("Berry Flavors throws an exception")
+        void testGetAllBerryFlavorsThrowsException() throws Exception
+        {
+            when(pokeApiClient.getResource(BerryFlavor.class, new PageQuery(10, 0)))
+                    .thenThrow(new RuntimeException("Test Exception"));
+
+            this.mockMvc.perform(get(BERRY_API + "/berry-flavor"))
+                    .andExpect(status().isInternalServerError());
+
+            verify(pokeApiClient).getResource(BerryFlavor.class, new PageQuery(10, 0));
+        }
     }
 
-    //
-
-    @Test
-    @DisplayName("Test getBerryFirmness returns no berry firmness")
-    void testGetBerryFirmnessReturnsNullResponse() throws Exception
+    @Nested
+    @DisplayName("Get Berry Flavor Positive Cases")
+    class GetBerryFlavorPositive
     {
-        when(pokeApiClient.getResource(any(), anyString())).thenReturn(Mono.empty());
-        this.mockMvc.perform(get(BERRY_API + "/berry-firmness/" + berryFirmness_1.getId()))
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> {
-                    final var contentAsString = result.getResponse().getContentAsString();
-                    assertThat(contentAsString).isEqualTo("Could not find berry-firmness with " + berry_1.getId());
-                });
+        @Autowired
+        private MockMvc mockMvc;
+
+        @Test
+        @DisplayName("Berry Flavor 1 returns the expected berry flavor")
+        void testGetBerryFlavor() throws Exception
+        {
+            when(pokeApiClient.getResource(BerryFlavor.class, "1"))
+                    .thenReturn(Mono.just(berryFlavor_1));
+
+            MvcResult mvcResult = this.mockMvc.perform(get(BERRY_API + "/berry-flavor/1"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            String actual = mvcResult.getResponse().getContentAsString();
+            String expected = jsonMapper.writeValueAsString(berryFlavor_1);
+
+            assertThat(expected).isEqualTo(actual);
+
+            verify(pokeApiClient).getResource(BerryFlavor.class, "1");
+        }
     }
 
-    @Test
-    @DisplayName("Test getBerryFirmness returns expected berry firmness")
-    void testGetBerryFirmnessReturnsExpectedBerryFirmness() throws Exception
+    @Nested
+    @DisplayName("Get Berry Flavor Negative Cases")
+    class GetBerryFlavorNegative
     {
-        Mono<PokeApiResource> mono = Mono.just(berryFirmness_1);
-        when(pokeApiClient.getResource(any(), anyString())).thenReturn(mono);
-        this.mockMvc.perform(get(BERRY_API + "/berry-firmness/" + berryFirmness_1.getId()))
-                .andExpect(status().isOk())
-                .andExpect(result -> {
-                    final var contentAsString = result.getResponse().getContentAsString();
-                    BerryFirmness response = jsonMapper.readValue(contentAsString, BerryFirmness.class);
-                    assertThat(response.getName()).isEqualTo(berryFirmness_1.getName());
-                    assertThat(response.getId()).isEqualTo(berryFirmness_1.getId());
-                });
-    }
+        @Autowired
+        private MockMvc mockMvc;
 
-    @Test
-    @DisplayName("Test getBerryFirmness/1 returns an exception")
-    void testGetBerryFirmness1ThrowsAnException() throws Exception
-    {
-        when(pokeApiClient.getResource(any(), anyString())).thenThrow(new RuntimeException("From testGetBerryFirmness1ThrowsAnException"));
-        this.mockMvc.perform(get(BERRY_API + "/berry-firmness/" + berryFirmness_1.getId()))
-                .andExpect(status().isInternalServerError())
-                .andExpect(result -> {
-                    final var contentAsString = result.getResponse().getContentAsString();
-                    assertThat(contentAsString).isEqualTo("From testGetBerryFirmness1ThrowsAnException");
-                });
-    }
+        @Test
+        @DisplayName("Berry Flavor 1 returns no result")
+        void testGetBerryFlavorReturnsNoResult() throws Exception
+        {
+            when(pokeApiClient.getResource(BerryFlavor.class, "1"))
+                    .thenReturn(Mono.empty());
 
-    //
+            this.mockMvc.perform(get(BERRY_API + "/berry-flavor/1"))
+                    .andExpect(status().isBadRequest());
 
-    @Test
-    @DisplayName("Test getBerryFlavor returns no berry flavors")
-    void testGetAllBerryFlavorsReturnsNullResponse() throws Exception
-    {
-        when(pokeApiClient.getResource(any(), any(PageQuery.class))).thenReturn(Mono.empty());
-        this.mockMvc.perform(get(BERRY_API + "/berry-flavor"))
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> {
-                    final var contentAsString = result.getResponse().getContentAsString();
-                    assertThat(contentAsString).isEqualTo("Could not access berry-flavor endpoint");
-                });
-    }
+            verify(pokeApiClient).getResource(BerryFlavor.class, "1");
+        }
 
-    @Test
-    @DisplayName("Test getBerryFlavors returns the expected results")
-    void testGetBerryFlavors() throws Exception
-    {
-        Mono<?> mono = getMonoFromListResponse(getAllBerryFlavorsResponse, new NamedApiResource<BerryFlavor>());
-        when(pokeApiClient.getResource(any(), any(PageQuery.class))).thenReturn((Mono<NamedApiResourceList<PokeApiResource>>) mono);
-        this.mockMvc.perform(get(BERRY_API + "/berry-flavor"))
-                .andExpect(status().isOk())
-                .andExpect(result -> {
-                    final var contentAsString = result.getResponse().getContentAsString();
-                    List<NamedApiResource<Berry>> berries = jsonMapper.readValue(contentAsString, new TypeReference<>()
-                    {
-                    });
-                    assertThat(berries).size().isEqualTo(getAllBerryFlavorsResponse.results().size());
-                });
-    }
+        @Test
+        @DisplayName("Berry Flavor 1 throws an exception")
+        void testGetBerryFlavorThrowsException() throws Exception
+        {
+            when(pokeApiClient.getResource(BerryFlavor.class, "1"))
+                    .thenThrow(new RuntimeException("Test Exception"));
 
-    @Test
-    @DisplayName("Test getBerryFlavors returns an exception")
-    void testGetBerryFlavorsThrowsAnException() throws Exception
-    {
-        when(pokeApiClient.getResource(any(), any(PageQuery.class))).thenThrow(new RuntimeException("From getBerryFlavorsThrowsAnException"));
-        this.mockMvc.perform(get(BERRY_API + "/berry-flavor"))
-                .andExpect(status().isInternalServerError())
-                .andExpect(result -> {
-                    final var contentAsString = result.getResponse().getContentAsString();
-                    assertThat(contentAsString).isEqualTo("From getBerryFlavorsThrowsAnException");
-                });
-    }
+            this.mockMvc.perform(get(BERRY_API + "/berry-flavor/1"))
+                    .andExpect(status().isInternalServerError());
 
-    //
-
-    @Test
-    @DisplayName("Test getBerryFlavor/1 returns no berry flavor")
-    void testGetBerryFlavorReturnsNullResponse() throws Exception
-    {
-        when(pokeApiClient.getResource(any(), anyString())).thenReturn(Mono.empty());
-        this.mockMvc.perform(get(BERRY_API + "/berry-flavor/" + berryFlavor_1.getId()))
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> {
-                    final var contentAsString = result.getResponse().getContentAsString();
-                    assertThat(contentAsString).isEqualTo("Could not find berry-flavor with " + berryFlavor_1.getId());
-                });
-    }
-
-    @Test
-    @DisplayName("Test getBerryFlavor/1 returns expected berry flavor")
-    void testGetBerryFlavorReturnsExpectedBerryFlavor() throws Exception
-    {
-        Mono<PokeApiResource> mono = Mono.just(berryFlavor_1);
-        when(pokeApiClient.getResource(any(), anyString())).thenReturn(mono);
-        this.mockMvc.perform(get(BERRY_API + "/berry-flavor/" + berryFlavor_1.getId()))
-                .andExpect(status().isOk())
-                .andExpect(result -> {
-                    final var contentAsString = result.getResponse().getContentAsString();
-                    BerryFlavor response = jsonMapper.readValue(contentAsString, BerryFlavor.class);
-                    assertThat(response.getName()).isEqualTo(berryFlavor_1.getName());
-                    assertThat(response.getId()).isEqualTo(berryFlavor_1.getId());
-                });
-    }
-
-    @Test
-    @DisplayName("Test getBerryFlavor/1 returns an exception")
-    void testGetBerryFlavor1ThrowsAnException() throws Exception
-    {
-        when(pokeApiClient.getResource(any(), anyString())).thenThrow(new RuntimeException("From testGetBerryFlavor1ThrowsAnException"));
-        this.mockMvc.perform(get(BERRY_API + "/berry-flavor/" + berryFlavor_1.getId()))
-                .andExpect(status().isInternalServerError())
-                .andExpect(result -> {
-                    final var contentAsString = result.getResponse().getContentAsString();
-                    assertThat(contentAsString).isEqualTo("From testGetBerryFlavor1ThrowsAnException");
-                });
+            verify(pokeApiClient).getResource(BerryFlavor.class, "1");
+        }
     }
 }

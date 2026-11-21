@@ -1,0 +1,47 @@
+{
+  "count": 16,
+  "next": "https://pokeapi.co/api/v2/move-target?offset=10&limit=6",
+  "previous": null,
+  "results": [
+    {
+      "name": "specific-move",
+      "url": "https://pokeapi.co/api/v2/move-target/1/"
+    },
+    {
+      "name": "selected-pokemon-me-first",
+      "url": "https://pokeapi.co/api/v2/move-target/2/"
+    },
+    {
+      "name": "ally",
+      "url": "https://pokeapi.co/api/v2/move-target/3/"
+    },
+    {
+      "name": "users-field",
+      "url": "https://pokeapi.co/api/v2/move-target/4/"
+    },
+    {
+      "name": "user-or-ally",
+      "url": "https://pokeapi.co/api/v2/move-target/5/"
+    },
+    {
+      "name": "opponents-field",
+      "url": "https://pokeapi.co/api/v2/move-target/6/"
+    },
+    {
+      "name": "user",
+      "url": "https://pokeapi.co/api/v2/move-target/7/"
+    },
+    {
+      "name": "random-opponent",
+      "url": "https://pokeapi.co/api/v2/move-target/8/"
+    },
+    {
+      "name": "all-other-pokemon",
+      "url": "https://pokeapi.co/api/v2/move-target/9/"
+    },
+    {
+      "name": "selected-pokemon",
+      "url": "https://pokeapi.co/api/v2/move-target/10/"
+    }
+  ]
+}

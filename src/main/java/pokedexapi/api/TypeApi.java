@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
-import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
@@ -18,20 +17,20 @@ public class TypeApi extends BaseApiController
 {
     private static final Logger LOGGER = LogManager.getLogger(TypeApi.class);
 
-    TypeApi(PokemonService pokemonService, PokeApiClient client)
+    TypeApi(PokeApiClient client)
     {
-        super(pokemonService, client);
+        super(client);
     }
 
     @GetMapping(value = "")
-    ResponseEntity<?> getTypes(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    ResponseEntity<?> getAllTypes(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                  @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getTypes limit:{} offset:{}", limit, offset);
+        LOGGER.info("getAllTypes limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<Type> page = pokeApiClient.getResource(Type.class, new PageQuery(limit, offset)).block();
-            if (null != page) return ResponseEntity.ok(page.results());
-            else return ResponseEntity.badRequest().body("Could not access Type endpoint");
+            NamedApiResourceList<Type> types = pokeApiClient.getResource(Type.class, new PageQuery(limit, offset * limit)).block();
+            if (null != types) return ResponseEntity.ok(types);
+            return ResponseEntity.badRequest().body("Could not access Type endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -45,7 +44,7 @@ public class TypeApi extends BaseApiController
         try {
             Type type = pokeApiClient.getResource(Type.class, nameOrId).block();
             if (null != type) return ResponseEntity.ok(type);
-            else return ResponseEntity.badRequest().body("Could not find Type with " + nameOrId);
+            return ResponseEntity.badRequest().body("Could not find Type with " + nameOrId);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());

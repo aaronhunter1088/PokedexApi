@@ -11,27 +11,26 @@ import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.gender.Gender;
 
-
 @RestController
 @RequestMapping("/gender")
 public class GenderApi extends BaseApiController
 {
     private static final Logger LOGGER = LogManager.getLogger(GenderApi.class);
 
-    GenderApi(PokemonService pokemonService, PokeApiClient client)
+    GenderApi(PokeApiClient client)
     {
-        super(pokemonService, client);
+        super(client);
     }
 
     @GetMapping(value = "")
-    ResponseEntity<?> getGenders(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    ResponseEntity<?> getAllGenders(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                    @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getGenders limit:{} offset:{}", limit, offset);
+        LOGGER.info("getAllGenders limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<Gender> page = pokeApiClient.getResource(Gender.class, new PageQuery(limit, offset)).block();
-            if (null != page) return ResponseEntity.ok(page.results());
-            else return ResponseEntity.badRequest().body("Could not access Gender endpoint");
+            NamedApiResourceList<Gender> genders = pokeApiClient.getResource(Gender.class, new PageQuery(limit, offset * limit)).block();
+            if (null != genders) return ResponseEntity.ok(genders);
+            return ResponseEntity.badRequest().body("Could not access Gender endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -45,7 +44,7 @@ public class GenderApi extends BaseApiController
         try {
             Gender gender = pokeApiClient.getResource(Gender.class, id).block();
             if (null != gender) return ResponseEntity.ok(gender);
-            else return ResponseEntity.badRequest().body("Could not find Gender with " + id);
+            return ResponseEntity.badRequest().body("Could not find Gender with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());

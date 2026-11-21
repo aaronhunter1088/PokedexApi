@@ -2,7 +2,6 @@ package pokedexapi.api;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
@@ -14,33 +13,28 @@ import skaro.pokeapi.resource.contesteffect.ContestEffect;
 import skaro.pokeapi.resource.contesttype.ContestType;
 import skaro.pokeapi.resource.supercontesteffect.SuperContestEffect;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.Map;
-
 @RestController
 @RequestMapping("/contest")
 class ContestApi extends BaseApiController
 {
     private static final Logger LOGGER = LogManager.getLogger(ContestApi.class);
 
-    ContestApi(PokemonService pokemonService, PokeApiClient client)
+    ContestApi(PokeApiClient client)
     {
-        super(pokemonService, client);
+        super(client);
     }
 
     // ContestType
+
     @GetMapping(value = "/contest-type")
-    ResponseEntity<?> getAllContests(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    ResponseEntity<?> getAllContestTypes(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                         @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getAllContests");
+        LOGGER.info("getAllContestTypes limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<ContestType> contests = pokeApiClient.getResource(skaro.pokeapi.resource.contesttype.ContestType.class, new PageQuery(limit, offset)).block();
-            if (null != contests) return ResponseEntity.ok(contests.results());
-            else return ResponseEntity.badRequest().body("Could not access ContestType endpoint");
+            NamedApiResourceList<ContestType> contestTypes = pokeApiClient.getResource(ContestType.class, new PageQuery(limit, offset * limit)).block();
+            if (null != contestTypes) return ResponseEntity.ok(contestTypes);
+            return ResponseEntity.badRequest().body("Could not access ContestType endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -54,7 +48,7 @@ class ContestApi extends BaseApiController
         try {
             ContestType contestType = pokeApiClient.getResource(ContestType.class, id).block();
             if (null != contestType) return ResponseEntity.ok(contestType);
-            else return ResponseEntity.badRequest().body("Could not find a contestType with " + id);
+            return ResponseEntity.badRequest().body("Could not find a ContestType with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -62,15 +56,16 @@ class ContestApi extends BaseApiController
     }
 
     // ContestEffect
+
     @GetMapping(value = "/contest-effect")
     ResponseEntity<?> getAllContestEffect(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+                                          @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getAllContestEffects limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<ContestEffect> page = pokeApiClient.getResource(ContestEffect.class, new PageQuery(limit, offset)).block();
-            if (null != page) return ResponseEntity.ok(page.results());
-            else return ResponseEntity.badRequest().body("Could not access ContestEffect endpoint");
+            NamedApiResourceList<ContestEffect> contestEffects = pokeApiClient.getResource(ContestEffect.class, new PageQuery(limit, offset * limit)).block();
+            if (null != contestEffects) return ResponseEntity.ok(contestEffects);
+            return ResponseEntity.badRequest().body("Could not access ContestEffect endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -81,19 +76,10 @@ class ContestApi extends BaseApiController
     ResponseEntity<?> getContestEffect(@PathVariable String id)
     {
         LOGGER.info("getContestEffect with {}", id);
-        HttpResponse<String> response;
-        JSONParser jsonParser;
         try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(pokeApiBaseUrl + "contest-effect/" + id))
-                    .GET()
-                    .build();
-            response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-            LOGGER.info("response: {}", response.body());
-            jsonParser = new JSONParser(response.body());
-            Map<String, Object> results = (Map<String, Object>) jsonParser.parse();
-            if (null != results && !results.isEmpty()) return ResponseEntity.ok(results);
-            else return ResponseEntity.badRequest().body("Could not find a ContestEffect with " + id);
+            ContestEffect contestEffect = pokeApiClient.getResource(ContestEffect.class, id).block();
+            if (null != contestEffect) return ResponseEntity.ok(contestEffect);
+            return ResponseEntity.badRequest().body("Could not find ContestEffect with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -101,15 +87,16 @@ class ContestApi extends BaseApiController
     }
 
     // SuperContestEffects
+
     @GetMapping(value = "/super-contest-effect")
     ResponseEntity<?> getAllSuperContestEffect(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+                                               @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
         LOGGER.info("getAllSuperContestEffects limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<SuperContestEffect> page = pokeApiClient.getResource(SuperContestEffect.class, new PageQuery(limit, offset)).block();
-            if (null != page) return ResponseEntity.ok(page.results());
-            else return ResponseEntity.badRequest().body("Could not access SuperContestEffect endpoint");
+            NamedApiResourceList<SuperContestEffect> superContestEffects = pokeApiClient.getResource(SuperContestEffect.class, new PageQuery(limit, offset * limit)).block();
+            if (null != superContestEffects) return ResponseEntity.ok(superContestEffects);
+            return ResponseEntity.badRequest().body("Could not access SuperContestEffect endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -120,23 +107,13 @@ class ContestApi extends BaseApiController
     ResponseEntity<?> getSuperContestEffect(@PathVariable String id)
     {
         LOGGER.info("getSuperContestEffect with {}", id);
-        HttpResponse<String> response;
-        JSONParser jsonParser;
         try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(pokeApiBaseUrl + "super-contest-effect/" + id))
-                    .GET()
-                    .build();
-            response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-            LOGGER.info("response: {}", response.body());
-            jsonParser = new JSONParser(response.body());
-            Map<String, Object> results = (Map<String, Object>) jsonParser.parse();
-            if (null != results && !results.isEmpty()) return ResponseEntity.ok(results);
-            else return ResponseEntity.badRequest().body("Could not find a SuperContestEffect with " + id);
+            SuperContestEffect superContestEffect = pokeApiClient.getResource(SuperContestEffect.class, id).block();
+            if (null != superContestEffect) return ResponseEntity.ok(superContestEffect);
+            return ResponseEntity.badRequest().body("Could not find SuperContestEffect with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
-
 }

@@ -1,0 +1,47 @@
+{
+  "count": 66,
+  "next": "https://pokeapi.co/api/v2/encounter-method?offset=20&limit=10",
+  "previous": "https://pokeapi.co/api/v2/encounter-method?offset=0&limit=10",
+  "results": [
+    {
+      "name": "bridge-spots",
+      "url": "https://pokeapi.co/api/v2/encounter-method/11/"
+    },
+    {
+      "name": "super-rod-spots",
+      "url": "https://pokeapi.co/api/v2/encounter-method/12/"
+    },
+    {
+      "name": "surf-spots",
+      "url": "https://pokeapi.co/api/v2/encounter-method/13/"
+    },
+    {
+      "name": "yellow-flowers",
+      "url": "https://pokeapi.co/api/v2/encounter-method/14/"
+    },
+    {
+      "name": "purple-flowers",
+      "url": "https://pokeapi.co/api/v2/encounter-method/15/"
+    },
+    {
+      "name": "red-flowers",
+      "url": "https://pokeapi.co/api/v2/encounter-method/16/"
+    },
+    {
+      "name": "rough-terrain",
+      "url": "https://pokeapi.co/api/v2/encounter-method/17/"
+    },
+    {
+      "name": "gift",
+      "url": "https://pokeapi.co/api/v2/encounter-method/18/"
+    },
+    {
+      "name": "gift-egg",
+      "url": "https://pokeapi.co/api/v2/encounter-method/19/"
+    },
+    {
+      "name": "static",
+      "url": "https://pokeapi.co/api/v2/encounter-method/20/"
+    }
+  ]
+}

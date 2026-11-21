@@ -1,0 +1,47 @@
+{
+  "count": 1104,
+  "next": "https://pokeapi.co/api/v2/location?offset=20&limit=10",
+  "previous": "https://pokeapi.co/api/v2/location?offset=0&limit=10",
+  "results": [
+    {
+      "name": "great-marsh",
+      "url": "https://pokeapi.co/api/v2/location/11/"
+    },
+    {
+      "name": "solaceon-ruins",
+      "url": "https://pokeapi.co/api/v2/location/12/"
+    },
+    {
+      "name": "sinnoh-victory-road",
+      "url": "https://pokeapi.co/api/v2/location/13/"
+    },
+    {
+      "name": "ravaged-path",
+      "url": "https://pokeapi.co/api/v2/location/14/"
+    },
+    {
+      "name": "oreburgh-gate",
+      "url": "https://pokeapi.co/api/v2/location/15/"
+    },
+    {
+      "name": "stark-mountain",
+      "url": "https://pokeapi.co/api/v2/location/16/"
+    },
+    {
+      "name": "spring-path",
+      "url": "https://pokeapi.co/api/v2/location/17/"
+    },
+    {
+      "name": "turnback-cave",
+      "url": "https://pokeapi.co/api/v2/location/18/"
+    },
+    {
+      "name": "snowpoint-temple",
+      "url": "https://pokeapi.co/api/v2/location/19/"
+    },
+    {
+      "name": "wayward-cave",
+      "url": "https://pokeapi.co/api/v2/location/20/"
+    }
+  ]
+}

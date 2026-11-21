@@ -18,20 +18,20 @@ public class GrowthRateApi extends BaseApiController
 {
     private static final Logger LOGGER = LogManager.getLogger(GrowthRateApi.class);
 
-    GrowthRateApi(PokemonService pokemonService, PokeApiClient client)
+    GrowthRateApi(PokeApiClient client)
     {
-        super(pokemonService, client);
+        super(client);
     }
 
     @GetMapping(value = "")
-    ResponseEntity<?> getGrowthRates(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    ResponseEntity<?> getAllGrowthRates(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                        @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getGrowthRates limit:{} offset:{}", limit, offset);
+        LOGGER.info("getAllGrowthRates limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<GrowthRate> page = pokeApiClient.getResource(GrowthRate.class, new PageQuery(limit, offset)).block();
-            if (null != page) return ResponseEntity.ok(page.results());
-            else return ResponseEntity.badRequest().body("Could not access GrowthRate endpoint");
+            NamedApiResourceList<GrowthRate> growthRates = pokeApiClient.getResource(GrowthRate.class, new PageQuery(limit, offset * limit)).block();
+            if (null != growthRates) return ResponseEntity.ok(growthRates);
+            return ResponseEntity.badRequest().body("Could not access GrowthRate endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -45,7 +45,7 @@ public class GrowthRateApi extends BaseApiController
         try {
             GrowthRate growthRate = pokeApiClient.getResource(GrowthRate.class, id).block();
             if (null != growthRate) return ResponseEntity.ok(growthRate);
-            else return ResponseEntity.badRequest().body("Could not find GrowthRate with " + id);
+            return ResponseEntity.badRequest().body("Could not find GrowthRate with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());

@@ -1,0 +1,11 @@
+{
+  "count": 11,
+  "next": null,
+  "previous": "https://pokeapi.co/api/v2/region?offset=0&limit=10",
+  "results": [
+    {
+      "name": "orre",
+      "url": "https://pokeapi.co/api/v2/region/11/"
+    }
+  ]
+}

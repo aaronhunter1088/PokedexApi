@@ -21,10 +21,11 @@ import java.util.Arrays;
 public class PokemonSpeciesApi extends BaseApiController
 {
     private static final Logger logger = LogManager.getLogger(PokemonSpeciesApi.class);
+    private String lastSuccessfulSpeciesId = "0";
 
-    PokemonSpeciesApi(PokemonService pokemonService, PokeApiClient client)
+    PokemonSpeciesApi(PokeApiClient client)
     {
-        super(pokemonService, client);
+        super(client);
     }
 
     @GetMapping(value = "")
@@ -33,40 +34,40 @@ public class PokemonSpeciesApi extends BaseApiController
     {
         logger.info("getAllSpeciesData limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<PokemonSpecies> allSpeciesData = pokeApiClient.getResource(PokemonSpecies.class, new PageQuery(limit, offset)).block();
-            if (null != allSpeciesData) return ResponseEntity.ok(allSpeciesData.results());
-            else return ResponseEntity.badRequest().body("Could not access PokemonSpecies endpoint");
+            NamedApiResourceList<PokemonSpecies> allSpeciesData = pokeApiClient.getResource(PokemonSpecies.class, new PageQuery(limit, offset * limit)).block();
+            if (null != allSpeciesData) return ResponseEntity.ok(allSpeciesData);
+            return ResponseEntity.badRequest().body("Could not access PokemonSpecies endpoint");
         }
         catch (Exception e) {
-            Arrays.stream(e.getStackTrace()).forEach(logger::error);
-            return ResponseEntity.badRequest().body("Could not fetch all species because " + e.getMessage());
+            logger.error("Could not fetch all species: {}", e.getMessage());
+            return ResponseEntity.internalServerError().body("Could not fetch all species because " + e.getMessage());
         }
     }
 
     @RequestMapping(value = "/{nameOrId}", method = RequestMethod.GET)
-    ResponseEntity<?> getPokemonSpeciesData(@PathVariable String nameOrId)
+    public ResponseEntity<?> getPokemonSpeciesData(@PathVariable String nameOrId)
     {
         logger.info("getSpeciesData: {}", nameOrId);
         try {
             PokemonSpecies speciesData;
             try {
-                speciesData = pokemonService.getPokemonSpeciesData(nameOrId);
+                //speciesData = pokemonApiService.getPokemonSpeciesData(nameOrId);
+                speciesData = pokeApiClient.getResource(PokemonSpecies.class, nameOrId).block();
+                if (speciesData != null) {
+                    lastSuccessfulSpeciesId = String.valueOf(nameOrId);
+                    return ResponseEntity.ok(speciesData);
+                }
             }
             catch (Exception e) {
-                speciesData = null;
+                logger.error("Error fetching species data for {}: {}", nameOrId, e.getMessage());
             }
-            if (speciesData != null) return ResponseEntity.ok(speciesData);
-            else {
-                Pokemon pokemonResource = retrievePokemon(nameOrId);
-                if (pokemonResource == null) return ResponseEntity.badRequest().body("Could not find PokemonSpecies with: " + nameOrId);
-                NamedApiResource<PokemonSpecies> speciesResource = pokemonResource.species();
-                if (null == speciesResource) {
-                    return ResponseEntity.noContent().build();
-                }
-                HttpResponse<String> response = pokemonService.callUrl(speciesResource.url());
-                // TODO: Convert response.body() to PokemonSpecies
-                if (response.statusCode() == 200) return ResponseEntity.ok(response.body());
-                else return ResponseEntity.badRequest().body("Could not find PokemonSpecies with: " + nameOrId);
+            Pokemon pokemon = retrievePokemon(nameOrId);
+            if (pokemon == null) return ResponseEntity.badRequest().body("Could not find PokemonSpecies with: " + nameOrId);
+            NamedApiResource<PokemonSpecies> speciesUrl = pokemon.species();
+            if (speciesUrl != null) {
+                return ResponseEntity.ok(pokeApiClient.getResource(PokemonSpecies.class, lastSuccessfulSpeciesId).block());
+            } else {
+                return ResponseEntity.badRequest().body("Could not find PokemonSpecies with: " + nameOrId);
             }
         }
         catch (Exception e) {

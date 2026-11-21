@@ -1,0 +1,47 @@
+{
+  "count": 2223,
+  "next": "https://pokeapi.co/api/v2/item?offset=20&limit=10",
+  "previous": "https://pokeapi.co/api/v2/item?offset=0&limit=10",
+  "results": [
+    {
+      "name": "luxury-ball",
+      "url": "https://pokeapi.co/api/v2/item/11/"
+    },
+    {
+      "name": "premier-ball",
+      "url": "https://pokeapi.co/api/v2/item/12/"
+    },
+    {
+      "name": "dusk-ball",
+      "url": "https://pokeapi.co/api/v2/item/13/"
+    },
+    {
+      "name": "heal-ball",
+      "url": "https://pokeapi.co/api/v2/item/14/"
+    },
+    {
+      "name": "quick-ball",
+      "url": "https://pokeapi.co/api/v2/item/15/"
+    },
+    {
+      "name": "cherish-ball",
+      "url": "https://pokeapi.co/api/v2/item/16/"
+    },
+    {
+      "name": "potion",
+      "url": "https://pokeapi.co/api/v2/item/17/"
+    },
+    {
+      "name": "antidote",
+      "url": "https://pokeapi.co/api/v2/item/18/"
+    },
+    {
+      "name": "burn-heal",
+      "url": "https://pokeapi.co/api/v2/item/19/"
+    },
+    {
+      "name": "ice-heal",
+      "url": "https://pokeapi.co/api/v2/item/20/"
+    }
+  ]
+}

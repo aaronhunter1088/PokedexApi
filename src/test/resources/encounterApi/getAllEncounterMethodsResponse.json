@@ -1,0 +1,47 @@
+{
+  "count": 66,
+  "next": "https://pokeapi.co/api/v2/encounter-method?offset=10&limit=10",
+  "previous": null,
+  "results": [
+    {
+      "name": "walk",
+      "url": "https://pokeapi.co/api/v2/encounter-method/1/"
+    },
+    {
+      "name": "old-rod",
+      "url": "https://pokeapi.co/api/v2/encounter-method/2/"
+    },
+    {
+      "name": "good-rod",
+      "url": "https://pokeapi.co/api/v2/encounter-method/3/"
+    },
+    {
+      "name": "super-rod",
+      "url": "https://pokeapi.co/api/v2/encounter-method/4/"
+    },
+    {
+      "name": "surf",
+      "url": "https://pokeapi.co/api/v2/encounter-method/5/"
+    },
+    {
+      "name": "rock-smash",
+      "url": "https://pokeapi.co/api/v2/encounter-method/6/"
+    },
+    {
+      "name": "headbutt",
+      "url": "https://pokeapi.co/api/v2/encounter-method/7/"
+    },
+    {
+      "name": "dark-grass",
+      "url": "https://pokeapi.co/api/v2/encounter-method/8/"
+    },
+    {
+      "name": "grass-spots",
+      "url": "https://pokeapi.co/api/v2/encounter-method/9/"
+    },
+    {
+      "name": "cave-spots",
+      "url": "https://pokeapi.co/api/v2/encounter-method/10/"
+    }
+  ]
+}

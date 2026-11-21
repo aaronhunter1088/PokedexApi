@@ -1,0 +1,47 @@
+{
+  "count": 25,
+  "next": "https://pokeapi.co/api/v2/nature?offset=10&limit=10",
+  "previous": null,
+  "results": [
+    {
+      "name": "hardy",
+      "url": "https://pokeapi.co/api/v2/nature/1/"
+    },
+    {
+      "name": "bold",
+      "url": "https://pokeapi.co/api/v2/nature/2/"
+    },
+    {
+      "name": "modest",
+      "url": "https://pokeapi.co/api/v2/nature/3/"
+    },
+    {
+      "name": "calm",
+      "url": "https://pokeapi.co/api/v2/nature/4/"
+    },
+    {
+      "name": "timid",
+      "url": "https://pokeapi.co/api/v2/nature/5/"
+    },
+    {
+      "name": "lonely",
+      "url": "https://pokeapi.co/api/v2/nature/6/"
+    },
+    {
+      "name": "docile",
+      "url": "https://pokeapi.co/api/v2/nature/7/"
+    },
+    {
+      "name": "mild",
+      "url": "https://pokeapi.co/api/v2/nature/8/"
+    },
+    {
+      "name": "gentle",
+      "url": "https://pokeapi.co/api/v2/nature/9/"
+    },
+    {
+      "name": "hasty",
+      "url": "https://pokeapi.co/api/v2/nature/10/"
+    }
+  ]
+}

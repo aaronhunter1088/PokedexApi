@@ -1,0 +1,23 @@
+{
+  "count": 14,
+  "next": null,
+  "previous": "https://pokeapi.co/api/v2/pokemon-shape?offset=0&limit=10",
+  "results": [
+    {
+      "name": "heads",
+      "url": "https://pokeapi.co/api/v2/pokemon-shape/11/"
+    },
+    {
+      "name": "humanoid",
+      "url": "https://pokeapi.co/api/v2/pokemon-shape/12/"
+    },
+    {
+      "name": "bug-wings",
+      "url": "https://pokeapi.co/api/v2/pokemon-shape/13/"
+    },
+    {
+      "name": "armor",
+      "url": "https://pokeapi.co/api/v2/pokemon-shape/14/"
+    }
+  ]
+}

@@ -17,20 +17,20 @@ public class AbilityApi extends BaseApiController
 {
     private static final Logger LOGGER = LogManager.getLogger(AbilityApi.class);
 
-    AbilityApi(PokemonService pokemonService, PokeApiClient client)
+    AbilityApi(PokeApiClient client)
     {
-        super(pokemonService, client);
+        super(client);
     }
 
     @GetMapping(value = "")
     public ResponseEntity<?> getAllAbilities(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
                                              @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getAllAbilities");
+        LOGGER.info("getAllAbilities limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<Ability> abilities = pokeApiClient.getResource(Ability.class, new PageQuery(limit, offset)).block();
-            if (null != abilities) return ResponseEntity.ok(abilities.results());
-            else return ResponseEntity.badRequest().body("Could not access Ability endpoint");
+            NamedApiResourceList<Ability> abilities = pokeApiClient.getResource(Ability.class, new PageQuery(limit, offset * limit)).block();
+            if (null != abilities) return ResponseEntity.ok(abilities);
+            return ResponseEntity.badRequest().body("Could not access Ability endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -43,8 +43,8 @@ public class AbilityApi extends BaseApiController
         LOGGER.info("getAbility {}", id);
         try {
             Ability ability = pokeApiClient.getResource(Ability.class, id).block();
-            if (null != ability) return ResponseEntity.ok(ability);
-            else return ResponseEntity.badRequest().body("Could not find Ability with " + id);
+            if (ability != null) return ResponseEntity.ok(ability);
+            return ResponseEntity.badRequest().body("Could not find Ability with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());

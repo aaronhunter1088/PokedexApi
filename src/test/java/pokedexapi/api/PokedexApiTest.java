@@ -1,85 +1,278 @@
 package pokedexapi.api;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import pokedexapi.service.PokemonApiService;
-import pokedexapi.service.PokemonLocationEncounterService;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import pokedexapi.controllers.BaseApiTest;
 import reactor.core.publisher.Mono;
-import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
-import skaro.pokeapi.resource.PokeApiResource;
 import skaro.pokeapi.resource.pokedex.Pokedex;
+import tools.jackson.core.type.TypeReference;
+
+import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-class PokedexApiTest
+@AutoConfigureMockMvc
+class PokedexApiTest extends BaseApiTest
 {
-    @Autowired
-    private PokedexApi pokedexApi;
+    private static final String POKEDEX_API = "/pokedex";
+    private static NamedApiResourceList<Pokedex> getAllPokedexesResponse;
+    private static NamedApiResourceList<Pokedex> getNext10PokedexesResponse;
+    private static Pokedex pokedex_1_national;
+    private static Pokedex pokedex_2_kanto;
 
-    @MockitoBean
-    private PokemonApiService pokemonApiService;
-
-    @MockitoBean
-    private PokeApiClient pokeApiClient;
-
-    @MockitoBean
-    private PokemonLocationEncounterService pokemonLocationEncounterService;
-
-    @SuppressWarnings("unchecked")
-    private <T extends PokeApiResource> NamedApiResourceList<T> mockNamedApiResourceList()
+    @BeforeAll
+    static void setup() throws IOException
     {
-        return (NamedApiResourceList<T>) mock(NamedApiResourceList.class);
+        getAllPokedexesResponse = jsonMapper.readValue(
+                new ClassPathResource("apiPokedex/getAllPokedexesResponse.json").getFile(),
+                new TypeReference<>()
+                {}
+        );
+        getNext10PokedexesResponse = jsonMapper.readValue(
+                new ClassPathResource("apiPokedex/getNext10PokedexesResponse.json").getFile(),
+                new TypeReference<>()
+                {}
+        );
+        pokedex_1_national = jsonMapper.readValue(
+                new ClassPathResource("apiPokedex/pokedex_1_national.json").getFile(),
+                Pokedex.class
+        );
+        pokedex_2_kanto = jsonMapper.readValue(
+                new ClassPathResource("apiPokedex/pokedex_2_kanto.json").getFile(),
+                Pokedex.class
+        );
     }
 
-    @Test
-    @DisplayName("getPokedexTotal returns ok")
-    void testGetPokedexTotal()
+    @Nested
+    @DisplayName("Get All Pokedexes Positive Cases")
+    class GetAllPokedexesPositive
     {
-        when(pokemonApiService.getTotalPokemon("kanto")).thenReturn(151);
+        @Autowired
+        private MockMvc mockMvc;
 
-        var result = pokedexApi.getPokedexTotal("kanto");
+        @Test
+        @DisplayName("getPokedexes returns the first page")
+        void testGetAllPokedexes() throws Exception
+        {
+            when(pokeApiClient.getResource(Pokedex.class, new PageQuery(10, 0)))
+                    .thenReturn(Mono.just(getAllPokedexesResponse));
 
-        assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isEqualTo(151);
+            MvcResult mvcResult = this.mockMvc.perform(get(POKEDEX_API))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            String actual = mvcResult.getResponse().getContentAsString();
+            String expected = jsonMapper.writeValueAsString(getAllPokedexesResponse);
+
+            assertThat(expected).isEqualTo(actual);
+
+            verify(pokeApiClient).getResource(Pokedex.class, new PageQuery(10, 0));
+        }
+
+        @Test
+        @DisplayName("getPokedexes returns the second page (offset is a page index)")
+        void testGetAllPokedexesSecondPage() throws Exception
+        {
+            when(pokeApiClient.getResource(Pokedex.class, new PageQuery(10, 10)))
+                    .thenReturn(Mono.just(getNext10PokedexesResponse));
+
+            MvcResult mvcResult = this.mockMvc.perform(get(POKEDEX_API + "?limit=10&offset=1"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            String actual = mvcResult.getResponse().getContentAsString();
+            String expected = jsonMapper.writeValueAsString(getNext10PokedexesResponse);
+
+            assertThat(expected).isEqualTo(actual);
+
+            verify(pokeApiClient).getResource(Pokedex.class, new PageQuery(10, 10));
+        }
     }
 
-    @Test
-    @DisplayName("getPokedexes returns ok")
-    void testGetPokedexes()
+    @Nested
+    @DisplayName("Get All Pokedexes Negative Cases")
+    class GetAllPokedexesNegative
     {
-        NamedApiResourceList<Pokedex> response = mockNamedApiResourceList();
-        when(pokeApiClient.getResource(eq(Pokedex.class), any(PageQuery.class))).thenReturn(Mono.just(response));
+        @Autowired
+        private MockMvc mockMvc;
 
-        var result = pokedexApi.getPokedexes(10, 0);
+        @Test
+        @DisplayName("getPokedexes returns no pokedexes")
+        void testGetAllPokedexesReturnsNoResults() throws Exception
+        {
+            when(pokeApiClient.getResource(Pokedex.class, new PageQuery(10, 0)))
+                    .thenReturn(Mono.empty());
 
-        assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isEqualTo(response.results());
+            this.mockMvc.perform(get(POKEDEX_API))
+                    .andExpect(status().isBadRequest());
+
+            verify(pokeApiClient).getResource(Pokedex.class, new PageQuery(10, 0));
+        }
+
+        @Test
+        @DisplayName("getPokedexes returns null pokedexes")
+        void testGetAllPokedexesReturnsNull() throws Exception
+        {
+            when(pokeApiClient.getResource(Pokedex.class, new PageQuery(10, 0)))
+                    .thenReturn(null);
+
+            this.mockMvc.perform(get(POKEDEX_API))
+                    .andExpect(status().isInternalServerError());
+
+            verify(pokeApiClient).getResource(Pokedex.class, new PageQuery(10, 0));
+        }
+
+        @Test
+        @DisplayName("getPokedexes throws an exception")
+        void testGetAllPokedexesThrowsException() throws Exception
+        {
+            when(pokeApiClient.getResource(Pokedex.class, new PageQuery(10, 0)))
+                    .thenThrow(new RuntimeException("Test Exception"));
+
+            this.mockMvc.perform(get(POKEDEX_API))
+                    .andExpect(status().isInternalServerError());
+
+            verify(pokeApiClient).getResource(Pokedex.class, new PageQuery(10, 0));
+        }
     }
 
-    @Test
-    @DisplayName("getSpecificPokedex returns ok")
-    void testGetSpecificPokedex()
+    @Nested
+    @DisplayName("Get Pokedex Positive Cases")
+    class GetPokedexPositive
     {
-        Pokedex response = mock(Pokedex.class);
-        when(pokeApiClient.getResource(Pokedex.class, "1")).thenReturn(Mono.just(response));
+        @Autowired
+        private MockMvc mockMvc;
 
-        var result = pokedexApi.getPokedex("1");
+        @Test
+        @DisplayName("getPokedex returns the 1st pokedex")
+        void testGetPokedex() throws Exception
+        {
+            when(pokeApiClient.getResource(Pokedex.class, "1"))
+                    .thenReturn(Mono.just(pokedex_1_national));
 
-        assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isSameAs(response);
+            MvcResult mvcResult = this.mockMvc.perform(get(POKEDEX_API + "/1/name"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            String actual = mvcResult.getResponse().getContentAsString();
+            String expected = jsonMapper.writeValueAsString(pokedex_1_national);
+
+            assertThat(expected).isEqualTo(actual);
+
+            verify(pokeApiClient).getResource(Pokedex.class, "1");
+        }
+    }
+
+    @Nested
+    @DisplayName("Get Pokedex Negative Cases")
+    class GetPokedexNegative
+    {
+        @Autowired
+        private MockMvc mockMvc;
+
+        @Test
+        @DisplayName("getPokedex returns no pokedex")
+        void testGetPokedexReturnsNoResult() throws Exception
+        {
+            when(pokeApiClient.getResource(Pokedex.class, "1"))
+                    .thenReturn(Mono.empty());
+
+            this.mockMvc.perform(get(POKEDEX_API + "/1/name"))
+                    .andExpect(status().isBadRequest());
+
+            verify(pokeApiClient).getResource(Pokedex.class, "1");
+        }
+
+        @Test
+        @DisplayName("getPokedex throws an exception")
+        void testGetPokedexThrowsException() throws Exception
+        {
+            when(pokeApiClient.getResource(Pokedex.class, "1"))
+                    .thenThrow(new RuntimeException("Test Exception"));
+
+            this.mockMvc.perform(get(POKEDEX_API + "/1/name"))
+                    .andExpect(status().isInternalServerError());
+
+            verify(pokeApiClient).getResource(Pokedex.class, "1");
+        }
+    }
+
+    @Nested
+    @DisplayName("Get Pokedex Total Positive Cases")
+    class GetPokedexTotalPositive
+    {
+        @Autowired
+        private MockMvc mockMvc;
+
+        @Test
+        @DisplayName("getPokedexTotal with no value defaults to pokedex 1 and returns 1025")
+        void testGetPokedexTotalDefault() throws Exception
+        {
+            when(pokeApiClient.getResource(Pokedex.class, "1"))
+                    .thenReturn(Mono.just(pokedex_1_national));
+
+            MvcResult mvcResult = this.mockMvc.perform(get(POKEDEX_API + "/" + " " + "/total"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            assertThat(mvcResult.getResponse().getContentAsString()).isEqualTo("1025");
+
+            verify(pokeApiClient).getResource(Pokedex.class, "1");
+        }
+
+        @Test
+        @DisplayName("getPokedexTotal for pokedex 2 returns 151")
+        void testGetPokedexTotalKanto() throws Exception
+        {
+            when(pokeApiClient.getResource(Pokedex.class, "2"))
+                    .thenReturn(Mono.just(pokedex_2_kanto));
+
+            MvcResult mvcResult = this.mockMvc.perform(get(POKEDEX_API + "/2/total"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            assertThat(mvcResult.getResponse().getContentAsString()).isEqualTo("151");
+
+            verify(pokeApiClient).getResource(Pokedex.class, "2");
+        }
+    }
+
+    @Nested
+    @DisplayName("Get Pokedex Total Negative Cases")
+    class GetPokedexTotalNegative
+    {
+        @Autowired
+        private MockMvc mockMvc;
+
+        @Test
+        @DisplayName("getPokedexTotal throws an exception")
+        void testGetPokedexTotalThrowsException() throws Exception
+        {
+            when(pokeApiClient.getResource(Pokedex.class, "2"))
+                    .thenThrow(new RuntimeException("Test Exception"));
+
+            this.mockMvc.perform(get(POKEDEX_API + "/2/total"))
+                    .andExpect(status().isInternalServerError());
+
+            verify(pokeApiClient).getResource(Pokedex.class, "2");
+        }
     }
 }
-

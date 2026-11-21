@@ -17,20 +17,20 @@ public class GenerationApi extends BaseApiController
 {
     private static final Logger LOGGER = LogManager.getLogger(GenerationApi.class);
 
-    GenerationApi(PokemonService pokemonService, PokeApiClient client)
+    GenerationApi(PokeApiClient client)
     {
-        super(pokemonService, client);
+        super(client);
     }
 
     @GetMapping(value = "")
-    ResponseEntity<?> getGenerations(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    ResponseEntity<?> getAllGenerations(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                        @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getGenerations limit:{} offset:{}", limit, offset);
+        LOGGER.info("getAllGenerations limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<Generation> page = pokeApiClient.getResource(Generation.class, new PageQuery(limit, offset)).block();
-            if (null != page) return ResponseEntity.ok(page.results());
-            else return ResponseEntity.badRequest().body("Could not access Generation endpoint");
+            NamedApiResourceList<Generation> page = pokeApiClient.getResource(Generation.class, new PageQuery(limit, offset * limit)).block();
+            if (null != page) return ResponseEntity.ok(page);
+            return ResponseEntity.badRequest().body("Could not access Generation endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -38,13 +38,13 @@ public class GenerationApi extends BaseApiController
     }
 
     @GetMapping(value = "/{id}")
-    ResponseEntity<?> getGeneration(@PathVariable("id") int id)
+    ResponseEntity<?> getGeneration(@PathVariable("id") String id)
     {
         LOGGER.info("getGeneration {}", id);
         try {
-            Generation generation = pokeApiClient.getResource(Generation.class, String.valueOf(id)).block();
+            Generation generation = pokeApiClient.getResource(Generation.class, id).block();
             if (null != generation) return ResponseEntity.ok(generation);
-            else return ResponseEntity.badRequest().body("Could not find Generation with " + id);
+            return ResponseEntity.badRequest().body("Could not find Generation with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());

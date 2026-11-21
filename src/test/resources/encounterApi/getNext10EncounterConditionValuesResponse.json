@@ -1,0 +1,47 @@
+{
+  "count": 363,
+  "next": "https://pokeapi.co/api/v2/encounter-condition-value?offset=20&limit=10",
+  "previous": "https://pokeapi.co/api/v2/encounter-condition-value?offset=0&limit=10",
+  "results": [
+    {
+      "name": "slot2-emerald",
+      "url": "https://pokeapi.co/api/v2/encounter-condition-value/11/"
+    },
+    {
+      "name": "slot2-firered",
+      "url": "https://pokeapi.co/api/v2/encounter-condition-value/12/"
+    },
+    {
+      "name": "slot2-leafgreen",
+      "url": "https://pokeapi.co/api/v2/encounter-condition-value/13/"
+    },
+    {
+      "name": "radio-off",
+      "url": "https://pokeapi.co/api/v2/encounter-condition-value/14/"
+    },
+    {
+      "name": "radio-hoenn",
+      "url": "https://pokeapi.co/api/v2/encounter-condition-value/15/"
+    },
+    {
+      "name": "radio-sinnoh",
+      "url": "https://pokeapi.co/api/v2/encounter-condition-value/16/"
+    },
+    {
+      "name": "season-spring",
+      "url": "https://pokeapi.co/api/v2/encounter-condition-value/17/"
+    },
+    {
+      "name": "season-summer",
+      "url": "https://pokeapi.co/api/v2/encounter-condition-value/18/"
+    },
+    {
+      "name": "season-autumn",
+      "url": "https://pokeapi.co/api/v2/encounter-condition-value/19/"
+    },
+    {
+      "name": "season-winter",
+      "url": "https://pokeapi.co/api/v2/encounter-condition-value/20/"
+    }
+  ]
+}

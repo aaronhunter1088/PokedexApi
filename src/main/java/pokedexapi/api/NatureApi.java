@@ -18,19 +18,19 @@ public class NatureApi extends BaseApiController
 {
     private static final Logger LOGGER = LogManager.getLogger(NatureApi.class);
 
-    NatureApi(PokemonService pokemonService, PokeApiClient client)
+    NatureApi(PokeApiClient client)
     {
-        super(pokemonService, client);
+        super(client);
     }
 
     @GetMapping(value = "")
-    ResponseEntity<?> getNatures(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    ResponseEntity<?> getAllNatures(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                    @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getNatures limit:{} offset:{}", limit, offset);
+        LOGGER.info("getAllNatures limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<Nature> page = pokeApiClient.getResource(Nature.class, new PageQuery(limit, offset)).block();
-            if (null != page) return ResponseEntity.ok(page.results());
+            NamedApiResourceList<Nature> page = pokeApiClient.getResource(Nature.class, new PageQuery(limit, offset * limit)).block();
+            if (null != page) return ResponseEntity.ok(page);
             else return ResponseEntity.badRequest().body("Could not access Nature endpoint");
         }
         catch (Exception e) {

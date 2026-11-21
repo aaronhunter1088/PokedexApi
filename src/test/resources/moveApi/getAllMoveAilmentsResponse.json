@@ -1,0 +1,47 @@
+{
+  "count": 23,
+  "next": "https://pokeapi.co/api/v2/move-ailment?offset=10&limit=10",
+  "previous": null,
+  "results": [
+    {
+      "name": "unknown",
+      "url": "https://pokeapi.co/api/v2/move-ailment/-1/"
+    },
+    {
+      "name": "none",
+      "url": "https://pokeapi.co/api/v2/move-ailment/0/"
+    },
+    {
+      "name": "paralysis",
+      "url": "https://pokeapi.co/api/v2/move-ailment/1/"
+    },
+    {
+      "name": "sleep",
+      "url": "https://pokeapi.co/api/v2/move-ailment/2/"
+    },
+    {
+      "name": "freeze",
+      "url": "https://pokeapi.co/api/v2/move-ailment/3/"
+    },
+    {
+      "name": "burn",
+      "url": "https://pokeapi.co/api/v2/move-ailment/4/"
+    },
+    {
+      "name": "poison",
+      "url": "https://pokeapi.co/api/v2/move-ailment/5/"
+    },
+    {
+      "name": "confusion",
+      "url": "https://pokeapi.co/api/v2/move-ailment/6/"
+    },
+    {
+      "name": "infatuation",
+      "url": "https://pokeapi.co/api/v2/move-ailment/7/"
+    },
+    {
+      "name": "trap",
+      "url": "https://pokeapi.co/api/v2/move-ailment/8/"
+    }
+  ]
+}

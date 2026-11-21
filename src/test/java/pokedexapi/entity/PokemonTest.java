@@ -9,6 +9,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import pokedexapi.controllers.BaseApiTest;
 import skaro.pokeapi.resource.pokemon.Pokemon;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -26,8 +27,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PokemonTest extends BaseApiTest
 {
 
-    skaro.pokeapi.resource.pokemon.Pokemon skaroPichu;
-    skaro.pokeapi.resource.pokemon.Pokemon skaroPikachu;
+    //Pokemon skaroPichu;
+    //Pokemon skaroPikachu;
     Pokemon ditto;
     Pokemon pichu;
     Pokemon pikachu;
@@ -35,20 +36,26 @@ public class PokemonTest extends BaseApiTest
     @BeforeEach
     void setUp() throws IOException
     {
-        skaroPichu = jsonMapper.readValue(
-                new ClassPathResource("entity/pichu.json").getFile(),
-                skaro.pokeapi.resource.pokemon.Pokemon.class
+        pichu = jsonMapper.readValue(
+                new ClassPathResource("pokemonApi/pichu.json").getFile(),
+                Pokemon.class
         );
-        skaroPikachu = jsonMapper.readValue(
-                new ClassPathResource("entity/pikachu.json").getFile(),
-                skaro.pokeapi.resource.pokemon.Pokemon.class
+        pikachu = jsonMapper.readValue(
+                new ClassPathResource("pokemonApi/pikachu.json").getFile(),
+                Pokemon.class
         );
-        pichu = Pokemon.from(skaroPichu, Collections.emptyMap());
-        pikachu = Pokemon.from(skaroPikachu, Collections.emptyMap());
-        ditto = Pokemon.from(skaroPikachu, Collections.emptyMap());
 
-        assertEquals("pikachu", skaroPikachu.getName());
-        assertSame(25, skaroPikachu.getId());
+        ditto = Pokemon.from(pikachu, Collections.emptyMap()); // transforms into Pikachu
+
+        assertNotNull(pichu);
+        assertEquals("pichu", pichu.getName());
+        assertEquals(172, pichu.getId());
+        assertNotNull(pikachu);
+        assertEquals("pikachu", pikachu.getName());
+        assertEquals(25, pikachu.getId());
+        assertNotNull(ditto);
+        assertEquals("pikachu", ditto.getName());
+        assertEquals(25, ditto.getId());
     }
 
     @Test

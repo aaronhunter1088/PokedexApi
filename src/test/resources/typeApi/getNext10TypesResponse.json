@@ -1,0 +1,47 @@
+{
+  "count": 21,
+  "next": "https://pokeapi.co/api/v2/type?offset=20&limit=1",
+  "previous": "https://pokeapi.co/api/v2/type?offset=0&limit=10",
+  "results": [
+    {
+      "name": "water",
+      "url": "https://pokeapi.co/api/v2/type/11/"
+    },
+    {
+      "name": "grass",
+      "url": "https://pokeapi.co/api/v2/type/12/"
+    },
+    {
+      "name": "electric",
+      "url": "https://pokeapi.co/api/v2/type/13/"
+    },
+    {
+      "name": "psychic",
+      "url": "https://pokeapi.co/api/v2/type/14/"
+    },
+    {
+      "name": "ice",
+      "url": "https://pokeapi.co/api/v2/type/15/"
+    },
+    {
+      "name": "dragon",
+      "url": "https://pokeapi.co/api/v2/type/16/"
+    },
+    {
+      "name": "dark",
+      "url": "https://pokeapi.co/api/v2/type/17/"
+    },
+    {
+      "name": "fairy",
+      "url": "https://pokeapi.co/api/v2/type/18/"
+    },
+    {
+      "name": "stellar",
+      "url": "https://pokeapi.co/api/v2/type/19/"
+    },
+    {
+      "name": "unknown",
+      "url": "https://pokeapi.co/api/v2/type/10001/"
+    }
+  ]
+}

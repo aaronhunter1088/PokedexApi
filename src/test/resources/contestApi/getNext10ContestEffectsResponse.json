@@ -1,0 +1,37 @@
+{
+  "count": 33,
+  "next": "https://pokeapi.co/api/v2/contest-effect?offset=20&limit=10",
+  "previous": "https://pokeapi.co/api/v2/contest-effect?offset=0&limit=10",
+  "results": [
+    {
+      "url": "https://pokeapi.co/api/v2/contest-effect/11/"
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/contest-effect/12/"
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/contest-effect/13/"
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/contest-effect/14/"
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/contest-effect/15/"
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/contest-effect/16/"
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/contest-effect/17/"
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/contest-effect/18/"
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/contest-effect/19/"
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/contest-effect/20/"
+    }
+  ]
+}

@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import pokedexapi.api.PokemonApi;
+import pokedexapi.api.PokemonSpeciesApi;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResource;
@@ -47,14 +49,22 @@ public class PokemonApiService implements PokemonService
     @Value("${skaro.pokeapi.baseUri}")
     protected String pokeApiBaseUrl;
     protected PokemonLocationEncounterService pokemonLocationEncounterService;
+    protected PokemonApi pokemonApi;
+    protected PokemonSpeciesApi pokemonSpeciesApi;
     private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
     private static final long RETRY_DELAY_MS = 2_000L;
 
     @Autowired
-    public PokemonApiService(PokeApiClient client, JsonMapper jsonMapper)
+    public PokemonApiService(PokeApiClient client, JsonMapper jsonMapper,
+                             PokemonLocationEncounterService pokemonLocationEncounterService,
+                             PokemonApi pokemonApi,
+                             PokemonSpeciesApi pokemonSpeciesApi)
     {
         this.pokeApiClient = client;
         this.jsonMapper = jsonMapper;
+        this.pokemonLocationEncounterService = pokemonLocationEncounterService;
+        this.pokemonApi = pokemonApi;
+        this.pokemonSpeciesApi = pokemonSpeciesApi;
     }
 
     /**
@@ -79,9 +89,10 @@ public class PokemonApiService implements PokemonService
         for (int attempt = 1; attempt <= 3; attempt++) {
             try {
                 NamedApiResourceList<Pokemon> result =
-                        pokeApiClient.getResource(Pokemon.class, new PageQuery(_limit, offset))
-                                .timeout(Duration.ofSeconds(15))
-                                .block();
+                        (NamedApiResourceList<Pokemon>) pokemonApi.getAllPokemon(_limit, offset).getBody();
+                        //pokeApiClient.getResource(Pokemon.class, new PageQuery(_limit, offset))
+                        //        .timeout(Duration.ofSeconds(15))
+                        //        .block();
 
                 LOGGER.info("getAllPokemons result: null={}, results count={}",
                         result == null,
@@ -121,7 +132,8 @@ public class PokemonApiService implements PokemonService
         LOGGER.debug("Cache miss for pokemon key pokemon:{}; fetching from PokeAPI", nameOrId);
         Pokemon pokemon = null;
         try {
-            pokemon = pokeApiClient.getResource(Pokemon.class, nameOrId).block();
+            pokemon = (Pokemon) pokemonApi.getAPokemon(nameOrId).getBody();
+            //pokemon = pokeApiClient.getResource(Pokemon.class, nameOrId).block();
             if (pokemon != null) LOGGER.debug("{} found", pokemon);
         }
         catch (Exception e) {
@@ -143,7 +155,7 @@ public class PokemonApiService implements PokemonService
     {
         LOGGER.info("getPokemonSpeciesData: {}", id);
         try {
-            PokemonSpecies speciesData = pokeApiClient.getResource(PokemonSpecies.class, id).block();
+            PokemonSpecies speciesData = (PokemonSpecies) pokemonSpeciesApi.getPokemonSpeciesData(id).getBody();
             if (speciesData != null) {
                 return speciesData;
             }
@@ -282,13 +294,13 @@ public class PokemonApiService implements PokemonService
      * Pokedex or -1 if not found
      * <a href="https://pokeapi.co/api/v2/pokedex/{pokedexId}">Test</a>
      *
-     * @param pokedexId the id to get the total Pokemon from
+     * @param nameOrId the id to get the total Pokemon from
      * @return the total number of Pokemon in the Pokedex or -1
      */
     @Override
-    public Integer getTotalPokemon(String pokedexId)
+    public Integer getTotalPokemon(String nameOrId)
     {
-        Pokedex pokedex = pokeApiClient.getResource(Pokedex.class, Objects.requireNonNullElse(pokedexId, "1")).block();
+        Pokedex pokedex = pokeApiClient.getResource(Pokedex.class, null == nameOrId || nameOrId.isBlank() ? "1" : nameOrId).block();
         if (pokedex != null) return pokedex.getPokemonEntries().size();
         else return -1;
     }

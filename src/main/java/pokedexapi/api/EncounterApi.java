@@ -19,22 +19,22 @@ class EncounterApi extends BaseApiController
 {
     private static final Logger logger = LogManager.getLogger(EncounterApi.class);
 
-    EncounterApi(PokemonService pokemonService, PokeApiClient client)
+    EncounterApi(PokeApiClient client)
     {
-        super(pokemonService, client);
+        super(client);
     }
 
     // Encounter Methods
 
     @GetMapping(value = "/encounter-method")
     ResponseEntity<?> getEncounterMethods(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+                                          @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        logger.info("getEncounterMethods");
+        logger.info("getEncounterMethods limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<EncounterMethod> encounters = pokeApiClient.getResource(skaro.pokeapi.resource.encountermethod.EncounterMethod.class, new PageQuery(limit, offset)).block();
-            if (null != encounters) return ResponseEntity.ok(encounters.results());
-            else return ResponseEntity.badRequest().body("Could not access EncounterMethod endpoint");
+            NamedApiResourceList<EncounterMethod> encounterMethods = pokeApiClient.getResource(EncounterMethod.class, new PageQuery(limit, offset * limit)).block();
+            if (null != encounterMethods) return ResponseEntity.ok(encounterMethods);
+            return ResponseEntity.badRequest().body("Could not access EncounterMethods endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -48,7 +48,7 @@ class EncounterApi extends BaseApiController
         try {
             EncounterMethod encounterMethod = pokeApiClient.getResource(EncounterMethod.class, id).block();
             if (null != encounterMethod) return ResponseEntity.ok(encounterMethod);
-            else return ResponseEntity.badRequest().body("Could not find an encounterMethod with " + id);
+            return ResponseEntity.badRequest().body("Could not find an EncounterMethod with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -58,14 +58,14 @@ class EncounterApi extends BaseApiController
     // Conditions
 
     @GetMapping(value = "/encounter-condition")
-    ResponseEntity<?> getConditions(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    ResponseEntity<?> getEncounterConditions(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                             @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        logger.info("getConditions");
+        logger.info("getEncounterConditions limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<EncounterCondition> conditions = pokeApiClient.getResource(skaro.pokeapi.resource.encountercondition.EncounterCondition.class, new PageQuery(limit, offset)).block();
-            if (null != conditions) return ResponseEntity.ok(conditions.results());
-            else return ResponseEntity.badRequest().body("Could not access EncounterCondition endpoint");
+            NamedApiResourceList<EncounterCondition> encounterConditions = pokeApiClient.getResource(EncounterCondition.class, new PageQuery(limit, offset * limit)).block();
+            if (null != encounterConditions) return ResponseEntity.ok(encounterConditions);
+            return ResponseEntity.badRequest().body("Could not access EncounterConditions endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -73,13 +73,13 @@ class EncounterApi extends BaseApiController
     }
 
     @GetMapping(value = "/encounter-condition/{id}")
-    ResponseEntity<?> getCondition(@PathVariable(value = "id") String id)
+    ResponseEntity<?> getEncounterCondition(@PathVariable(value = "id") String id)
     {
-        logger.info("getCondition {}", id);
+        logger.info("getEncounterCondition {}", id);
         try {
             EncounterCondition encounterCondition = pokeApiClient.getResource(EncounterCondition.class, id).block();
             if (null != encounterCondition) return ResponseEntity.ok(encounterCondition);
-            else return ResponseEntity.badRequest().body("Could not find an encounterCondition with " + id);
+            return ResponseEntity.badRequest().body("Could not find an EncounterCondition with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -89,14 +89,14 @@ class EncounterApi extends BaseApiController
     // Condition Values
 
     @GetMapping(value = "/encounter-condition-value")
-    ResponseEntity<?> getConditionValues(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-            @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    ResponseEntity<?> getEncounterConditionValues(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                                  @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        logger.info("getConditionValues");
+        logger.info("getEncounterConditionValues limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<EncounterConditionValue> conditionValues = pokeApiClient.getResource(skaro.pokeapi.resource.encounterconditionvalue.EncounterConditionValue.class, new PageQuery(limit, offset)).block();
-            if (null != conditionValues) return ResponseEntity.ok(conditionValues.results());
-            else return ResponseEntity.badRequest().body("Could not access EncounterConditionValue endpoint");
+            NamedApiResourceList<EncounterConditionValue> encounterConditionValues = pokeApiClient.getResource(EncounterConditionValue.class, new PageQuery(limit, offset * limit)).block();
+            if (null != encounterConditionValues) return ResponseEntity.ok(encounterConditionValues);
+            return ResponseEntity.badRequest().body("Could not access EncounterConditionValues endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -104,17 +104,16 @@ class EncounterApi extends BaseApiController
     }
 
     @GetMapping(value = "/encounter-condition-value/{id}")
-    ResponseEntity<?> getConditionValue(@PathVariable(value = "id") String id)
+    ResponseEntity<?> getEncounterConditionValue(@PathVariable(value = "id") String id)
     {
-        logger.info("getConditionValue {}", id);
+        logger.info("getEncounterConditionValue {}", id);
         try {
-            EncounterConditionValue conditionValue = pokeApiClient.getResource(EncounterConditionValue.class, id).block();
-            if (null != conditionValue) return ResponseEntity.ok(conditionValue);
-            else return ResponseEntity.badRequest().body("Could not find an conditionValue with " + id);
+            EncounterConditionValue encounterConditionValue = pokeApiClient.getResource(EncounterConditionValue.class, id).block();
+            if (null != encounterConditionValue) return ResponseEntity.ok(encounterConditionValue);
+            return ResponseEntity.badRequest().body("Could not find an EncounterConditionValue with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
-
 }
