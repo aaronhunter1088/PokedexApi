@@ -1,0 +1,23 @@
+{
+  "count": 14,
+  "next": null,
+  "previous": "https://pokeapi.co/api/v2/move-category?offset=0&limit=10",
+  "results": [
+    {
+      "name": "whole-field-effect",
+      "url": "https://pokeapi.co/api/v2/move-category/10/"
+    },
+    {
+      "name": "field-effect",
+      "url": "https://pokeapi.co/api/v2/move-category/11/"
+    },
+    {
+      "name": "force-switch",
+      "url": "https://pokeapi.co/api/v2/move-category/12/"
+    },
+    {
+      "name": "unique",
+      "url": "https://pokeapi.co/api/v2/move-category/13/"
+    }
+  ]
+}

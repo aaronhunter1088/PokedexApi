@@ -13,7 +13,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 class PokedexApiApplicationTest extends BaseApiTest
 {
-
     @Autowired
     private PokedexApiApplication application;
 

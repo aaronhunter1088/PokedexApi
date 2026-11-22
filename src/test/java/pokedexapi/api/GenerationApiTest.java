@@ -1,69 +1,212 @@
 package pokedexapi.api;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import pokedexapi.service.PokemonApiService;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import pokedexapi.controllers.BaseApiTest;
 import reactor.core.publisher.Mono;
-import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
-import skaro.pokeapi.resource.PokeApiResource;
 import skaro.pokeapi.resource.generation.Generation;
+import tools.jackson.core.type.TypeReference;
+
+import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-class GenerationApiTest
+@AutoConfigureMockMvc
+class GenerationApiTest extends BaseApiTest
 {
-    @Autowired
-    private GenerationApi generationApi;
+    private static final String GENERATION_API = "/generation";
+    private static NamedApiResourceList<Generation> getAllGenerationsResponse;
+    private static NamedApiResourceList<Generation> getNextGenerationsResponse;
+    private static Generation generation_1;
 
-    @MockitoBean
-    private PokeApiClient pokeApiClient;
-
-    @MockitoBean
-    private PokemonApiService pokemonApiService;
-
-    @SuppressWarnings("unchecked")
-    private <T extends PokeApiResource> NamedApiResourceList<T> mockNamedApiResourceList()
+    @BeforeAll
+    static void setup() throws IOException
     {
-        return (NamedApiResourceList<T>) mock(NamedApiResourceList.class);
+        getAllGenerationsResponse = jsonMapper.readValue(
+                new ClassPathResource("generationApi/getAllGenerationsResponse.json").getFile(),
+                new TypeReference<>()
+                {}
+        );
+        getNextGenerationsResponse = jsonMapper.readValue(
+                new ClassPathResource("generationApi/getNextGenerationsResponse.json").getFile(),
+                new TypeReference<>()
+                {}
+        );
+        generation_1 = jsonMapper.readValue(
+                new ClassPathResource("generationApi/generation_1.json").getFile(),
+                Generation.class
+        );
     }
 
-    @Test
-    @DisplayName("getGenerations returns ok")
-    void testGetGenerations()
+    @Nested
+    @DisplayName("Get All Generations Positive Cases")
+    class GetAllGenerationsPositive
     {
-        NamedApiResourceList<Generation> response = mockNamedApiResourceList();
-        when(pokeApiClient.getResource(eq(Generation.class), any(PageQuery.class))).thenReturn(Mono.just(response));
+        @Autowired
+        private MockMvc mockMvc;
 
-        var result = generationApi.getGenerations(10, 0);
+        @Test
+        @DisplayName("getGenerations returns the first page")
+        void testGetAllGenerations() throws Exception
+        {
+            when(pokeApiClient.getResource(Generation.class, new PageQuery(10, 0)))
+                    .thenReturn(Mono.just(getAllGenerationsResponse));
 
-        assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isSameAs(response);
+            MvcResult mvcResult = this.mockMvc.perform(get(GENERATION_API))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            String actual = mvcResult.getResponse().getContentAsString();
+            String expected = jsonMapper.writeValueAsString(getAllGenerationsResponse);
+
+            assertThat(expected).isEqualTo(actual);
+
+            verify(pokeApiClient).getResource(Generation.class, new PageQuery(10, 0));
+        }
+
+        @Test
+        @DisplayName("getGenerations returns the second page (offset is a page index)")
+        void testGetAllGenerationsSecondPage() throws Exception
+        {
+            when(pokeApiClient.getResource(Generation.class, new PageQuery(10, 10)))
+                    .thenReturn(Mono.just(getNextGenerationsResponse));
+
+            MvcResult mvcResult = this.mockMvc.perform(get(GENERATION_API + "?limit=10&offset=1"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            String actual = mvcResult.getResponse().getContentAsString();
+            String expected = jsonMapper.writeValueAsString(getNextGenerationsResponse);
+
+            assertThat(expected).isEqualTo(actual);
+
+            verify(pokeApiClient).getResource(Generation.class, new PageQuery(10, 10));
+        }
     }
 
-    @Test
-    @DisplayName("getGeneration returns ok")
-    void testGetGeneration()
+    @Nested
+    @DisplayName("Get All Generations Negative Cases")
+    class GetAllGenerationsNegative
     {
-        Generation response = mock(Generation.class);
-        when(pokeApiClient.getResource(Generation.class, "1")).thenReturn(Mono.just(response));
+        @Autowired
+        private MockMvc mockMvc;
 
-        var result = generationApi.getGeneration(1);
+        @Test
+        @DisplayName("getGenerations returns no generations")
+        void testGetAllGenerationsReturnsNoResults() throws Exception
+        {
+            when(pokeApiClient.getResource(Generation.class, new PageQuery(10, 0)))
+                    .thenReturn(Mono.empty());
 
-        assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isSameAs(response);
+            this.mockMvc.perform(get(GENERATION_API))
+                    .andExpect(status().isBadRequest());
+
+            verify(pokeApiClient).getResource(Generation.class, new PageQuery(10, 0));
+        }
+
+        @Test
+        @DisplayName("getGenerations returns null generations")
+        void testGetAllGenerationsReturnsNull() throws Exception
+        {
+            when(pokeApiClient.getResource(Generation.class, new PageQuery(10, 0)))
+                    .thenReturn(null);
+
+            this.mockMvc.perform(get(GENERATION_API))
+                    .andExpect(status().isInternalServerError());
+
+            verify(pokeApiClient).getResource(Generation.class, new PageQuery(10, 0));
+        }
+
+        @Test
+        @DisplayName("getGenerations throws an exception")
+        void testGetAllGenerationsThrowsException() throws Exception
+        {
+            when(pokeApiClient.getResource(Generation.class, new PageQuery(10, 0)))
+                    .thenThrow(new RuntimeException("Test Exception"));
+
+            this.mockMvc.perform(get(GENERATION_API))
+                    .andExpect(status().isInternalServerError());
+
+            verify(pokeApiClient).getResource(Generation.class, new PageQuery(10, 0));
+        }
+    }
+
+    @Nested
+    @DisplayName("Get Generation Positive Cases")
+    class GetGenerationPositive
+    {
+        @Autowired
+        private MockMvc mockMvc;
+
+        @Test
+        @DisplayName("getGeneration returns the 1st generation")
+        void testGetGeneration() throws Exception
+        {
+            when(pokeApiClient.getResource(Generation.class, "1"))
+                    .thenReturn(Mono.just(generation_1));
+
+            MvcResult mvcResult = this.mockMvc.perform(get(GENERATION_API + "/1"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            String actual = mvcResult.getResponse().getContentAsString();
+            String expected = jsonMapper.writeValueAsString(generation_1);
+
+            assertThat(expected).isEqualTo(actual);
+
+            verify(pokeApiClient).getResource(Generation.class, "1");
+        }
+    }
+
+    @Nested
+    @DisplayName("Get Generation Negative Cases")
+    class GetGenerationNegative
+    {
+        @Autowired
+        private MockMvc mockMvc;
+
+        @Test
+        @DisplayName("getGeneration returns no generation")
+        void testGetGenerationReturnsNoResult() throws Exception
+        {
+            when(pokeApiClient.getResource(Generation.class, "1"))
+                    .thenReturn(Mono.empty());
+
+            this.mockMvc.perform(get(GENERATION_API + "/1"))
+                    .andExpect(status().isBadRequest());
+
+            verify(pokeApiClient).getResource(Generation.class, "1");
+        }
+
+        @Test
+        @DisplayName("getGeneration throws an exception")
+        void testGetGenerationThrowsException() throws Exception
+        {
+            when(pokeApiClient.getResource(Generation.class, "1"))
+                    .thenThrow(new RuntimeException("Test Exception"));
+
+            this.mockMvc.perform(get(GENERATION_API + "/1"))
+                    .andExpect(status().isInternalServerError());
+
+            verify(pokeApiClient).getResource(Generation.class, "1");
+        }
     }
 }
-

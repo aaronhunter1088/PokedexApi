@@ -1,0 +1,47 @@
+{
+  "count": 32,
+  "next": "https://pokeapi.co/api/v2/version-group?offset=10&limit=10",
+  "previous": null,
+  "results": [
+    {
+      "name": "red-blue",
+      "url": "https://pokeapi.co/api/v2/version-group/1/"
+    },
+    {
+      "name": "yellow",
+      "url": "https://pokeapi.co/api/v2/version-group/2/"
+    },
+    {
+      "name": "gold-silver",
+      "url": "https://pokeapi.co/api/v2/version-group/3/"
+    },
+    {
+      "name": "crystal",
+      "url": "https://pokeapi.co/api/v2/version-group/4/"
+    },
+    {
+      "name": "ruby-sapphire",
+      "url": "https://pokeapi.co/api/v2/version-group/5/"
+    },
+    {
+      "name": "emerald",
+      "url": "https://pokeapi.co/api/v2/version-group/6/"
+    },
+    {
+      "name": "firered-leafgreen",
+      "url": "https://pokeapi.co/api/v2/version-group/7/"
+    },
+    {
+      "name": "diamond-pearl",
+      "url": "https://pokeapi.co/api/v2/version-group/8/"
+    },
+    {
+      "name": "platinum",
+      "url": "https://pokeapi.co/api/v2/version-group/9/"
+    },
+    {
+      "name": "heartgold-soulsilver",
+      "url": "https://pokeapi.co/api/v2/version-group/10/"
+    }
+  ]
+}

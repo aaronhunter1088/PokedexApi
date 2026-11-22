@@ -44,8 +44,11 @@ public class BaseApiTest
     protected PokemonApiService pokemonApiService;
     @MockitoBean
     protected PokeApiClient pokeApiClient;
-    @Autowired
-    protected JsonMapper jsonMapper;
+
+    protected static final JsonMapper jsonMapper = JsonMapper.builder().build();
+
+    protected BaseApiTest()
+    {}
 
     @Value("${skaro.pokeapi.baseUri}")
     protected String pokeApiBaseUrl;

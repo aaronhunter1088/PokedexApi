@@ -1,29 +1,27 @@
 package pokedexapi.controllers;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import pokedexapi.service.PokemonLocationEncounterService;
 import pokedexapi.service.PokemonService;
+import reactor.core.publisher.Mono;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.resource.pokemon.Pokemon;
 
-import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class BaseApiControllerTest
 {
     private static class TestableBaseApiController extends BaseApiController
     {
-        TestableBaseApiController(PokemonService pokemonService, PokeApiClient client)
+        TestableBaseApiController(PokeApiClient client)
         {
-            super(pokemonService, client);
+            super(client);
         }
 
         TestableBaseApiController(PokemonService pokemonService, PokeApiClient client,
@@ -44,117 +42,131 @@ class BaseApiControllerTest
         }
 
         @SuppressWarnings("removal")
-        void invokeSetGifImage(Pokemon pokemon)
-        {
-            setGifImage(pokemon);
-        }
-
-        @SuppressWarnings("removal")
         Map<String, Object> invokeGenerateDefaultAttributesMap()
         {
             return generateDefaultAttributesMap();
         }
+    }
 
-        HttpResponse<String> invokeFallbackCallUrl(String url) throws Exception
+    @Nested
+    @DisplayName("Constructors")
+    class Constructors
+    {
+        @Test
+        @DisplayName("client constructor only sets the client")
+        void testClientConstructor()
         {
-            return fallbackCallUrl(url);
+            PokeApiClient client = mock(PokeApiClient.class);
+
+            TestableBaseApiController controller = new TestableBaseApiController(client);
+
+            assertThat(controller.pokeApiClient).isSameAs(client);
+            assertThat(controller.pokemonApiService).isNull();
+            assertThat(controller.pokemonLocationEncounterService).isNull();
+        }
+
+        @Test
+        @DisplayName("full constructor sets all fields")
+        void testFullConstructor()
+        {
+            PokemonService pokemonService = mock(PokemonService.class);
+            PokeApiClient client = mock(PokeApiClient.class);
+            PokemonLocationEncounterService locationService = mock(PokemonLocationEncounterService.class);
+
+            TestableBaseApiController controller = new TestableBaseApiController(pokemonService, client, locationService);
+
+            assertThat(controller.pokemonApiService).isSameAs(pokemonService);
+            assertThat(controller.pokeApiClient).isSameAs(client);
+            assertThat(controller.pokemonLocationEncounterService).isSameAs(locationService);
         }
     }
 
-    @Test
-    @DisplayName("constructors initialize fields")
-    void testConstructors()
+    @Nested
+    @DisplayName("getEvolutionChainID")
+    class GetEvolutionChainID
     {
-        PokemonService pokemonService = mock(PokemonService.class);
-        PokeApiClient pokeApiClient = mock(PokeApiClient.class);
-        PokemonLocationEncounterService locationService = mock(PokemonLocationEncounterService.class);
+        private final TestableBaseApiController controller = new TestableBaseApiController(mock(PokeApiClient.class));
 
-        TestableBaseApiController withTwoArgs = new TestableBaseApiController(pokemonService, pokeApiClient);
-        TestableBaseApiController withThreeArgs = new TestableBaseApiController(pokemonService, pokeApiClient, locationService);
+        @Test
+        @DisplayName("returns the chain key for a pokemon id")
+        void testGetEvolutionChainID()
+        {
+            Map<Integer, List<List<Integer>>> map = Map.of(
+                    1, List.of(List.of(1, 2, 3)),
+                    2, List.of(List.of(4, 5, 6))
+            );
 
-        assertThat(withTwoArgs.pokemonService).isSameAs(pokemonService);
-        assertThat(withTwoArgs.pokeApiClient).isSameAs(pokeApiClient);
-        assertThat(withTwoArgs.pokemonLocationEncounterService).isNull();
-        assertThat(withThreeArgs.pokemonLocationEncounterService).isSameAs(locationService);
+            assertThat(controller.invokeGetEvolutionChainID(map, "5")).isEqualTo(2);
+        }
+
+        @Test
+        @DisplayName("returns 0 when the pokemon id is not in any chain")
+        void testGetEvolutionChainIDNotFound()
+        {
+            Map<Integer, List<List<Integer>>> map = Map.of(1, List.of(List.of(1, 2, 3)));
+
+            assertThat(controller.invokeGetEvolutionChainID(map, "99")).isZero();
+        }
     }
 
-    @Test
-    @DisplayName("getEvolutionChainID returns chain key for pokemon id")
-    void testGetEvolutionChainID()
+    @Nested
+    @DisplayName("retrievePokemon")
+    class RetrievePokemon
     {
-        TestableBaseApiController controller = new TestableBaseApiController(mock(PokemonService.class), mock(PokeApiClient.class));
-        Map<Integer, List<List<Integer>>> map = Map.of(
-                1, List.of(List.of(1, 2, 3)),
-                2, List.of(List.of(4, 5, 6))
-        );
+        private final PokeApiClient client = mock(PokeApiClient.class);
+        private final TestableBaseApiController controller = new TestableBaseApiController(client);
 
-        Integer result = controller.invokeGetEvolutionChainID(map, "5");
+        @Test
+        @DisplayName("returns the pokemon from the client")
+        void testRetrievePokemon()
+        {
+            Pokemon pokemon = mock(Pokemon.class);
+            when(client.getResource(Pokemon.class, "pikachu")).thenReturn(Mono.just(pokemon));
 
-        assertThat(result).isEqualTo(2);
+            assertThat(controller.invokeRetrievePokemon("pikachu")).isSameAs(pokemon);
+
+            verify(client).getResource(Pokemon.class, "pikachu");
+        }
+
+        @Test
+        @DisplayName("returns null when the client returns empty")
+        void testRetrievePokemonEmpty()
+        {
+            when(client.getResource(Pokemon.class, "missingno")).thenReturn(Mono.empty());
+
+            assertThat(controller.invokeRetrievePokemon("missingno")).isNull();
+
+            verify(client).getResource(Pokemon.class, "missingno");
+        }
+
+        @Test
+        @DisplayName("returns null when the client throws")
+        void testRetrievePokemonThrows()
+        {
+            when(client.getResource(Pokemon.class, "boom")).thenThrow(new RuntimeException("Test Exception"));
+
+            assertThat(controller.invokeRetrievePokemon("boom")).isNull();
+
+            verify(client).getResource(Pokemon.class, "boom");
+        }
     }
 
-    @Test
-    @DisplayName("retrievePokemon delegates to service")
-    void testRetrievePokemon() throws Exception
+    @Nested
+    @DisplayName("generateDefaultAttributesMap")
+    class GenerateDefaultAttributesMap
     {
-        PokemonService pokemonService = mock(PokemonService.class);
-        PokeApiClient client = mock(PokeApiClient.class);
-        Pokemon pokemon = mock(Pokemon.class);
-        when(pokemonService.getPokemonByIdOrName("pikachu")).thenReturn(pokemon);
-        TestableBaseApiController controller = new TestableBaseApiController(pokemonService, client);
+        @Test
+        @DisplayName("contains the expected keys with null values")
+        void testGenerateDefaultAttributesMap()
+        {
+            TestableBaseApiController controller = new TestableBaseApiController(mock(PokeApiClient.class));
 
-        Pokemon result = controller.invokeRetrievePokemon("pikachu");
+            Map<String, Object> result = controller.invokeGenerateDefaultAttributesMap();
 
-        assertThat(result).isSameAs(pokemon);
-    }
-
-    @Test
-    @DisplayName("setGifImage swallows errors")
-    void testSetGifImage() throws Exception
-    {
-        PokemonService pokemonService = mock(PokemonService.class);
-        PokeApiClient client = mock(PokeApiClient.class);
-        Pokemon pokemon = mock(Pokemon.class);
-        when(pokemon.id()).thenReturn(25);
-        when(pokemonService.callUrl(anyString())).thenThrow(new RuntimeException("boom"));
-        TestableBaseApiController controller = new TestableBaseApiController(pokemonService, client);
-
-        controller.invokeSetGifImage(pokemon);
-
-        assertThat(true).isTrue();
-    }
-
-    @Test
-    @DisplayName("generateDefaultAttributesMap contains expected keys")
-    void testGenerateDefaultAttributesMap()
-    {
-        TestableBaseApiController controller = new TestableBaseApiController(mock(PokemonService.class), mock(PokeApiClient.class));
-
-        Map<String, Object> result = controller.invokeGenerateDefaultAttributesMap();
-
-        assertThat(result)
-                .containsKeys("name", "gender", "id", "heldItem", "knownMove", "trigger")
-                .hasSize(21);
-    }
-
-    @Test
-    @DisplayName("fallbackCallUrl returns service response and rethrows on error")
-    void testFallbackCallUrl() throws Exception
-    {
-        PokemonService pokemonService = mock(PokemonService.class);
-        PokeApiClient client = mock(PokeApiClient.class);
-        @SuppressWarnings("unchecked")
-        HttpResponse<String> response = (HttpResponse<String>) mock(HttpResponse.class);
-        when(response.statusCode()).thenReturn(200);
-        when(pokemonService.callUrl("https://example.com")).thenReturn(response);
-        when(pokemonService.callUrl("https://error.com")).thenThrow(new RuntimeException("boom"));
-
-        TestableBaseApiController controller = new TestableBaseApiController(pokemonService, client);
-
-        assertThat(controller.invokeFallbackCallUrl("https://example.com")).isSameAs(response);
-        assertThatThrownBy(() -> controller.invokeFallbackCallUrl("https://error.com"))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("boom");
+            assertThat(result)
+                    .containsKeys("name", "gender", "id", "heldItem", "knownMove", "trigger")
+                    .hasSize(21);
+            assertThat(result.values()).containsOnlyNulls();
+        }
     }
 }
-

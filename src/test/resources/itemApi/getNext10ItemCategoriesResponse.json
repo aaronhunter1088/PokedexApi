@@ -1,0 +1,47 @@
+{
+  "count": 54,
+  "next": "https://pokeapi.co/api/v2/item-category?offset=20&limit=10",
+  "previous": "https://pokeapi.co/api/v2/item-category?offset=0&limit=10",
+  "results": [
+    {
+      "name": "spelunking",
+      "url": "https://pokeapi.co/api/v2/item-category/11/"
+    },
+    {
+      "name": "held-items",
+      "url": "https://pokeapi.co/api/v2/item-category/12/"
+    },
+    {
+      "name": "choice",
+      "url": "https://pokeapi.co/api/v2/item-category/13/"
+    },
+    {
+      "name": "effort-training",
+      "url": "https://pokeapi.co/api/v2/item-category/14/"
+    },
+    {
+      "name": "bad-held-items",
+      "url": "https://pokeapi.co/api/v2/item-category/15/"
+    },
+    {
+      "name": "training",
+      "url": "https://pokeapi.co/api/v2/item-category/16/"
+    },
+    {
+      "name": "plates",
+      "url": "https://pokeapi.co/api/v2/item-category/17/"
+    },
+    {
+      "name": "species-specific",
+      "url": "https://pokeapi.co/api/v2/item-category/18/"
+    },
+    {
+      "name": "type-enhancement",
+      "url": "https://pokeapi.co/api/v2/item-category/19/"
+    },
+    {
+      "name": "event-items",
+      "url": "https://pokeapi.co/api/v2/item-category/20/"
+    }
+  ]
+}

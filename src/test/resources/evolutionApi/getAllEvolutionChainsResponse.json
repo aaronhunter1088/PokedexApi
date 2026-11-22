@@ -1,0 +1,37 @@
+{
+  "count": 540,
+  "next": "https://pokeapi.co/api/v2/evolution-chain?offset=10&limit=10",
+  "previous": null,
+  "results": [
+    {
+      "url": "https://pokeapi.co/api/v2/evolution-chain/1/"
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/evolution-chain/2/"
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/evolution-chain/3/"
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/evolution-chain/4/"
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/evolution-chain/5/"
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/evolution-chain/6/"
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/evolution-chain/7/"
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/evolution-chain/8/"
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/evolution-chain/9/"
+    },
+    {
+      "url": "https://pokeapi.co/api/v2/evolution-chain/10/"
+    }
+  ]
+}

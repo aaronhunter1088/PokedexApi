@@ -1,0 +1,47 @@
+{
+  "count": 54,
+  "next": "https://pokeapi.co/api/v2/item-category?offset=10&limit=10",
+  "previous": null,
+  "results": [
+    {
+      "name": "stat-boosts",
+      "url": "https://pokeapi.co/api/v2/item-category/1/"
+    },
+    {
+      "name": "effort-drop",
+      "url": "https://pokeapi.co/api/v2/item-category/2/"
+    },
+    {
+      "name": "medicine",
+      "url": "https://pokeapi.co/api/v2/item-category/3/"
+    },
+    {
+      "name": "other",
+      "url": "https://pokeapi.co/api/v2/item-category/4/"
+    },
+    {
+      "name": "in-a-pinch",
+      "url": "https://pokeapi.co/api/v2/item-category/5/"
+    },
+    {
+      "name": "picky-healing",
+      "url": "https://pokeapi.co/api/v2/item-category/6/"
+    },
+    {
+      "name": "type-protection",
+      "url": "https://pokeapi.co/api/v2/item-category/7/"
+    },
+    {
+      "name": "baking-only",
+      "url": "https://pokeapi.co/api/v2/item-category/8/"
+    },
+    {
+      "name": "collectibles",
+      "url": "https://pokeapi.co/api/v2/item-category/9/"
+    },
+    {
+      "name": "evolution",
+      "url": "https://pokeapi.co/api/v2/item-category/10/"
+    }
+  ]
+}

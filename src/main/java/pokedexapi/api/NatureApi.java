@@ -1,60 +1,61 @@
 package pokedexapi.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
-import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.nature.Nature;
 
-import java.util.Arrays;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/nature")
 public class NatureApi extends BaseApiController
 {
-    /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(NatureApi.class);
 
-    @Autowired
-    NatureApi(PokemonService pokemonService, PokeApiClient client)
+    NatureApi(PokeApiClient client)
     {
-        super(pokemonService, client);
+        super(client);
     }
 
-    // Natures
-    @GetMapping("")
-    @ResponseBody
-    ResponseEntity<?> getNatures(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-                                 @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    @Operation(summary = "Get all natures", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
+    @GetMapping(value = "")
+    ResponseEntity<?> getAllNatures(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                    @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getNatures");
+        LOGGER.info("getAllNatures limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<Nature> natures = pokeApiClient.getResource(Nature.class, new PageQuery(limit, offset)).block();
-            if (null != natures) return ResponseEntity.ok(natures);
-            else return ResponseEntity.badRequest().body("Could not access Nature endpoint");
+            NamedApiResourceList<Nature> natures = pokeApiClient.getResource(Nature.class, new PageQuery(limit, offset * limit)).block();
+            if (natures != null) return ResponseEntity.ok(natures);
+            return ResponseEntity.badRequest().body("Could not access Nature endpoint");
         }
         catch (Exception e) {
-            Arrays.stream(e.getStackTrace()).forEach(LOGGER::error);
-            return ResponseEntity.badRequest().body("Could not fetch all Nature because " + e.getMessage());
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    @ResponseBody
+    @Operation(summary = "Get nature", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
+    @GetMapping(value = "/{id}")
     ResponseEntity<?> getNature(@PathVariable(value = "id") String id)
     {
         LOGGER.info("getNature {}", id);
         try {
             Nature nature = pokeApiClient.getResource(Nature.class, id).block();
-            if (null != nature) return ResponseEntity.ok(nature);
-            else return ResponseEntity.badRequest().body("Could not access Nature endpoint");
+            if (nature != null) return ResponseEntity.ok(nature);
+            return ResponseEntity.badRequest().body("Could not find Nature with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());

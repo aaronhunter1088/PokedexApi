@@ -1,225 +1,368 @@
 package pokedexapi.service;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.context.SpringBootTest;
+import com.sun.net.httpserver.HttpServer;
+import org.junit.jupiter.api.*;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import pokedexapi.controllers.BaseApiTest;
-import reactor.core.publisher.Mono;
-import skaro.pokeapi.resource.*;
-import skaro.pokeapi.resource.ability.Ability;
-import skaro.pokeapi.resource.egggroup.EggGroup;
-import skaro.pokeapi.resource.generation.Generation;
-import skaro.pokeapi.resource.growthrate.GrowthRate;
-import skaro.pokeapi.resource.pokedex.Pokedex;
+import org.springframework.http.ResponseEntity;
+import pokedexapi.api.EvolutionApi;
+import pokedexapi.api.PokemonApi;
+import pokedexapi.api.PokemonSpeciesApi;
+import skaro.pokeapi.client.PokeApiClient;
+import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.pokemon.Pokemon;
-import skaro.pokeapi.resource.pokemoncolor.PokemonColor;
-import skaro.pokeapi.resource.pokemonhabitat.PokemonHabitat;
-import skaro.pokeapi.resource.pokemonshape.PokemonShape;
-import skaro.pokeapi.resource.pokemonspecies.Genus;
 import skaro.pokeapi.resource.pokemonspecies.PokemonSpecies;
-import skaro.pokeapi.resource.pokemonspecies.PokemonSpeciesDexEntry;
-import skaro.pokeapi.resource.pokemonspecies.PokemonSpeciesVariety;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 /**
- * Used to integrated JUnit 5's Spring TestContext
- * Framework into JUnit 5's Jupiter programming model.
- * It provides support for loading a Spring ApplicationContext
- * and having beans @Autowired into your test instance.
+ * Unit tests for {@link PokemonApiService}. Collaborators are mocked and
+ * HTTP calls are served by a local {@link HttpServer}, so no network is needed.
  */
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-class PokemonApiServiceTest extends BaseApiTest
+class PokemonApiServiceTest
 {
-    Pokemon pikachu;
-    PokemonSpecies species1Response;
-    Pokedex pokedex2Response;
+    private static final JsonMapper jsonMapper = JsonMapper.builder().build();
+    private static HttpServer server;
+    private static String baseUrl;
+
+    private static Pokemon pikachu;
+    private static PokemonSpecies species1;
+
+    private PokeApiClient pokeApiClient;
+    private PokemonApi pokemonApi;
+    private PokemonSpeciesApi pokemonSpeciesApi;
+    private EvolutionApi evolutionApi;
+    private PokemonApiService service;
+
+    @BeforeAll
+    static void setupAll() throws IOException
+    {
+        pikachu = jsonMapper.readValue(new ClassPathResource("pokemonApi/pikachu.json").getFile(), Pokemon.class);
+        species1 = jsonMapper.readValue(new ClassPathResource("service/pokemonSpecies1Response.json").getFile(), PokemonSpecies.class);
+
+        server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        respondWith("/ok", 200, "{\"ok\":true}");
+        respondWith("/missing", 404, "{}");
+        respondWith("/areas", 200, "[{\"name\":\"zeta-area\"},{\"name\":\"alpha-area\"}]");
+        respondWith("/empty-areas", 200, "[]");
+        respondWith("/bad-json", 200, "not json");
+        respondWith("/chain", 200, "{\"id\":1,\"baby_trigger_item\":null}");
+        respondWith("/encounters", 200,
+                "[{\"location_area\":{\"name\":\"viridian-forest-area\",\"url\":\"u\"},\"version_details\":[]},"
+                        + "{\"location_area\":{\"name\":\"kanto-route-2-south-towns-area\",\"url\":\"u\"},\"version_details\":[]}]");
+        respondWith("/type", 200,
+                "{\"count\":2,\"next\":\"http://127.0.0.1:%d/type2\",\"previous\":null,\"results\":[{\"name\":\"water\",\"url\":\"u\"}]}");
+        respondWith("/type2", 200,
+                "{\"count\":2,\"next\":null,\"previous\":null,\"results\":[{\"name\":\"fire\",\"url\":\"u\"}]}");
+        server.start();
+        baseUrl = "http://127.0.0.1:" + server.getAddress().getPort();
+    }
+
+    private static void respondWith(String path, int status, String body)
+    {
+        server.createContext(path, exchange -> {
+            final byte[] bytes = body.formatted(server.getAddress().getPort()).getBytes(StandardCharsets.UTF_8);
+            exchange.sendResponseHeaders(status, bytes.length);
+            exchange.getResponseBody().write(bytes);
+            exchange.close();
+        });
+    }
+
+    @AfterAll
+    static void teardownAll()
+    {
+        server.stop(0);
+    }
 
     @BeforeEach
-    public void setup() throws IOException
+    void setup()
     {
-        pikachu = jsonMapper.readValue(
-                new ClassPathResource("entity/pikachu.json").getFile(),
-                skaro.pokeapi.resource.pokemon.Pokemon.class
-        );
-        species1Response = jsonMapper.readValue(
-                new ClassPathResource("service/pokemonSpecies1Response.json").getFile(),
-                PokemonSpecies.class
-        );
-        pokedex2Response = jsonMapper.readValue(
-                new ClassPathResource("service/pokedex2Response.json").getFile(),
-                Pokedex.class
-        );
+        pokeApiClient = mock(PokeApiClient.class);
+        pokemonApi = mock(PokemonApi.class);
+        pokemonSpeciesApi = mock(PokemonSpeciesApi.class);
+        evolutionApi = mock(EvolutionApi.class);
+        service = new PokemonApiService(pokeApiClient, jsonMapper, mock(PokemonLocationEncounterService.class),
+                pokemonApi, pokemonSpeciesApi, evolutionApi);
+        service.pokeApiBaseUrl = baseUrl + "/";
     }
 
-    @Test
-    @DisplayName("Test getPokemonByName using pikachu's name")
-    void testGetPokemonByNameUsingTheirIdOrName()
+    @Nested
+    @DisplayName("getPokemonChainData")
+    class GetPokemonChainData
     {
-        Mono<PokeApiResource> just = Mono.just(pikachu);
-        when(pokeApiClient.getResource(any(), anyString())).thenReturn(just);
+        @Test
+        @DisplayName("returns the chain from EvolutionApi as a map")
+        void testGetPokemonChainData()
+        {
+            doReturn(ResponseEntity.ok(Map.of("id", 1, "chain", Map.of()))).when(evolutionApi).getEvolutionChain("1");
 
-        Pokemon result = pokemonApiService.getPokemonByIdOrName(pikachu.getName());
-        assertNotNull(result);
-        verify(pokeApiClient, times(1)).getResource(any(), anyString());
+            final Map<String, Object> chain = service.getPokemonChainData("1");
+
+            assertEquals(1, chain.get("id"));
+            assertTrue(chain.containsKey("chain"));
+            verify(evolutionApi, times(1)).getEvolutionChain("1");
+        }
+
+        @Test
+        @DisplayName("returns an empty map when EvolutionApi returns an error status")
+        void testGetPokemonChainDataErrorStatus()
+        {
+            doReturn(ResponseEntity.badRequest().body("not found")).when(evolutionApi).getEvolutionChain("0");
+
+            assertTrue(service.getPokemonChainData("0").isEmpty());
+
+            verify(evolutionApi, times(1)).getEvolutionChain("0");
+        }
+
+        @Test
+        @DisplayName("returns an empty map when EvolutionApi throws")
+        void testGetPokemonChainDataThrows()
+        {
+            when(evolutionApi.getEvolutionChain("1")).thenThrow(new RuntimeException("Test Exception"));
+
+            assertTrue(service.getPokemonChainData("1").isEmpty());
+
+            verify(evolutionApi, times(1)).getEvolutionChain("1");
+        }
     }
 
-    @Test
-    @DisplayName("Test getPokemonByName using pikachu's id")
-    void testGetPokemonByIdOrNameUsingTheirId()
+    @Nested
+    @DisplayName("getAllPokemons")
+    class GetAllPokemons
     {
-        Mono<PokeApiResource> just = Mono.just(pikachu);
-        when(pokeApiClient.getResource(any(), anyString())).thenReturn(just);
+        @Test
+        @DisplayName("returns the page from PokemonApi")
+        @SuppressWarnings("unchecked")
+        void testGetAllPokemons()
+        {
+            NamedApiResourceList<Pokemon> page = mock(NamedApiResourceList.class);
+            doReturn(ResponseEntity.ok(page)).when(pokemonApi).getAllPokemon(10, 0);
 
-        Pokemon result = pokemonApiService.getPokemonByIdOrName(pikachu.getId().toString());
-        assertNotNull(result);
-        verify(pokeApiClient, times(1)).getResource(any(), anyString());
+            assertSame(page, service.getAllPokemons(10, 0));
+
+            verify(pokemonApi, times(1)).getAllPokemon(10, 0);
+        }
+
+        @Test
+        @DisplayName("returns null without retrying when PokemonApi throws")
+        void testGetAllPokemonsThrows()
+        {
+            when(pokemonApi.getAllPokemon(10, 0)).thenThrow(new RuntimeException("Test Exception"));
+
+            assertNull(service.getAllPokemons(10, 0));
+
+            verify(pokemonApi, times(1)).getAllPokemon(10, 0);
+        }
+
+        @Test
+        @DisplayName("returns null without retrying when PokemonApi returns an error status")
+        void testGetAllPokemonsErrorStatus()
+        {
+            doReturn(ResponseEntity.internalServerError().body("error")).when(pokemonApi).getAllPokemon(10, 0);
+
+            assertNull(service.getAllPokemons(10, 0));
+
+            verify(pokemonApi, times(1)).getAllPokemon(10, 0);
+        }
     }
 
-    @Test
-    @DisplayName("Test getPokemonByIdOrName with monchumon returns null")
-    void testGetPokemonByIdOrNameWithMonchumonReturnsNull()
+    @Nested
+    @DisplayName("getPokemonByIdOrName")
+    class GetPokemonByIdOrName
     {
-        Pokemon notFound = pokemonApiService.getPokemonByIdOrName("monchumon");
+        @Test
+        @DisplayName("returns the pokemon by name")
+        void testByName()
+        {
+            doReturn(ResponseEntity.ok(pikachu)).when(pokemonApi).getAPokemon("pikachu");
 
-        assertNull(notFound);
-        verify(pokeApiClient, times(1)).getResource(any(), anyString());
+            assertSame(pikachu, service.getPokemonByIdOrName("pikachu"));
+
+            verify(pokemonApi, times(1)).getAPokemon("pikachu");
+        }
+
+        @Test
+        @DisplayName("returns the pokemon by id")
+        void testById()
+        {
+            doReturn(ResponseEntity.ok(pikachu)).when(pokemonApi).getAPokemon("25");
+
+            assertSame(pikachu, service.getPokemonByIdOrName("25"));
+
+            verify(pokemonApi, times(1)).getAPokemon("25");
+        }
+
+        @Test
+        @DisplayName("returns null when PokemonApi throws")
+        void testThrows()
+        {
+            when(pokemonApi.getAPokemon("monchumon")).thenThrow(new RuntimeException("Test Exception"));
+
+            assertNull(service.getPokemonByIdOrName("monchumon"));
+
+            verify(pokemonApi, times(1)).getAPokemon("monchumon");
+        }
     }
 
-    //
-
-    @Test
-    @DisplayName("Test getPokemonSpecies with 1 returns successfully")
-    void testGetPokemonSpeciesReturnsSuccessfully()
+    @Nested
+    @DisplayName("getPokemonSpeciesData")
+    class GetPokemonSpeciesData
     {
-        Mono<PokeApiResource> just = Mono.just(species1Response);
-        when(pokeApiClient.getResource(any(), anyString())).thenReturn(just);
+        @Test
+        @DisplayName("returns the species from PokemonSpeciesApi")
+        void testSuccess()
+        {
+            doReturn(ResponseEntity.ok(species1)).when(pokemonSpeciesApi).getPokemonSpeciesData("1");
 
-        PokemonSpecies species = pokemonApiService.getPokemonSpeciesData("1");
-        assertNotNull(species);
-        assertEquals(1, species.getId());
-        assertEquals("bulbasaur", species.getName());
-        assertEquals(1, species.getOrder());
-        assertEquals(1, species.getGenderRate());
-        assertEquals(45, species.getCaptureRate());
-        assertEquals(50, species.getBaseHappiness());
-        assertFalse(species.isBaby());
-        assertFalse(species.isLegendary());
-        assertFalse(species.isMythical());
-        assertEquals(20, species.getHatchCounter());
-        assertFalse(species.hasGenderDifferences());
-        assertFalse(species.isFormsSwitchable());
-        NamedApiResource<GrowthRate> growthRate = species.getGrowthRate();
-        assertEquals("medium-slow", growthRate.name());
-        assertEquals("https://pokeapi.co/api/v2/growth-rate/4/", growthRate.url());
-        List<PokemonSpeciesDexEntry> speciesDexEntry = species.getPokedexNumbers();
-        assertNotNull(speciesDexEntry);
-        assertSame(8, speciesDexEntry.size());
-        List<NamedApiResource<EggGroup>> eggGroups = species.getEggGroups();
-        assertNotNull(eggGroups);
-        assertSame(2, eggGroups.size());
-        NamedApiResource<PokemonColor> color = species.getColor();
-        assertEquals("green", color.name());
-        assertEquals("https://pokeapi.co/api/v2/pokemon-color/5/", color.url());
-        NamedApiResource<PokemonShape> shape = species.getShape();
-        assertEquals("quadruped", shape.name());
-        assertEquals("https://pokeapi.co/api/v2/pokemon-shape/8/", shape.url());
-        NamedApiResource<PokemonSpecies> evolvesFromSpecies = species.getEvolvesFromSpecies();
-        assertNull(evolvesFromSpecies);
-        NamedApiResource<PokemonHabitat> habitat = species.getHabitat();
-        assertEquals("grassland", habitat.name());
-        assertEquals("https://pokeapi.co/api/v2/pokemon-habitat/3/", habitat.url());
-        NamedApiResource<Generation> generation = species.getGeneration();
-        assertEquals("generation-i", generation.name());
-        assertEquals("https://pokeapi.co/api/v2/generation/1/", generation.url());
-        List<Name> names = species.getNames();
-        assertNotNull(names);
-        assertSame(11, names.size());
-        List<FlavorText> flavorTextEntries = species.getFlavorTextEntries();
-        assertNotNull(flavorTextEntries);
-        List<Description> formDescriptions = species.getFormDescriptions();
-        assertNotNull(formDescriptions);
-        List<Genus> genera = species.getGenera();
-        assertNotNull(genera);
-        List<PokemonSpeciesVariety> varieties = species.getVarieties();
-        assertNotNull(varieties);
-        verify(pokeApiClient, times(1)).getResource(any(), anyString());
+            PokemonSpecies species = service.getPokemonSpeciesData("1");
+
+            assertSame(species1, species);
+            assertEquals(1, species.getId());
+            assertEquals("bulbasaur", species.getName());
+            verify(pokemonSpeciesApi, times(1)).getPokemonSpeciesData("1");
+        }
+
+        @Test
+        @DisplayName("returns null when the response has no body")
+        void testNoBody()
+        {
+            doReturn(ResponseEntity.badRequest().build()).when(pokemonSpeciesApi).getPokemonSpeciesData("0");
+
+            assertNull(service.getPokemonSpeciesData("0"));
+        }
+
+        @Test
+        @DisplayName("returns null when PokemonSpeciesApi throws")
+        void testThrows()
+        {
+            when(pokemonSpeciesApi.getPokemonSpeciesData("0")).thenThrow(new RuntimeException("Test Exception"));
+
+            assertNull(service.getPokemonSpeciesData("0"));
+        }
     }
 
-    @Test
-    @DisplayName("Test getPokemonSpecies with 0 returns null")
-    void testGetPokemonSpeciesFails()
+    @Nested
+    @DisplayName("callUrl")
+    class CallUrl
     {
-        Mono just = mock(Mono.class);
-        when(pokeApiClient.getResource(any(), anyString())).thenReturn(just);
-        when(just.block()).thenReturn(null);
+        @Test
+        @DisplayName("returns the response for a valid url")
+        void testValidUrl() throws Exception
+        {
+            HttpResponse<String> response = service.callUrl(baseUrl + "/ok");
 
-        PokemonSpecies species = pokemonApiService.getPokemonSpeciesData("0");
-        assertNull(species);
+            assertEquals(200, response.statusCode());
+            assertEquals("{\"ok\":true}", response.body());
+        }
+
+        @Test
+        @DisplayName("returns the 404 response for an unknown resource")
+        void testNotFound() throws Exception
+        {
+            assertEquals(404, service.callUrl(baseUrl + "/missing").statusCode());
+        }
+
+        @Test
+        @DisplayName("throws for a malformed url")
+        void testMalformedUrl()
+        {
+            assertThrows(Exception.class, () -> service.callUrl("not a url"));
+        }
     }
 
-    // Pokemon Locations and Chain Data tests
-
-    @Test // pokedex 1 is national pokedex
-    @DisplayName("Test getTotalPokemon for pokedex 2 returns 151 pokemon")
-    void testGetTotalPokemonForPokedex1Returns151Pokemon()
+    @Nested
+    @DisplayName("getPokemonLocationAreas")
+    class GetPokemonLocationAreas
     {
-        Mono<PokeApiResource> just = Mono.just(pokedex2Response);
-        when(pokeApiClient.getResource(any(), anyString())).thenReturn(just);
+        @Test
+        @DisplayName("returns the area names sorted")
+        void testSorted() throws Exception
+        {
+            assertEquals(List.of("alpha-area", "zeta-area"), service.getPokemonLocationAreas(baseUrl + "/areas"));
+        }
 
-        int totalPokemon = pokemonApiService.getTotalPokemon("2");
-        assertEquals(151, totalPokemon);
-        verify(pokeApiClient, times(1)).getResource(any(), anyString());
+        @Test
+        @DisplayName("returns an empty list when there are no areas")
+        void testEmpty() throws Exception
+        {
+            assertTrue(service.getPokemonLocationAreas(baseUrl + "/empty-areas").isEmpty());
+        }
+
+        @Test
+        @DisplayName("throws when the body cannot be parsed")
+        void testBadJson()
+        {
+            assertThrows(Exception.class, () -> service.getPokemonLocationAreas(baseUrl + "/bad-json"));
+        }
     }
 
-    @Test
-    @DisplayName("Test getTotalPokemon for pokedex 0 returns -1 pokemon")
-    void testGetTotalPokemonForPokedex0Returns0Pokemon()
+    @Nested
+    @DisplayName("getPokemonLocationAreaEncounters")
+    class GetPokemonLocationAreaEncounters
     {
-        Mono just = mock(Mono.class);
-        when(pokeApiClient.getResource(any(), anyString())).thenReturn(just);
-        when(just.block()).thenReturn(null);
+        @Test
+        @DisplayName("returns the location area names sorted")
+        void testSorted()
+        {
+            assertEquals(List.of("kanto-route-2-south-towns-area", "viridian-forest-area"),
+                    service.getPokemonLocationAreaEncounters(baseUrl + "/encounters"));
+        }
 
-        int totalPokemon = pokemonApiService.getTotalPokemon("0");
-        assertEquals(-1, totalPokemon);
+        @Test
+        @DisplayName("returns an empty list for a malformed url")
+        void testMalformedUrl()
+        {
+            assertTrue(service.getPokemonLocationAreaEncounters("not a url").isEmpty());
+        }
     }
 
-    //
-
-    @Test
-    @DisplayName("Test callUrl with a valid url returns a resource")
-    void testCallUrlWithValidUrlReturnsResponse() throws Exception
+    @Nested
+    @DisplayName("getPokemonEvolutionChain")
+    class GetPokemonEvolutionChain
     {
-        HttpResponse<String> resource = pokemonApiService.callUrl(pokeApiBaseUrl + "ability/1");
-        assertNotNull(resource);
-        assertEquals(200, resource.statusCode());
-        Ability ability = jsonMapper.readValue(
-                resource.body(),
-                Ability.class
-        );
-        assertNotNull(ability);
+        @Test
+        @DisplayName("throws when the body cannot be parsed")
+        void testBadJson()
+        {
+            assertThrows(Exception.class, () -> service.getPokemonEvolutionChain(baseUrl + "/bad-json"));
+        }
     }
 
-    @Test
-    @DisplayName("Test callUrl with an invalid url returns not found")
-    void testCallUrlWithInvalidUrlReturnsNotFound() throws Exception
+    @Nested
+    @DisplayName("getAllTypes")
+    class GetAllTypes
     {
-        HttpResponse<String> resource = pokemonApiService.callUrl(pokeApiBaseUrl + "ability/0");
-        assertNotNull(resource);
-        assertEquals(404, resource.statusCode());
+        @Test
+        @DisplayName("follows next pages and returns sorted names")
+        void testPaged()
+        {
+            assertEquals(List.of("fire", "water"), service.getAllTypes());
+        }
+
+        @Test
+        @DisplayName("returns an empty list on a non-200 response")
+        void testNon200()
+        {
+            service.pokeApiBaseUrl = baseUrl + "/missing?";
+
+            assertTrue(service.getAllTypes().isEmpty());
+        }
+
+        @Test
+        @DisplayName("returns an empty list when the call fails")
+        void testCallFails()
+        {
+            service.pokeApiBaseUrl = "not a url";
+
+            assertTrue(service.getAllTypes().isEmpty());
+        }
     }
 }

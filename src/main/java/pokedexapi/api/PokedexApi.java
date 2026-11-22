@@ -2,7 +2,6 @@ package pokedexapi.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,15 +11,14 @@ import pokedexapi.controllers.BaseApiController;
 import pokedexapi.service.PokemonLocationEncounterService;
 import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
-
-import java.util.*;
+import skaro.pokeapi.query.PageQuery;
+import skaro.pokeapi.resource.NamedApiResourceList;
+import skaro.pokeapi.resource.pokedex.Pokedex;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/pokedex")
 public class PokedexApi extends BaseApiController
 {
-    /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(PokedexApi.class);
 
     PokedexApi(PokemonService pokemonService, PokeApiClient client, PokemonLocationEncounterService pokemonLocationEncounterService)
@@ -28,23 +26,58 @@ public class PokedexApi extends BaseApiController
         super(pokemonService, client, pokemonLocationEncounterService);
     }
 
-    @Operation(summary = "Returns the Pokedex which contains entries of Pokemon", responses = {
-            @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))),
-            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content)})
-    @GetMapping("/pokedex/{pokedex}")
-    @ResponseBody
-    ResponseEntity<?> getPokedex(@PathVariable String pokedex)
+    @Operation(summary = "Get all pokedexes", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
+    @GetMapping(value = "")
+    ResponseEntity<?> getAllPokedexes(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                      @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getPokedex {}", pokedex);
-        int allPokemon;
+        LOGGER.info("getAllPokedexes limit={} offset={}", limit, offset);
         try {
-            allPokemon = pokemonService.getTotalPokemon(pokedex);
-            if (allPokemon != 0) return ResponseEntity.ok(allPokemon);
-            else return ResponseEntity.badRequest().body("Could not return Pokédex total");
+            NamedApiResourceList<Pokedex> pokedexes = pokeApiClient.getResource(Pokedex.class, new PageQuery(limit, offset * limit)).block();
+            if (pokedexes != null) return ResponseEntity.ok(pokedexes);
+            return ResponseEntity.badRequest().body("Could not access Pokedex endpoint");
         }
         catch (Exception e) {
-            Arrays.stream(e.getStackTrace()).forEach(LOGGER::error);
-            return ResponseEntity.badRequest().body("Could not fetch Pokédex because " + e.getMessage());
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "Returns a Pokedex by name or id", responses = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
+    @GetMapping(value = "{nameOrId}/name")
+    ResponseEntity<?> getPokedex(@PathVariable("nameOrId") String nameOrId)
+    {
+        LOGGER.info("getPokedex {}", nameOrId);
+        try {
+            Pokedex pokedex = pokeApiClient.getResource(Pokedex.class, nameOrId).block();
+            if (pokedex != null) return ResponseEntity.ok(pokedex);
+            return ResponseEntity.badRequest().body("Could not find a Pokedex with " + nameOrId);
+        }
+        catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "Returns the number of Pokemon entries in a Pokedex", responses = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
+    @GetMapping(value = "/{nameOrId}/total")
+    ResponseEntity<?> getPokedexTotal(@PathVariable(value = "nameOrId", required = false) String nameOrId)
+    {
+        LOGGER.info("getPokedexTotal for Pokedex {}", nameOrId);
+        try {
+            Pokedex pokedex = pokeApiClient.getResource(Pokedex.class, nameOrId).block();
+            if (pokedex != null) return ResponseEntity.ok(pokedex.getPokemonEntries().size());
+            return ResponseEntity.badRequest().body("Could not find a Pokedex with " + nameOrId);
+        }
+        catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 }

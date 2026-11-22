@@ -1,75 +1,61 @@
 package pokedexapi.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
-import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
+import skaro.pokeapi.query.PageQuery;
+import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.stat.Stat;
 
-import java.net.http.HttpResponse;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/stat")
 public class StatApi extends BaseApiController
 {
-    /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(StatApi.class);
 
-    @Autowired
-    StatApi(PokemonService pokemonService, PokeApiClient client)
+    StatApi(PokeApiClient client)
     {
-        super(pokemonService, client);
+        super(client);
     }
 
-    // Pokemon Stats
-    @GetMapping("")
-    @ResponseBody
-    ResponseEntity<?> getStats(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-                               @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    @Operation(summary = "Get all stats", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
+    @GetMapping(value = "")
+    ResponseEntity<?> getAllStats(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                  @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getPokemonStats limit:{} offset:{}", limit, offset);
-        HttpResponse<String> stats;
+        LOGGER.info("getAllStats limit:{} offset:{}", limit, offset);
         try {
-            stats = pokemonService.callUrl(pokeApiBaseUrl + "stat?limit=" + limit + "&offset=" + offset);
+            NamedApiResourceList<Stat> stats = pokeApiClient.getResource(Stat.class, new PageQuery(limit, offset * limit)).block();
+            if (stats != null) return ResponseEntity.ok(stats);
+            return ResponseEntity.badRequest().body("Could not access Stats endpoint");
         }
         catch (Exception e) {
-            LOGGER.error("Error retrieving response because {}", e.getMessage());
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
-        return switch (stats.statusCode()) {
-            case 200 -> ResponseEntity.ok(stats.body());
-            case 400 -> ResponseEntity.badRequest().body("Could not access Stats endpoint");
-            default -> ResponseEntity.internalServerError().body("Could not access Stats endpoint");
-        };
     }
 
-    @RequestMapping(value = "/{nameOrId}", method = RequestMethod.GET)
-    @ResponseBody
+    @Operation(summary = "Get stat", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
+    @GetMapping(value = "/{nameOrId}")
     ResponseEntity<?> getStat(@PathVariable("nameOrId") String nameOrId)
     {
-        LOGGER.info("getPokemonStat {}", nameOrId);
-//        HttpResponse<String> stat;
-//        try {
-//            stat = pokemonApiService.callUrl(pokeApiBaseUrl+"stat/"+nameOrId);
-//        } catch (Exception e) {
-//            LOGGER.error("Error retrieving response because {}", e.getMessage());
-//            return ResponseEntity.internalServerError().build();
-//        }
-//        return switch (stat.statusCode()) {
-//            case 200 -> ResponseEntity.ok(stat.body());
-//            case 400 -> ResponseEntity.badRequest().body("Could not access Stat endpoint");
-//            default -> ResponseEntity.internalServerError().body("Could not access Stat endpoint");
-//        };
-
+        LOGGER.info("getStat {}", nameOrId);
         try {
             Stat stat = pokeApiClient.getResource(Stat.class, nameOrId).block();
-            if (null != stat) return ResponseEntity.ok(stat);
-            else return ResponseEntity.badRequest().body("Could not access Stat endpoint");
+            if (stat != null) return ResponseEntity.ok(stat);;
+            return ResponseEntity.badRequest().body("Could not find Stat with " + nameOrId);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());

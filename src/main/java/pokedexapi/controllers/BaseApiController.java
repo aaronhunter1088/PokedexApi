@@ -3,23 +3,19 @@ package pokedexapi.controllers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import pokedexapi.service.PokemonLocationEncounterService;
 import pokedexapi.service.PokemonService;
+import reactor.core.publisher.Mono;
 import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.resource.pokemon.Pokemon;
 
-import java.net.http.HttpResponse;
+import java.net.http.HttpClient;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static pokedexapi.utilities.Constants.GIF_IMAGE_URL;
-
-@CrossOrigin(origins = "*")
 @Controller
 public class BaseApiController
 {
@@ -27,24 +23,24 @@ public class BaseApiController
     private static final Logger LOGGER = LogManager.getLogger(BaseApiController.class);
     @Value("${skaro.pokeapi.baseUri}")
     protected String pokeApiBaseUrl;
-    protected final PokemonService pokemonService;
+    protected static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
+    protected final PokemonService pokemonApiService;
     protected final PokeApiClient pokeApiClient;
     protected final PokemonLocationEncounterService pokemonLocationEncounterService;
 
     @Autowired
-    protected BaseApiController(@Qualifier("PokemonApiService") PokemonService pokemonService,
+    protected BaseApiController(PokemonService pokemonApiService,
                                 PokeApiClient client,
                                 PokemonLocationEncounterService pokemonLocationEncounterService)
     {
-        this.pokemonService = pokemonService;
+        this.pokemonApiService = pokemonApiService;
         this.pokeApiClient = client;
         this.pokemonLocationEncounterService = pokemonLocationEncounterService;
     }
 
-    protected BaseApiController(@Qualifier("PokemonApiService") PokemonService pokemonService,
-                                PokeApiClient client)
+    protected BaseApiController(PokeApiClient client)
     {
-        this.pokemonService = pokemonService;
+        this.pokemonApiService = null;
         this.pokeApiClient = client;
         this.pokemonLocationEncounterService = null;
     }
@@ -79,7 +75,9 @@ public class BaseApiController
     protected Pokemon retrievePokemon(String nameOrId)
     {
         try {
-            return pokemonService.getPokemonByIdOrName(nameOrId);
+            //return pokemonService.getPokemonByIdOrName(nameOrId);
+            Mono<?> mono = pokeApiClient.getResource(Pokemon.class, nameOrId);
+            return (Pokemon) mono.block();
         }
         catch (Exception e) {
             LOGGER.error("Failed to retrieve Pokemon with name or id: {}", nameOrId, e);
@@ -87,18 +85,18 @@ public class BaseApiController
         }
     }
 
-    @Deprecated(forRemoval = true)
-    protected void setGifImage(Pokemon pokemon)
-    {
-        HttpResponse<String> response = null;
-        try {
-            response = pokemonService.callUrl(GIF_IMAGE_URL(pokemon.id()));
-            if (response.statusCode() == 404) throw new Exception("Gif image not found");
-        }
-        catch (Exception e) {
-            LOGGER.error("Failed to fetch the gif image at: {}", GIF_IMAGE_URL(pokemon.id()));
-        }
-    }
+//    @Deprecated(forRemoval = true)
+//    protected void setGifImage(Pokemon pokemon)
+//    {
+//        HttpResponse<String> response = null;
+//        try {
+//            response = pokemonApiService.callUrl(GIF_IMAGE_URL(pokemon.id()));
+//            if (response.statusCode() == 404) throw new Exception("Gif image not found");
+//        }
+//        catch (Exception e) {
+//            LOGGER.error("Failed to fetch the gif image at: {}", GIF_IMAGE_URL(pokemon.id()));
+//        }
+//    }
 
     @Deprecated(forRemoval = true)
     protected Map<String, Object> generateDefaultAttributesMap()
@@ -129,16 +127,16 @@ public class BaseApiController
         }};
     }
 
-    protected HttpResponse<String> fallbackCallUrl(String url) throws Exception
-    {
-        try {
-            HttpResponse<String> response = pokemonService.callUrl(url);
-            LOGGER.info("status: {}", response.statusCode());
-            return response;
-        }
-        catch (Exception e) {
-            LOGGER.error("Failed to call URL: {}", url, e);
-            throw e;
-        }
-    }
+//    protected HttpResponse<String> fallbackCallUrl(String url) throws Exception
+//    {
+//        try {
+//            HttpResponse<String> response = pokemonApiService.callUrl(url);
+//            LOGGER.info("status: {}", response.statusCode());
+//            return response;
+//        }
+//        catch (Exception e) {
+//            LOGGER.error("Failed to call URL: {}", url, e);
+//            throw e;
+//        }
+//    }
 }

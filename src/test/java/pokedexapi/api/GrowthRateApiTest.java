@@ -1,69 +1,212 @@
 package pokedexapi.api;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import pokedexapi.service.PokemonApiService;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import pokedexapi.controllers.BaseApiTest;
 import reactor.core.publisher.Mono;
-import skaro.pokeapi.client.PokeApiClient;
 import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
-import skaro.pokeapi.resource.PokeApiResource;
 import skaro.pokeapi.resource.growthrate.GrowthRate;
+import tools.jackson.core.type.TypeReference;
+
+import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-class GrowthRateApiTest
+@AutoConfigureMockMvc
+class GrowthRateApiTest extends BaseApiTest
 {
-    @Autowired
-    private GrowthRateApi growthRateApi;
+    private static final String GROWTH_RATE_API = "/growth-rate";
+    private static NamedApiResourceList<GrowthRate> getAllGrowthRatesResponse;
+    private static NamedApiResourceList<GrowthRate> getNextGrowthRatesResponse;
+    private static GrowthRate growthRate_1;
 
-    @MockitoBean
-    private PokeApiClient pokeApiClient;
-
-    @MockitoBean
-    private PokemonApiService pokemonApiService;
-
-    @SuppressWarnings("unchecked")
-    private <T extends PokeApiResource> NamedApiResourceList<T> mockNamedApiResourceList()
+    @BeforeAll
+    static void setup() throws IOException
     {
-        return (NamedApiResourceList<T>) mock(NamedApiResourceList.class);
+        getAllGrowthRatesResponse = jsonMapper.readValue(
+                new ClassPathResource("growthRateApi/getAllGrowthRatesResponse.json").getFile(),
+                new TypeReference<>()
+                {}
+        );
+        getNextGrowthRatesResponse = jsonMapper.readValue(
+                new ClassPathResource("growthRateApi/getNextGrowthRatesResponse.json").getFile(),
+                new TypeReference<>()
+                {}
+        );
+        growthRate_1 = jsonMapper.readValue(
+                new ClassPathResource("growthRateApi/growth_rate_1.json").getFile(),
+                GrowthRate.class
+        );
     }
 
-    @Test
-    @DisplayName("getGrowthRates returns ok")
-    void testGetGrowthRates()
+    @Nested
+    @DisplayName("Get All GrowthRates Positive Cases")
+    class GetAllGrowthRatesPositive
     {
-        NamedApiResourceList<GrowthRate> response = mockNamedApiResourceList();
-        when(pokeApiClient.getResource(eq(GrowthRate.class), any(PageQuery.class))).thenReturn(Mono.just(response));
+        @Autowired
+        private MockMvc mockMvc;
 
-        var result = growthRateApi.getGrowthRates(10, 0);
+        @Test
+        @DisplayName("getGrowthRates returns the first page")
+        void testGetAllGrowthRates() throws Exception
+        {
+            when(pokeApiClient.getResource(GrowthRate.class, new PageQuery(10, 0)))
+                    .thenReturn(Mono.just(getAllGrowthRatesResponse));
 
-        assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isSameAs(response);
+            MvcResult mvcResult = this.mockMvc.perform(get(GROWTH_RATE_API))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            String actual = mvcResult.getResponse().getContentAsString();
+            String expected = jsonMapper.writeValueAsString(getAllGrowthRatesResponse);
+
+            assertThat(expected).isEqualTo(actual);
+
+            verify(pokeApiClient).getResource(GrowthRate.class, new PageQuery(10, 0));
+        }
+
+        @Test
+        @DisplayName("getGrowthRates returns the second page (offset is a page index)")
+        void testGetAllGrowthRatesSecondPage() throws Exception
+        {
+            when(pokeApiClient.getResource(GrowthRate.class, new PageQuery(10, 10)))
+                    .thenReturn(Mono.just(getNextGrowthRatesResponse));
+
+            MvcResult mvcResult = this.mockMvc.perform(get(GROWTH_RATE_API + "?limit=10&offset=1"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            String actual = mvcResult.getResponse().getContentAsString();
+            String expected = jsonMapper.writeValueAsString(getNextGrowthRatesResponse);
+
+            assertThat(expected).isEqualTo(actual);
+
+            verify(pokeApiClient).getResource(GrowthRate.class, new PageQuery(10, 10));
+        }
     }
 
-    @Test
-    @DisplayName("getGrowthRate returns ok")
-    void testGetGrowthRate()
+    @Nested
+    @DisplayName("Get All GrowthRates Negative Cases")
+    class GetAllGrowthRatesNegative
     {
-        GrowthRate response = mock(GrowthRate.class);
-        when(pokeApiClient.getResource(GrowthRate.class, "1")).thenReturn(Mono.just(response));
+        @Autowired
+        private MockMvc mockMvc;
 
-        var result = growthRateApi.getGrowthRate("1");
+        @Test
+        @DisplayName("getGrowthRates returns no growthRates")
+        void testGetAllGrowthRatesReturnsNoResults() throws Exception
+        {
+            when(pokeApiClient.getResource(GrowthRate.class, new PageQuery(10, 0)))
+                    .thenReturn(Mono.empty());
 
-        assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isSameAs(response);
+            this.mockMvc.perform(get(GROWTH_RATE_API))
+                    .andExpect(status().isBadRequest());
+
+            verify(pokeApiClient).getResource(GrowthRate.class, new PageQuery(10, 0));
+        }
+
+        @Test
+        @DisplayName("getGrowthRates returns null growthRates")
+        void testGetAllGrowthRatesReturnsNull() throws Exception
+        {
+            when(pokeApiClient.getResource(GrowthRate.class, new PageQuery(10, 0)))
+                    .thenReturn(null);
+
+            this.mockMvc.perform(get(GROWTH_RATE_API))
+                    .andExpect(status().isInternalServerError());
+
+            verify(pokeApiClient).getResource(GrowthRate.class, new PageQuery(10, 0));
+        }
+
+        @Test
+        @DisplayName("getGrowthRates throws an exception")
+        void testGetAllGrowthRatesThrowsException() throws Exception
+        {
+            when(pokeApiClient.getResource(GrowthRate.class, new PageQuery(10, 0)))
+                    .thenThrow(new RuntimeException("Test Exception"));
+
+            this.mockMvc.perform(get(GROWTH_RATE_API))
+                    .andExpect(status().isInternalServerError());
+
+            verify(pokeApiClient).getResource(GrowthRate.class, new PageQuery(10, 0));
+        }
+    }
+
+    @Nested
+    @DisplayName("Get GrowthRate Positive Cases")
+    class GetGrowthRatePositive
+    {
+        @Autowired
+        private MockMvc mockMvc;
+
+        @Test
+        @DisplayName("getGrowthRate returns the 1st growthRate")
+        void testGetGrowthRate() throws Exception
+        {
+            when(pokeApiClient.getResource(GrowthRate.class, "1"))
+                    .thenReturn(Mono.just(growthRate_1));
+
+            MvcResult mvcResult = this.mockMvc.perform(get(GROWTH_RATE_API + "/1"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            String actual = mvcResult.getResponse().getContentAsString();
+            String expected = jsonMapper.writeValueAsString(growthRate_1);
+
+            assertThat(expected).isEqualTo(actual);
+
+            verify(pokeApiClient).getResource(GrowthRate.class, "1");
+        }
+    }
+
+    @Nested
+    @DisplayName("Get GrowthRate Negative Cases")
+    class GetGrowthRateNegative
+    {
+        @Autowired
+        private MockMvc mockMvc;
+
+        @Test
+        @DisplayName("getGrowthRate returns no growthRate")
+        void testGetGrowthRateReturnsNoResult() throws Exception
+        {
+            when(pokeApiClient.getResource(GrowthRate.class, "1"))
+                    .thenReturn(Mono.empty());
+
+            this.mockMvc.perform(get(GROWTH_RATE_API + "/1"))
+                    .andExpect(status().isBadRequest());
+
+            verify(pokeApiClient).getResource(GrowthRate.class, "1");
+        }
+
+        @Test
+        @DisplayName("getGrowthRate throws an exception")
+        void testGetGrowthRateThrowsException() throws Exception
+        {
+            when(pokeApiClient.getResource(GrowthRate.class, "1"))
+                    .thenThrow(new RuntimeException("Test Exception"));
+
+            this.mockMvc.perform(get(GROWTH_RATE_API + "/1"))
+                    .andExpect(status().isInternalServerError());
+
+            verify(pokeApiClient).getResource(GrowthRate.class, "1");
+        }
     }
 }
-

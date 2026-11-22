@@ -1,0 +1,47 @@
+{
+  "count": 35,
+  "next": "https://pokeapi.co/api/v2/pokedex?offset=10&limit=10",
+  "previous": null,
+  "results": [
+    {
+      "name": "national",
+      "url": "https://pokeapi.co/api/v2/pokedex/1/"
+    },
+    {
+      "name": "kanto",
+      "url": "https://pokeapi.co/api/v2/pokedex/2/"
+    },
+    {
+      "name": "original-johto",
+      "url": "https://pokeapi.co/api/v2/pokedex/3/"
+    },
+    {
+      "name": "hoenn",
+      "url": "https://pokeapi.co/api/v2/pokedex/4/"
+    },
+    {
+      "name": "original-sinnoh",
+      "url": "https://pokeapi.co/api/v2/pokedex/5/"
+    },
+    {
+      "name": "extended-sinnoh",
+      "url": "https://pokeapi.co/api/v2/pokedex/6/"
+    },
+    {
+      "name": "updated-johto",
+      "url": "https://pokeapi.co/api/v2/pokedex/7/"
+    },
+    {
+      "name": "original-unova",
+      "url": "https://pokeapi.co/api/v2/pokedex/8/"
+    },
+    {
+      "name": "updated-unova",
+      "url": "https://pokeapi.co/api/v2/pokedex/9/"
+    },
+    {
+      "name": "conquest-gallery",
+      "url": "https://pokeapi.co/api/v2/pokedex/11/"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "count": 374,
+  "next": "https://pokeapi.co/api/v2/ability?offset=20&limit=10",
+  "previous": "https://pokeapi.co/api/v2/ability?offset=0&limit=10",
+  "results": [
+    {
+      "name": "water-absorb",
+      "url": "https://pokeapi.co/api/v2/ability/11/"
+    },
+    {
+      "name": "oblivious",
+      "url": "https://pokeapi.co/api/v2/ability/12/"
+    },
+    {
+      "name": "cloud-nine",
+      "url": "https://pokeapi.co/api/v2/ability/13/"
+    },
+    {
+      "name": "compound-eyes",
+      "url": "https://pokeapi.co/api/v2/ability/14/"
+    },
+    {
+      "name": "insomnia",
+      "url": "https://pokeapi.co/api/v2/ability/15/"
+    },
+    {
+      "name": "color-change",
+      "url": "https://pokeapi.co/api/v2/ability/16/"
+    },
+    {
+      "name": "immunity",
+      "url": "https://pokeapi.co/api/v2/ability/17/"
+    },
+    {
+      "name": "flash-fire",
+      "url": "https://pokeapi.co/api/v2/ability/18/"
+    },
+    {
+      "name": "shield-dust",
+      "url": "https://pokeapi.co/api/v2/ability/19/"
+    },
+    {
+      "name": "own-tempo",
+      "url": "https://pokeapi.co/api/v2/ability/20/"
+    }
+  ]
+}

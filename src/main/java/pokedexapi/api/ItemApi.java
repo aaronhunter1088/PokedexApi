@@ -1,13 +1,15 @@
 package pokedexapi.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
-import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
+import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.item.Item;
 import skaro.pokeapi.resource.itemattribute.ItemAttribute;
@@ -16,42 +18,47 @@ import skaro.pokeapi.resource.itemflingeffect.ItemFlingEffect;
 import skaro.pokeapi.resource.itempocket.ItemPocket;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/item")
 class ItemApi extends BaseApiController
 {
-    /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(ItemApi.class);
 
-    @Autowired
-    ItemApi(PokemonService pokemonService, PokeApiClient client)
+    ItemApi(PokeApiClient client)
     {
-        super(pokemonService, client);
+        super(client);
     }
 
+    @Operation(summary = "Get all items", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "")
-    @ResponseBody
-    ResponseEntity<?> getItems()
+    ResponseEntity<?> getAllItems(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                  @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getItems");
+        LOGGER.info("getAllItems limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<Item> items = pokeApiClient.getResource(Item.class).block();
-            if (null != items) return ResponseEntity.ok(items);
-            else return ResponseEntity.badRequest().body("Could not access Item endpoint");
+            NamedApiResourceList<Item> items = pokeApiClient.getResource(Item.class, new PageQuery(limit, offset * limit)).block();
+            if (items != null) return ResponseEntity.ok(items);
+            return ResponseEntity.badRequest().body("Could not access Item endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
-    @GetMapping(value = "/item/{id}")
+    @Operation(summary = "Get item", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
+    @GetMapping(value = "/{id}")
     ResponseEntity<?> getItem(@PathVariable(value = "id") String id)
     {
         LOGGER.info("getItem {}", id);
         try {
             Item item = pokeApiClient.getResource(Item.class, id).block();
-            if (null != item) return ResponseEntity.ok(item);
-            else return ResponseEntity.badRequest().body("Could not find an item with " + id);
+            if (item != null) return ResponseEntity.ok(item);
+            return ResponseEntity.badRequest().body("Could not find an item with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -59,29 +66,38 @@ class ItemApi extends BaseApiController
     }
 
     // Attributes
+
+    @Operation(summary = "Get all item attributes", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/item-attribute")
-    @ResponseBody
-    ResponseEntity<?> getItemAttributes()
+    ResponseEntity<?> getAllItemAttributes(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                           @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getItemAttributes");
+        LOGGER.info("getAllItemAttributes limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<ItemAttribute> itemAttributes = pokeApiClient.getResource(ItemAttribute.class).block();
-            if (null != itemAttributes) return ResponseEntity.ok(itemAttributes);
-            else return ResponseEntity.badRequest().body("Could not access ItemAttribute endpoint");
+            NamedApiResourceList<ItemAttribute> itemAttributes = pokeApiClient.getResource(ItemAttribute.class, new PageQuery(limit, offset * limit)).block();
+            if (itemAttributes != null) return ResponseEntity.ok(itemAttributes);
+            return ResponseEntity.badRequest().body("Could not access ItemAttribute endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
+    @Operation(summary = "Get item attribute", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/item-attribute/{id}")
     ResponseEntity<?> getItemAttribute(@PathVariable(value = "id") String id)
     {
         LOGGER.info("getItemAttribute {}", id);
         try {
             ItemAttribute itemAttribute = pokeApiClient.getResource(ItemAttribute.class, id).block();
-            if (null != itemAttribute) return ResponseEntity.ok(itemAttribute);
-            else return ResponseEntity.badRequest().body("Could not find an itemAttribute with " + id);
+            if (itemAttribute != null) return ResponseEntity.ok(itemAttribute);
+            return ResponseEntity.badRequest().body("Could not find an itemAttribute with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -89,29 +105,38 @@ class ItemApi extends BaseApiController
     }
 
     // Categories
+
+    @Operation(summary = "Get all item categories", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/item-category")
-    @ResponseBody
-    ResponseEntity<?> getItemCategories()
+    ResponseEntity<?> getAllItemCategories(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                           @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getItemCategories");
+        LOGGER.info("getAllItemCategories limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<ItemCategory> itemCategories = pokeApiClient.getResource(ItemCategory.class).block();
-            if (null != itemCategories) return ResponseEntity.ok(itemCategories);
-            else return ResponseEntity.badRequest().body("Could not access ItemCategory endpoint");
+            NamedApiResourceList<ItemCategory> itemCategories = pokeApiClient.getResource(ItemCategory.class, new PageQuery(limit, offset * limit)).block();
+            if (itemCategories != null) return ResponseEntity.ok(itemCategories);
+            return ResponseEntity.badRequest().body("Could not access ItemCategory endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
+    @Operation(summary = "Get item category", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/item-category/{id}")
     ResponseEntity<?> getItemCategory(@PathVariable(value = "id") String id)
     {
         LOGGER.info("getItemCategory {}", id);
         try {
             ItemCategory itemCategory = pokeApiClient.getResource(ItemCategory.class, id).block();
-            if (null != itemCategory) return ResponseEntity.ok(itemCategory);
-            else return ResponseEntity.badRequest().body("Could not find an itemCategory with " + id);
+            if (itemCategory != null) return ResponseEntity.ok(itemCategory);
+            return ResponseEntity.badRequest().body("Could not find an itemCategory with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -119,29 +144,38 @@ class ItemApi extends BaseApiController
     }
 
     // Fling Effects
+
+    @Operation(summary = "Get all fling effects", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/item-fling-effect")
-    @ResponseBody
-    ResponseEntity<?> getFlingEffects()
+    ResponseEntity<?> getAllFlingEffects(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                         @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getFlingEffects");
+        LOGGER.info("getAllFlingEffects limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<ItemFlingEffect> flingEffects = pokeApiClient.getResource(ItemFlingEffect.class).block();
-            if (null != flingEffects) return ResponseEntity.ok(flingEffects);
-            else return ResponseEntity.badRequest().body("Could not access ItemFlingEffect endpoint");
+            NamedApiResourceList<ItemFlingEffect> flingEffects = pokeApiClient.getResource(ItemFlingEffect.class, new PageQuery(limit, offset * limit)).block();
+            if (flingEffects != null) return ResponseEntity.ok(flingEffects);
+            return ResponseEntity.badRequest().body("Could not access ItemFlingEffect endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
+    @Operation(summary = "Get fling effect", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/item-fling-effect/{id}")
     ResponseEntity<?> getFlingEffect(@PathVariable(value = "id") String id)
     {
         LOGGER.info("getFlingEffect {}", id);
         try {
             ItemFlingEffect flingEffect = pokeApiClient.getResource(ItemFlingEffect.class, id).block();
-            if (null != flingEffect) return ResponseEntity.ok(flingEffect);
-            else return ResponseEntity.badRequest().body("Could not find a flingEffect with " + id);
+            if (flingEffect != null) return ResponseEntity.ok(flingEffect);
+            return ResponseEntity.badRequest().body("Could not find a flingEffect with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -149,29 +183,38 @@ class ItemApi extends BaseApiController
     }
 
     // Pockets
+
+    @Operation(summary = "Get all item pockets", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/item-pocket")
-    @ResponseBody
-    ResponseEntity<?> getItemPockets()
+    ResponseEntity<?> getAllItemPockets(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                        @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getItemPockets");
+        LOGGER.info("getAllItemPockets limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<ItemPocket> itemPocket = pokeApiClient.getResource(ItemPocket.class).block();
-            if (null != itemPocket) return ResponseEntity.ok(itemPocket);
-            else return ResponseEntity.badRequest().body("Could not access ItemPocket endpoint");
+            NamedApiResourceList<ItemPocket> itemPockets = pokeApiClient.getResource(ItemPocket.class, new PageQuery(limit, offset * limit)).block();
+            if (itemPockets != null) return ResponseEntity.ok(itemPockets);
+            return ResponseEntity.badRequest().body("Could not access ItemPocket endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
+    @Operation(summary = "Get item pocket", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/item-pocket/{id}")
     ResponseEntity<?> getItemPocket(@PathVariable(value = "id") String id)
     {
         LOGGER.info("getItemPocket {}", id);
         try {
             ItemPocket itemPocket = pokeApiClient.getResource(ItemPocket.class, id).block();
-            if (null != itemPocket) return ResponseEntity.ok(itemPocket);
-            else return ResponseEntity.badRequest().body("Could not find a itemPocket with " + id);
+            if (itemPocket != null) return ResponseEntity.ok(itemPocket);
+            return ResponseEntity.badRequest().body("Could not find a itemPocket with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());

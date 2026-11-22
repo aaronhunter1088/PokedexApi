@@ -1,68 +1,64 @@
 package pokedexapi.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
-import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
+import skaro.pokeapi.query.PageQuery;
+import skaro.pokeapi.resource.NamedApiResourceList;
+import skaro.pokeapi.resource.type.Type;
 
-import java.net.http.HttpResponse;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/type")
 public class TypeApi extends BaseApiController
 {
-    /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(TypeApi.class);
 
-    @Autowired
-    TypeApi(PokemonService pokemonService, PokeApiClient client)
+    TypeApi(PokeApiClient client)
     {
-        super(pokemonService, client);
+        super(client);
     }
 
-    @GetMapping("")
-    @ResponseBody
-    ResponseEntity<?> getTypes(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
-                               @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
+    @Operation(summary = "Get all types", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
+    @GetMapping(value = "")
+    ResponseEntity<?> getAllTypes(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                  @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getType limit:{} offset:{}", limit, offset);
-        HttpResponse<String> types;
+        LOGGER.info("getAllTypes limit:{} offset:{}", limit, offset);
         try {
-            types = pokemonService.callUrl(pokeApiBaseUrl + "type?limit=" + limit + "&offset=" + offset);
+            NamedApiResourceList<Type> types = pokeApiClient.getResource(Type.class, new PageQuery(limit, offset * limit)).block();
+            if (types != null) return ResponseEntity.ok(types);
+            return ResponseEntity.badRequest().body("Could not access Type endpoint");
         }
         catch (Exception e) {
-            LOGGER.error("Error retrieving response because {}", e.getMessage());
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
-        return switch (types.statusCode()) {
-            case 200 -> ResponseEntity.ok(types.body());
-            case 400 -> ResponseEntity.badRequest().body("Could not access Types endpoint");
-            default -> ResponseEntity.internalServerError().body("Could not access Types endpoint");
-        };
     }
 
-    @RequestMapping(value = "/{nameOrId}", method = RequestMethod.GET)
-    @ResponseBody
+    @Operation(summary = "Get a pokemons type", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
+    @GetMapping(value = "/{nameOrId}")
     ResponseEntity<?> getAPokemonsType(@PathVariable("nameOrId") String nameOrId)
     {
         LOGGER.info("getType {}", nameOrId);
-        HttpResponse<String> type;
         try {
-            type = pokemonService.callUrl(pokeApiBaseUrl + "type/" + nameOrId);
+            Type type = pokeApiClient.getResource(Type.class, nameOrId).block();
+            if (type != null) return ResponseEntity.ok(type);
+            return ResponseEntity.badRequest().body("Could not find Type with " + nameOrId);
         }
         catch (Exception e) {
-            LOGGER.error("Error retrieving response because {}", e.getMessage());
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
-        return switch (type.statusCode()) {
-            case 200 -> ResponseEntity.ok(type.body());
-            case 400 -> ResponseEntity.badRequest().body("Could not access Type endpoint");
-            default -> ResponseEntity.internalServerError().body("Could not access Type endpoint");
-        };
     }
 }

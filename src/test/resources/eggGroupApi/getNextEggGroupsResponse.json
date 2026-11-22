@@ -1,0 +1,47 @@
+{
+  "count": 15,
+  "next": "https://pokeapi.co/api/v2/egg-group?offset=11&limit=4",
+  "previous": "https://pokeapi.co/api/v2/egg-group?offset=0&limit=1",
+  "results": [
+    {
+      "name": "water1",
+      "url": "https://pokeapi.co/api/v2/egg-group/2/"
+    },
+    {
+      "name": "bug",
+      "url": "https://pokeapi.co/api/v2/egg-group/3/"
+    },
+    {
+      "name": "flying",
+      "url": "https://pokeapi.co/api/v2/egg-group/4/"
+    },
+    {
+      "name": "ground",
+      "url": "https://pokeapi.co/api/v2/egg-group/5/"
+    },
+    {
+      "name": "fairy",
+      "url": "https://pokeapi.co/api/v2/egg-group/6/"
+    },
+    {
+      "name": "plant",
+      "url": "https://pokeapi.co/api/v2/egg-group/7/"
+    },
+    {
+      "name": "humanshape",
+      "url": "https://pokeapi.co/api/v2/egg-group/8/"
+    },
+    {
+      "name": "water3",
+      "url": "https://pokeapi.co/api/v2/egg-group/9/"
+    },
+    {
+      "name": "mineral",
+      "url": "https://pokeapi.co/api/v2/egg-group/10/"
+    },
+    {
+      "name": "indeterminate",
+      "url": "https://pokeapi.co/api/v2/egg-group/11/"
+    }
+  ]
+}

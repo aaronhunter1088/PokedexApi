@@ -1,0 +1,47 @@
+{
+  "count": 23,
+  "next": "https://pokeapi.co/api/v2/move-ailment?offset=20&limit=3",
+  "previous": "https://pokeapi.co/api/v2/move-ailment?offset=0&limit=10",
+  "results": [
+    {
+      "name": "nightmare",
+      "url": "https://pokeapi.co/api/v2/move-ailment/9/"
+    },
+    {
+      "name": "torment",
+      "url": "https://pokeapi.co/api/v2/move-ailment/12/"
+    },
+    {
+      "name": "disable",
+      "url": "https://pokeapi.co/api/v2/move-ailment/13/"
+    },
+    {
+      "name": "yawn",
+      "url": "https://pokeapi.co/api/v2/move-ailment/14/"
+    },
+    {
+      "name": "heal-block",
+      "url": "https://pokeapi.co/api/v2/move-ailment/15/"
+    },
+    {
+      "name": "no-type-immunity",
+      "url": "https://pokeapi.co/api/v2/move-ailment/17/"
+    },
+    {
+      "name": "leech-seed",
+      "url": "https://pokeapi.co/api/v2/move-ailment/18/"
+    },
+    {
+      "name": "embargo",
+      "url": "https://pokeapi.co/api/v2/move-ailment/19/"
+    },
+    {
+      "name": "perish-song",
+      "url": "https://pokeapi.co/api/v2/move-ailment/20/"
+    },
+    {
+      "name": "ingrain",
+      "url": "https://pokeapi.co/api/v2/move-ailment/21/"
+    }
+  ]
+}

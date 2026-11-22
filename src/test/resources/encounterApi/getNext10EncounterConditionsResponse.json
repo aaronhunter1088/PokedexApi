@@ -1,0 +1,47 @@
+{
+  "count": 30,
+  "next": "https://pokeapi.co/api/v2/encounter-condition?offset=20&limit=10",
+  "previous": "https://pokeapi.co/api/v2/encounter-condition?offset=0&limit=10",
+  "results": [
+    {
+      "name": "item",
+      "url": "https://pokeapi.co/api/v2/encounter-condition/11/"
+    },
+    {
+      "name": "weekday",
+      "url": "https://pokeapi.co/api/v2/encounter-condition/12/"
+    },
+    {
+      "name": "first-party-pokemon",
+      "url": "https://pokeapi.co/api/v2/encounter-condition/13/"
+    },
+    {
+      "name": "special-encounter",
+      "url": "https://pokeapi.co/api/v2/encounter-condition/14/"
+    },
+    {
+      "name": "trade",
+      "url": "https://pokeapi.co/api/v2/encounter-condition/15/"
+    },
+    {
+      "name": "coins",
+      "url": "https://pokeapi.co/api/v2/encounter-condition/16/"
+    },
+    {
+      "name": "friend-safari-slot",
+      "url": "https://pokeapi.co/api/v2/encounter-condition/17/"
+    },
+    {
+      "name": "great-marsh-daily-slot",
+      "url": "https://pokeapi.co/api/v2/encounter-condition/18/"
+    },
+    {
+      "name": "honey-tree-group",
+      "url": "https://pokeapi.co/api/v2/encounter-condition/19/"
+    },
+    {
+      "name": "headbutt-tree",
+      "url": "https://pokeapi.co/api/v2/encounter-condition/20/"
+    }
+  ]
+}

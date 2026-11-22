@@ -1,13 +1,15 @@
 package pokedexapi.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pokedexapi.controllers.BaseApiController;
-import pokedexapi.service.PokemonService;
 import skaro.pokeapi.client.PokeApiClient;
+import skaro.pokeapi.query.PageQuery;
 import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.move.Move;
 import skaro.pokeapi.resource.moveailment.MoveAilment;
@@ -18,43 +20,49 @@ import skaro.pokeapi.resource.movelearnmethod.MoveLearnMethod;
 import skaro.pokeapi.resource.movetarget.MoveTarget;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/move")
 class MovesApi extends BaseApiController
 {
-    /* Logging instance */
     private static final Logger LOGGER = LogManager.getLogger(MovesApi.class);
 
-    @Autowired
-    MovesApi(PokemonService pokemonService, PokeApiClient client)
+    MovesApi(PokeApiClient client)
     {
-        super(pokemonService, client);
+        super(client);
     }
 
     // Moves
+
+    @Operation(summary = "Get all moves", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "")
-    @ResponseBody
-    ResponseEntity<?> getMoves()
+    ResponseEntity<?> getAllMoves(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                  @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getMoves");
+        LOGGER.info("getAllMoves limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<Move> moves = pokeApiClient.getResource(Move.class).block();
-            if (null != moves) return ResponseEntity.ok(moves);
-            else return ResponseEntity.badRequest().body("Could not access Move endpoint");
+            NamedApiResourceList<Move> moves = pokeApiClient.getResource(Move.class, new PageQuery(limit, offset * limit)).block();
+            if (moves != null ) return ResponseEntity.ok(moves);
+            return ResponseEntity.badRequest().body("Could not access Move endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
+    @Operation(summary = "Get move", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/{id}")
     ResponseEntity<?> getMove(@PathVariable(value = "id") String id)
     {
         LOGGER.info("getMove {}", id);
         try {
             Move move = pokeApiClient.getResource(Move.class, id).block();
-            if (null != move) return ResponseEntity.ok(move);
-            else return ResponseEntity.badRequest().body("Could not find a move with " + id);
+            if (move != null) return ResponseEntity.ok(move);
+            return ResponseEntity.badRequest().body("Could not find a Move with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -62,29 +70,38 @@ class MovesApi extends BaseApiController
     }
 
     // Move Ailment
+
+    @Operation(summary = "Get all move ailments", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/move-ailment")
-    @ResponseBody
-    ResponseEntity<?> getMoveAilments()
+    ResponseEntity<?> getAllMoveAilments(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                         @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getMoveAilments");
+        LOGGER.info("getAllMoveAilments limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<MoveAilment> moveAilments = pokeApiClient.getResource(MoveAilment.class).block();
-            if (null != moveAilments) return ResponseEntity.ok(moveAilments);
-            else return ResponseEntity.badRequest().body("Could not access MoveAilment endpoint");
+            NamedApiResourceList<MoveAilment> moveAilments = pokeApiClient.getResource(MoveAilment.class, new PageQuery(limit, offset * limit)).block();
+            if (moveAilments != null) return ResponseEntity.ok(moveAilments);
+            return ResponseEntity.badRequest().body("Could not access MoveAilment endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
+    @Operation(summary = "Get move ailment", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/move-ailment/{id}")
     ResponseEntity<?> getMoveAilment(@PathVariable(value = "id") String id)
     {
         LOGGER.info("getMoveAilment {}", id);
         try {
             MoveAilment moveAilment = pokeApiClient.getResource(MoveAilment.class, id).block();
-            if (null != moveAilment) return ResponseEntity.ok(moveAilment);
-            else return ResponseEntity.badRequest().body("Could not find a moveAilment with " + id);
+            if (moveAilment != null) return ResponseEntity.ok(moveAilment);
+            return ResponseEntity.badRequest().body("Could not find a MoveAilment with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -92,29 +109,38 @@ class MovesApi extends BaseApiController
     }
 
     // Battle Styles
+
+    @Operation(summary = "Get all move battle styles", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/move-battle-style")
-    @ResponseBody
-    ResponseEntity<?> getMoveBattleStyles()
+    ResponseEntity<?> getAllMoveBattleStyles(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                             @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getMoveMoveBattleStyles");
+        LOGGER.info("getAllMoveBattleStyles limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<MoveBattleStyle> moveAilments = pokeApiClient.getResource(MoveBattleStyle.class).block();
-            if (null != moveAilments) return ResponseEntity.ok(moveAilments);
-            else return ResponseEntity.badRequest().body("Could not access MoveBattleStyle endpoint");
+            NamedApiResourceList<MoveBattleStyle> moveBattleStyles = pokeApiClient.getResource(MoveBattleStyle.class, new PageQuery(limit, offset * limit)).block();
+            if (moveBattleStyles != null) return ResponseEntity.ok(moveBattleStyles);
+            return ResponseEntity.badRequest().body("Could not access MoveBattleStyle endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
+    @Operation(summary = "Get move battle style", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/move-battle-style/{id}")
     ResponseEntity<?> getMoveBattleStyle(@PathVariable(value = "id") String id)
     {
         LOGGER.info("getMoveBattleStyle {}", id);
         try {
             MoveBattleStyle battleStyle = pokeApiClient.getResource(MoveBattleStyle.class, id).block();
-            if (null != battleStyle) return ResponseEntity.ok(battleStyle);
-            else return ResponseEntity.badRequest().body("Could not find a battleStyle with " + id);
+            if (battleStyle != null) return ResponseEntity.ok(battleStyle);
+            return ResponseEntity.badRequest().body("Could not find a MoveBattleStyle with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -122,29 +148,38 @@ class MovesApi extends BaseApiController
     }
 
     // Categories
+
+    @Operation(summary = "Get all move categories", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/move-category")
-    @ResponseBody
-    ResponseEntity<?> getCategories()
+    ResponseEntity<?> getAllMoveCategories(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                           @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getCategories");
+        LOGGER.info("getAllMoveCategories limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<MoveCategory> moveCategories = pokeApiClient.getResource(MoveCategory.class).block();
-            if (null != moveCategories) return ResponseEntity.ok(moveCategories);
-            else return ResponseEntity.badRequest().body("Could not access MoveCategory endpoint");
+            NamedApiResourceList<MoveCategory> moveCategories = pokeApiClient.getResource(MoveCategory.class, new PageQuery(limit, offset * limit)).block();
+            if (moveCategories != null) return ResponseEntity.ok(moveCategories);
+            return ResponseEntity.badRequest().body("Could not access MoveCategory endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
+    @Operation(summary = "Get move category", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/move-category/{id}")
-    ResponseEntity<?> getCategory(@PathVariable(value = "id") String id)
+    ResponseEntity<?> getMoveCategory(@PathVariable(value = "id") String id)
     {
-        LOGGER.info("getMoveBattleStyle {}", id);
+        LOGGER.info("getMoveCategory {}", id);
         try {
             MoveCategory moveCategory = pokeApiClient.getResource(MoveCategory.class, id).block();
-            if (null != moveCategory) return ResponseEntity.ok(moveCategory);
-            else return ResponseEntity.badRequest().body("Could not find a moveCategory with " + id);
+            if (moveCategory != null) return ResponseEntity.ok(moveCategory);
+            return ResponseEntity.badRequest().body("Could not find a MoveCategory with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -152,29 +187,38 @@ class MovesApi extends BaseApiController
     }
 
     // Damage Classes
+
+    @Operation(summary = "Get all move damage classes", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/move-damage-class")
-    @ResponseBody
-    ResponseEntity<?> getDamageClasses()
+    ResponseEntity<?> getAllMoveDamageClasses(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                              @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getDamageClasses");
+        LOGGER.info("getAllMoveDamageClasses limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<MoveDamageClass> moveDamages = pokeApiClient.getResource(MoveDamageClass.class).block();
-            if (null != moveDamages) return ResponseEntity.ok(moveDamages);
-            else return ResponseEntity.badRequest().body("Could not access MoveDamageClass endpoint");
+            NamedApiResourceList<MoveDamageClass> moveDamages = pokeApiClient.getResource(MoveDamageClass.class, new PageQuery(limit, offset * limit)).block();
+            if (moveDamages != null) return ResponseEntity.ok(moveDamages);
+            return ResponseEntity.badRequest().body("Could not access MoveDamageClass endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
+    @Operation(summary = "Get move damage class", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/move-damage-class/{id}")
-    ResponseEntity<?> getDamageClass(@PathVariable(value = "id") String id)
+    ResponseEntity<?> getMoveDamageClass(@PathVariable(value = "id") String id)
     {
         LOGGER.info("getMoveDamageClass {}", id);
         try {
             MoveDamageClass moveDamageClass = pokeApiClient.getResource(MoveDamageClass.class, id).block();
-            if (null != moveDamageClass) return ResponseEntity.ok(moveDamageClass);
-            else return ResponseEntity.badRequest().body("Could not find a moveDamageClass with " + id);
+            if (moveDamageClass != null) return ResponseEntity.ok(moveDamageClass);
+            return ResponseEntity.badRequest().body("Could not find a MoveDamageClass with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -182,29 +226,38 @@ class MovesApi extends BaseApiController
     }
 
     // Learn Moves
+
+    @Operation(summary = "Get all move learn methods", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/move-learn-method")
-    @ResponseBody
-    ResponseEntity<?> getLearnMoves()
+    ResponseEntity<?> getAllMoveLearnMethods(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                             @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getLearnMoves");
+        LOGGER.info("getAllMoveLearnMethods limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<MoveLearnMethod> learnMoves = pokeApiClient.getResource(MoveLearnMethod.class).block();
-            if (null != learnMoves) return ResponseEntity.ok(learnMoves);
-            else return ResponseEntity.badRequest().body("Could not access MoveLearnMethod endpoint");
+            NamedApiResourceList<MoveLearnMethod> learnMoves = pokeApiClient.getResource(MoveLearnMethod.class, new PageQuery(limit, offset * limit)).block();
+            if (learnMoves != null) return ResponseEntity.ok(learnMoves);
+            return ResponseEntity.badRequest().body("Could not access MoveLearnMethod endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
+    @Operation(summary = "Get move learn method", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/move-learn-method/{id}")
     ResponseEntity<?> getMoveLearnMethod(@PathVariable(value = "id") String id)
     {
         LOGGER.info("getMoveLearnMethod {}", id);
         try {
             MoveLearnMethod moveLearnMethod = pokeApiClient.getResource(MoveLearnMethod.class, id).block();
-            if (null != moveLearnMethod) return ResponseEntity.ok(moveLearnMethod);
-            else return ResponseEntity.badRequest().body("Could not find a moveLearnMethod with " + id);
+            if (moveLearnMethod != null) return ResponseEntity.ok(moveLearnMethod);
+            return ResponseEntity.badRequest().body("Could not find a MoveLearnMethod with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -212,29 +265,38 @@ class MovesApi extends BaseApiController
     }
 
     // Targets
+
+    @Operation(summary = "Get all move targets", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/move-target")
-    @ResponseBody
-    ResponseEntity<?> getMoveTargets()
+    ResponseEntity<?> getAllMoveTargets(@RequestParam(value = "limit", required = false, defaultValue = "10") int limit,
+                                        @RequestParam(value = "offset", required = false, defaultValue = "0") int offset)
     {
-        LOGGER.info("getTargets");
+        LOGGER.info("getAllMoveTargets limit:{} offset:{}", limit, offset);
         try {
-            NamedApiResourceList<MoveTarget> learnMoves = pokeApiClient.getResource(MoveTarget.class).block();
-            if (null != learnMoves) return ResponseEntity.ok(learnMoves);
-            else return ResponseEntity.badRequest().body("Could not access MoveTarget endpoint");
+            NamedApiResourceList<MoveTarget> learnMoves = pokeApiClient.getResource(MoveTarget.class, new PageQuery(limit, offset * limit)).block();
+            if (learnMoves != null) return ResponseEntity.ok(learnMoves);
+            return ResponseEntity.badRequest().body("Could not access MoveTarget endpoint");
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
+    @Operation(summary = "Get move target", responses = {
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)})
     @GetMapping(value = "/move-target/{id}")
     ResponseEntity<?> getMoveTarget(@PathVariable(value = "id") String id)
     {
         LOGGER.info("getMoveTarget {}", id);
         try {
             MoveTarget moveTarget = pokeApiClient.getResource(MoveTarget.class, id).block();
-            if (null != moveTarget) return ResponseEntity.ok(moveTarget);
-            else return ResponseEntity.badRequest().body("Could not find a moveTarget with " + id);
+            if (moveTarget != null) return ResponseEntity.ok(moveTarget);
+            return ResponseEntity.badRequest().body("Could not find a MoveTarget with " + id);
         }
         catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());

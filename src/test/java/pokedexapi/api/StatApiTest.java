@@ -1,64 +1,173 @@
 package pokedexapi.api;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import pokedexapi.service.PokemonApiService;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import pokedexapi.controllers.BaseApiTest;
 import reactor.core.publisher.Mono;
-import skaro.pokeapi.client.PokeApiClient;
+import skaro.pokeapi.query.PageQuery;
+import skaro.pokeapi.resource.NamedApiResourceList;
 import skaro.pokeapi.resource.stat.Stat;
+import tools.jackson.core.type.TypeReference;
 
-import java.net.http.HttpResponse;
+import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-class StatApiTest
+@AutoConfigureMockMvc
+class StatApiTest extends BaseApiTest
 {
-    @Autowired
-    private StatApi statApi;
+    private static final String STAT_API = "/stat";
+    private static NamedApiResourceList<Stat> getAllStatsResponse;
+    private static Stat stat;
 
-    @MockitoBean
-    private PokemonApiService pokemonApiService;
-
-    @MockitoBean
-    private PokeApiClient pokeApiClient;
-
-    @Test
-    @DisplayName("getStats returns ok")
-    void testGetStats() throws Exception
+    @BeforeAll
+    static void setup() throws IOException
     {
-        @SuppressWarnings("unchecked")
-        HttpResponse<String> response = (HttpResponse<String>) mock(HttpResponse.class);
-        when(response.statusCode()).thenReturn(200);
-        when(response.body()).thenReturn("{\"results\":[]}");
-        when(pokemonApiService.callUrl(contains("stat?limit=10&offset=0"))).thenReturn(response);
-
-        var result = statApi.getStats(10, 0);
-
-        assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isEqualTo("{\"results\":[]}");
+        getAllStatsResponse = jsonMapper.readValue(
+                new ClassPathResource("statApi/getAllStatsResponse.json").getFile(),
+                new TypeReference<>() {}
+        );
+        stat = jsonMapper.readValue(
+                new ClassPathResource("statApi/stat_1.json").getFile(),
+                Stat.class
+        );
     }
 
-    @Test
-    @DisplayName("getStat returns ok")
-    void testGetStat()
+    @Nested
+    @DisplayName("Get All Stats Positive Cases")
+    class GetAllStatsPositive
     {
-        Stat response = mock(Stat.class);
-        when(pokeApiClient.getResource(Stat.class, "1")).thenReturn(Mono.just(response));
+        @Autowired
+        private MockMvc mockMvc;
 
-        var result = statApi.getStat("1");
+        @Test
+        @DisplayName("getAllStats returns the first page")
+        void testgetAllStatsreturnsthefirstpage() throws Exception
+        {
+            when(pokeApiClient.getResource(Stat.class, new PageQuery(10, 0)))
+                    .thenReturn(Mono.just(getAllStatsResponse));
 
-        assertThat(result.getStatusCode().value()).isEqualTo(200);
-        assertThat(result.getBody()).isSameAs(response);
+            MvcResult mvcResult = this.mockMvc.perform(get(STAT_API))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            String actual = mvcResult.getResponse().getContentAsString();
+            String expected = jsonMapper.writeValueAsString(getAllStatsResponse);
+
+            assertThat(expected).isEqualTo(actual);
+
+            verify(pokeApiClient).getResource(Stat.class, new PageQuery(10, 0));
+        }
+    }
+
+    @Nested
+    @DisplayName("Get All Stats Negative Cases")
+    class GetAllStatsNegative
+    {
+        @Autowired
+        private MockMvc mockMvc;
+
+        @Test
+        @DisplayName("getAllStats returns no results")
+        void testgetAllStatsreturnsnoresults() throws Exception
+        {
+            when(pokeApiClient.getResource(Stat.class, new PageQuery(10, 0)))
+                    .thenReturn(Mono.empty());
+
+            this.mockMvc.perform(get(STAT_API))
+                    .andExpect(status().isBadRequest());
+
+            verify(pokeApiClient).getResource(Stat.class, new PageQuery(10, 0));
+        }
+
+        @Test
+        @DisplayName("getAllStats throws an exception")
+        void testgetAllStatsthrowsanexception() throws Exception
+        {
+            when(pokeApiClient.getResource(Stat.class, new PageQuery(10, 0)))
+                    .thenThrow(new RuntimeException("Test Exception"));
+
+            this.mockMvc.perform(get(STAT_API))
+                    .andExpect(status().isInternalServerError());
+
+            verify(pokeApiClient).getResource(Stat.class, new PageQuery(10, 0));
+        }
+    }
+
+    @Nested
+    @DisplayName("Get Stat Positive Cases")
+    class GetStatPositive
+    {
+        @Autowired
+        private MockMvc mockMvc;
+
+        @Test
+        @DisplayName("getStat returns Stat 1")
+        void testgetStatreturnsStat1() throws Exception
+        {
+            when(pokeApiClient.getResource(Stat.class, "1"))
+                    .thenReturn(Mono.just(stat));
+
+            MvcResult mvcResult = this.mockMvc.perform(get(STAT_API + "/1"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            String actual = mvcResult.getResponse().getContentAsString();
+            String expected = jsonMapper.writeValueAsString(stat);
+
+            assertThat(expected).isEqualTo(actual);
+
+            verify(pokeApiClient).getResource(Stat.class, "1");
+        }
+    }
+
+    @Nested
+    @DisplayName("Get Stat Negative Cases")
+    class GetStatNegative
+    {
+        @Autowired
+        private MockMvc mockMvc;
+
+        @Test
+        @DisplayName("getStat returns no result")
+        void testgetStatreturnsnoresult() throws Exception
+        {
+            when(pokeApiClient.getResource(Stat.class, "1"))
+                    .thenReturn(Mono.empty());
+
+            this.mockMvc.perform(get(STAT_API + "/1"))
+                    .andExpect(status().isBadRequest());
+
+            verify(pokeApiClient).getResource(Stat.class, "1");
+        }
+
+        @Test
+        @DisplayName("getStat throws an exception")
+        void testgetStatthrowsanexception() throws Exception
+        {
+            when(pokeApiClient.getResource(Stat.class, "1"))
+                    .thenThrow(new RuntimeException("Test Exception"));
+
+            this.mockMvc.perform(get(STAT_API + "/1"))
+                    .andExpect(status().isInternalServerError());
+
+            verify(pokeApiClient).getResource(Stat.class, "1");
+        }
     }
 }
-
