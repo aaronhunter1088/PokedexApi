@@ -104,6 +104,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+        <!-- spring boot starter restclient: provides the auto-configuration that applies spring.http.serviceclient.* properties (base-url) to @ImportHttpServices clients -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-restclient</artifactId>
+        </dependency>
         <!-- caffeine cache -->
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
